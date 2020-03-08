@@ -1,0 +1,26 @@
+type User {
+  id: ID! @id
+  email: String! @unique
+  password: String!
+  role: Role!
+  refreshTokens: [Token!]!
+}
+
+type Token {
+  id: ID! @id
+  token: String! @unique
+  loginId: String! @unique
+  user: User! @relation(link: INLINE)
+}
+
+enum Role {
+  ADMIN,
+  DEFAULT_USER,
+}
+
+type Subject {
+  id: ID! @id
+  name: String! @unique
+  archive: String! @unique
+}
+

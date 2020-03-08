@@ -1,0 +1,8 @@
+endpoint: http://0.0.0.0:4466/zno-backend/dev
+datamodel: datamodel.prisma
+databaseType: document
+secret: my-secret-42
+
+generate:
+  - generator: typescript-client
+    output: ./generated/prisma-client/
