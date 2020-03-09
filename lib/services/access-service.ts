@@ -7,6 +7,8 @@
 
 /** External imports */
 import { FastifyInstance } from 'fastify';
+import HttpErrors from 'http-errors';
+import _ from 'lodash';
 
 /** Application's imports */
 import { UserProfile } from './types';
@@ -21,7 +23,7 @@ class AccessService {
     async generateToken(userProfile: UserProfile): Promise<string> {
         const expiresIn = this.instance.config.JWT_ACCESS_EXPIRES_IN;
 
-        const token = this.instance.jwt.sign(userProfile, {
+        const token = this.instance.jwt.sign(_.omit(userProfile, ['iat', 'exp']), {
             expiresIn: Number(expiresIn),
         });
 
@@ -30,6 +32,10 @@ class AccessService {
 
     async verifyToken(token: string): Promise<UserProfile> {
         const userProfile: UserProfile = this.instance.jwt.verify(token);
+
+        if (!userProfile) {
+            throw new HttpErrors.Unauthorized('Профіль користувача відсутній.');
+        }
 
         return userProfile;
     }

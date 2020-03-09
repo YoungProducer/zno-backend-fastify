@@ -11,12 +11,18 @@ import { IncomingMessage, ServerResponse } from "http";
 /** Application's imports */
 import { prisma, User } from '../../prisma/generated/prisma-client';
 import { ISignUpCredentials, ISignInCredentials, UserProfile } from "../services/types";
+import { IRefreshReturnData } from "./types";
+import {
+    me,
+    signin,
+    signup,
+} from './schema';
 
 export = async function (
     fastify: FastifyInstance,
     opts: any,
 ) {
-    fastify.post('/signup', async (
+    fastify.post('/signup', { schema: signup }, async (
         req: FastifyRequest<IncomingMessage>,
         reply: FastifyReply<ServerResponse>,
     ) => await signupHandler(
@@ -24,10 +30,18 @@ export = async function (
         req,
         reply,
     ));
-    fastify.post('/signin', async (
+    fastify.post('/signin', { schema: signin }, async (
         req: FastifyRequest<IncomingMessage>,
-    reply: FastifyReply<ServerResponse>,
+        reply: FastifyReply<ServerResponse>,
     ) => await signinHandler(
+        fastify,
+        req,
+        reply,
+    ));
+    fastify.get('/refresh', async (
+        req: FastifyRequest<IncomingMessage>,
+        reply: FastifyReply<ServerResponse>,
+    ) => await refreshHandler(
         fastify,
         req,
         reply,
@@ -41,7 +55,7 @@ export = async function (
             await fastify.authPreHandler(req, reply);
             return;
         });
-        fastify.get('/me', meHandler);
+        fastify.get('/me', { schema: me }, meHandler);
     });
 };
 
@@ -95,7 +109,7 @@ async function signinHandler(
 
         reply
             .setCookie('accessToken', accessToken, {
-                maxAge: 120,
+                maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
                 httpOnly: true,
                 path: '/',
             })
@@ -115,9 +129,34 @@ async function meHandler(
     reply: FastifyReply<ServerResponse>,
 ) {
     try {
-        const user = req.body.user;
+        const user = req.params.userProfile;
 
         return { ...user };
+    } catch (err) {
+        reply.send(err);
+    }
+}
+
+async function refreshHandler(
+    fastify: FastifyInstance,
+    req: FastifyRequest<IncomingMessage>,
+    reply: FastifyReply<ServerResponse>,
+) {
+    try {
+        const { accessToken, refreshToken, userProfile }: IRefreshReturnData = await fastify.authService.refresh(req);
+
+        reply
+            .setCookie('accessToken', accessToken, {
+                maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
+                httpOnly: true,
+                path: '/',
+            })
+            .setCookie('refreshToken', refreshToken, {
+                maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
+                httpOnly: true,
+                path: '/',
+            })
+            .send(userProfile);
     } catch (err) {
         reply.send(err);
     }

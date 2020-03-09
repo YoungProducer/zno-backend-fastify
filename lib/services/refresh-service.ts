@@ -17,12 +17,12 @@ import { prisma } from '../../prisma/generated/prisma-client';
 
 class RefreshService {
     instance!: FastifyInstance;
-    private expiresIn!: string;
+    private expiresIn!: number;
 
     constructor(fastify: FastifyInstance) {
         this.instance = fastify;
 
-        this.expiresIn = fastify.config.JWT_REFRESH_EXPIRES_IN;
+        this.expiresIn = Number(fastify.config.JWT_REFRESH_EXPIRES_IN);
     }
 
     async verifyToken(token: string): Promise<UserProfile> {

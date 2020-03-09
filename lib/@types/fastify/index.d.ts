@@ -17,7 +17,9 @@ import UserService from '../../services/user-service';
 import AccessService from '../../services/access-service';
 import RefreshService from '../../services/refresh-service';
 
-import JwtAccess, { TJwtAccess } from '../../plugins/jwtAccess';
+import AuthService from '../../auth/service';
+
+import { TJwtAccess } from '../../plugins/jwtAccess';
 
 interface Config {
   JWT_SECRET: string;
@@ -38,6 +40,7 @@ declare module 'fastify' {
     accessService: AccessService;
     refreshService: RefreshService;
     userService: UserService;
+    authService: AuthService;
     authPreHandler: TJwtAccess;
     config: Config;
   }

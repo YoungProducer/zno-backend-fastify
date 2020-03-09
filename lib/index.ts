@@ -9,6 +9,7 @@ import fastifyCors from 'fastify-cors';
 import jwt from 'fastify-jwt';
 import fastifyCookie from 'fastify-cookie';
 import { IncomingMessage, ServerResponse } from 'http';
+import _ from 'lodash';
 
 /** Application's imports */
 import BcryptHasher from './services/bcrypt-hasher';
@@ -20,6 +21,7 @@ import UserService from './services/user-service';
 import jwtAccess from './plugins/jwtAccess';
 
 import authController from './auth';
+import AuthService from './auth/service';
 
 /** Import env config */
 require('dotenv').config();
@@ -59,22 +61,52 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
     const refreshService = new RefreshService(fastify);
     fastify.decorate('refreshService', refreshService);
 
+    const authService = new AuthService(fastify);
+    fastify.decorate('authService', authService);
+
     fastify.decorate('authPreHandler', async (
         req: FastifyRequest<IncomingMessage>,
         reply: FastifyReply<ServerResponse>,
     ) => {
-        fastify.log.debug('auth');
         try {
-            /** Extract token from cookie */
-            const token = req.cookies['accessToken'];
+            /** Extract access token from cookies */
+            const accessToken = req.cookies['accessToken'];
 
             /** Verify token */
-            const user = await fastify.accessService.verifyToken(token);
+            const userProfile = await fastify.accessService.verifyToken(accessToken);
 
             /** Set user data to req body */
-            req.body.user = user;
+            req.params.userProfile = userProfile;
         } catch (err) {
-            reply.send(err);
+            try {
+                /** Extract refresh token from cookies */
+                const refreshToken = req.cookies['refreshToken'];
+
+                /** Verify token */
+                const userProfile = await fastify.refreshService.verifyToken(refreshToken);
+
+                /** Generate new tokens */
+                const newAccessToken = await fastify.accessService.generateToken(_.omit(userProfile, 'hash'));
+                const newRefreshToken = await fastify.refreshService.generateToken(userProfile);
+
+                /** Set profile to req body */
+                req.params.userProfile = _.omit(userProfile, 'hash');
+
+                /** Set new tokens pair to cookies */
+                reply
+                    .setCookie('accessToken', newAccessToken, {
+                        maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
+                        httpOnly: true,
+                        path: '/',
+                    })
+                    .setCookie('refreshToken', newRefreshToken, {
+                        maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
+                        httpOnly: true,
+                        path: '/',
+                    });
+            } catch (err) {
+                reply.send(err);
+            }
         }
     });
 };
