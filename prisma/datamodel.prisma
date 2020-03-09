@@ -21,6 +21,5 @@ enum Role {
 type Subject {
   id: ID! @id
   name: String! @unique
-  archive: String! @unique
 }
 

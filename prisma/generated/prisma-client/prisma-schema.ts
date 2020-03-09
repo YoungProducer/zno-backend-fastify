@@ -79,7 +79,6 @@ enum Role {
 type Subject {
   id: ID!
   name: String!
-  archive: String!
 }
 
 type SubjectConnection {
@@ -91,7 +90,6 @@ type SubjectConnection {
 input SubjectCreateInput {
   id: ID
   name: String!
-  archive: String!
 }
 
 type SubjectEdge {
@@ -104,14 +102,11 @@ enum SubjectOrderByInput {
   id_DESC
   name_ASC
   name_DESC
-  archive_ASC
-  archive_DESC
 }
 
 type SubjectPreviousValues {
   id: ID!
   name: String!
-  archive: String!
 }
 
 type SubjectSubscriptionPayload {
@@ -132,12 +127,10 @@ input SubjectSubscriptionWhereInput {
 
 input SubjectUpdateInput {
   name: String
-  archive: String
 }
 
 input SubjectUpdateManyMutationInput {
   name: String
-  archive: String
 }
 
 input SubjectWhereInput {
@@ -169,27 +162,12 @@ input SubjectWhereInput {
   name_not_starts_with: String
   name_ends_with: String
   name_not_ends_with: String
-  archive: String
-  archive_not: String
-  archive_in: [String!]
-  archive_not_in: [String!]
-  archive_lt: String
-  archive_lte: String
-  archive_gt: String
-  archive_gte: String
-  archive_contains: String
-  archive_not_contains: String
-  archive_starts_with: String
-  archive_not_starts_with: String
-  archive_ends_with: String
-  archive_not_ends_with: String
   AND: [SubjectWhereInput!]
 }
 
 input SubjectWhereUniqueInput {
   id: ID
   name: String
-  archive: String
 }
 
 type Subscription {

@@ -21,7 +21,9 @@ import UserService from './services/user-service';
 import jwtAccess from './plugins/jwtAccess';
 
 import authController from './auth';
+import subjectController from './subject';
 import AuthService from './auth/service';
+import SubjectService from './subject/service';
 
 /** Import env config */
 require('dotenv').config();
@@ -63,6 +65,9 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
 
     const authService = new AuthService(fastify);
     fastify.decorate('authService', authService);
+
+    const subjectService = new SubjectService();
+    fastify.decorate('subjectService', subjectService);
 
     fastify.decorate('authPreHandler', async (
         req: FastifyRequest<IncomingMessage>,
@@ -131,6 +136,7 @@ instance
     .register(fp(decorateFastifyInstance))
     .register(fastifyFormBody)
     .register(fastifyCookie)
-    .register(authController, { prefix: '/auth/user' });
+    .register(authController, { prefix: '/auth/user' })
+    .register(subjectController, { prefix: '/subject' });
 
 export { instance };

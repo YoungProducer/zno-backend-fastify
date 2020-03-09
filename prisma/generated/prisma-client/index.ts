@@ -183,9 +183,7 @@ export type SubjectOrderByInput =
   | "id_ASC"
   | "id_DESC"
   | "name_ASC"
-  | "name_DESC"
-  | "archive_ASC"
-  | "archive_DESC";
+  | "name_DESC";
 
 export type Role = "ADMIN" | "DEFAULT_USER";
 
@@ -212,7 +210,6 @@ export type MutationType = "CREATED" | "UPDATED" | "DELETED";
 export type SubjectWhereUniqueInput = AtLeastOne<{
   id: Maybe<ID_Input>;
   name?: Maybe<String>;
-  archive?: Maybe<String>;
 }>;
 
 export interface SubjectWhereInput {
@@ -244,20 +241,6 @@ export interface SubjectWhereInput {
   name_not_starts_with?: Maybe<String>;
   name_ends_with?: Maybe<String>;
   name_not_ends_with?: Maybe<String>;
-  archive?: Maybe<String>;
-  archive_not?: Maybe<String>;
-  archive_in?: Maybe<String[] | String>;
-  archive_not_in?: Maybe<String[] | String>;
-  archive_lt?: Maybe<String>;
-  archive_lte?: Maybe<String>;
-  archive_gt?: Maybe<String>;
-  archive_gte?: Maybe<String>;
-  archive_contains?: Maybe<String>;
-  archive_not_contains?: Maybe<String>;
-  archive_starts_with?: Maybe<String>;
-  archive_not_starts_with?: Maybe<String>;
-  archive_ends_with?: Maybe<String>;
-  archive_not_ends_with?: Maybe<String>;
   AND?: Maybe<SubjectWhereInput[] | SubjectWhereInput>;
 }
 
@@ -373,17 +356,14 @@ export type UserWhereUniqueInput = AtLeastOne<{
 export interface SubjectCreateInput {
   id?: Maybe<ID_Input>;
   name: String;
-  archive: String;
 }
 
 export interface SubjectUpdateInput {
   name?: Maybe<String>;
-  archive?: Maybe<String>;
 }
 
 export interface SubjectUpdateManyMutationInput {
   name?: Maybe<String>;
-  archive?: Maybe<String>;
 }
 
 export interface TokenCreateInput {
@@ -594,13 +574,11 @@ export interface NodeNode {
 export interface Subject {
   id: ID_Output;
   name: String;
-  archive: String;
 }
 
 export interface SubjectPromise extends Promise<Subject>, Fragmentable {
   id: () => Promise<ID_Output>;
   name: () => Promise<String>;
-  archive: () => Promise<String>;
 }
 
 export interface SubjectSubscription
@@ -608,7 +586,6 @@ export interface SubjectSubscription
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
   name: () => Promise<AsyncIterator<String>>;
-  archive: () => Promise<AsyncIterator<String>>;
 }
 
 export interface SubjectNullablePromise
@@ -616,7 +593,6 @@ export interface SubjectNullablePromise
     Fragmentable {
   id: () => Promise<ID_Output>;
   name: () => Promise<String>;
-  archive: () => Promise<String>;
 }
 
 export interface SubjectConnection {
@@ -938,7 +914,6 @@ export interface SubjectSubscriptionPayloadSubscription
 export interface SubjectPreviousValues {
   id: ID_Output;
   name: String;
-  archive: String;
 }
 
 export interface SubjectPreviousValuesPromise
@@ -946,7 +921,6 @@ export interface SubjectPreviousValuesPromise
     Fragmentable {
   id: () => Promise<ID_Output>;
   name: () => Promise<String>;
-  archive: () => Promise<String>;
 }
 
 export interface SubjectPreviousValuesSubscription
@@ -954,7 +928,6 @@ export interface SubjectPreviousValuesSubscription
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
   name: () => Promise<AsyncIterator<String>>;
-  archive: () => Promise<AsyncIterator<String>>;
 }
 
 export interface TokenSubscriptionPayload {
