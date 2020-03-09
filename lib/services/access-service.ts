@@ -19,7 +19,7 @@ class AccessService {
     }
 
     async generateToken(userProfile: UserProfile): Promise<string> {
-        const expiresIn = process.env.JWT_EXPIRES_IN;
+        const expiresIn = this.instance.config.JWT_ACCESS_EXPIRES_IN;
 
         const token = this.instance.jwt.sign(userProfile, {
             expiresIn: Number(expiresIn),

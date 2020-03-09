@@ -13,10 +13,19 @@ import { Server, IncomingMessage, ServerResponse } from 'http';
 /** Application's imports */
 import BcryptHasher from '../../services/bcrypt-hasher';
 import ValidatorService from '../../services/validator';
-import UserService from '../../auth/service';
+import UserService from '../../services/user-service';
 import AccessService from '../../services/access-service';
+import RefreshService from '../../services/refresh-service';
 
 import JwtAccess, { TJwtAccess } from '../../plugins/jwtAccess';
+
+interface Config {
+  JWT_SECRET: string;
+  JWT_ACCESS_EXPIRES_IN: string;
+  JWT_ACCESS_COOKIES_MAX_AGE: string;
+  JWT_REFRESH_EXPIRES_IN: string;
+  JWT_REFRESH_COOKIES_MAX_AGE: string;
+}
 
 declare module 'fastify' {
   export interface FastifyInstance<
@@ -27,7 +36,9 @@ declare module 'fastify' {
     bcryptHasher: BcryptHasher;
     validatorService: ValidatorService;
     accessService: AccessService;
+    refreshService: RefreshService;
     userService: UserService;
     authPreHandler: TJwtAccess;
+    config: Config;
   }
 }

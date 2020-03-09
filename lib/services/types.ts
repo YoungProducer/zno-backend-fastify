@@ -26,4 +26,10 @@ export interface UserProfile {
     id: string;
     email: string;
     role: Role;
+    /**
+     * This field exists only in refresh tokens.
+     * It's 'loginId' of each user
+     * for cases when user can login from different devices.
+     */
+    hash?: string;
 }

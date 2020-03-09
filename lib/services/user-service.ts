@@ -1,6 +1,6 @@
 /**
  * Created by: Oleksandr Bezrukov
- * Creation date: 8 March 2020
+ * Creation date: 9 March 2020
  *
  * User service to make authorization and authentication.
  */
