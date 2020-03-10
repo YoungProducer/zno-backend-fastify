@@ -23,6 +23,24 @@ export interface ISignInCredentials {
     remember: boolean;
 }
 
+export type TValidationError = {
+    /**
+     * Array of error fields.
+     * Example: ['email', 'password'].
+     */
+    errorFields: string[];
+    /**
+     * Object with messages for fields.
+     * Example: {
+     *     email: 'Invalid pattern',
+     *     password: 'To short password',
+     * }
+     */
+    errorMessages: {
+        [attr: string]: string;
+    };
+};
+
 export interface UserProfile {
     id: string;
     email: string;

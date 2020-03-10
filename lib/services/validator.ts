@@ -10,20 +10,33 @@ import validator from 'isemail';
 import HttpErrors from 'http-errors';
 
 /** Application's imports */
-import { ISignUpCredentials } from './types';
+import { ISignUpCredentials, TValidationError } from './types';
 
 class ValidatorService {
     validateSignUpCredentials = async (credentials: ISignUpCredentials) => {
-        if (credentials.email === undefined || credentials.password === undefined) {
-            throw new HttpErrors.UnprocessableEntity('Неправильний емеїл або пароль');
-        }
+        let error: TValidationError = {
+            errorFields: [],
+            errorMessages: {},
+        };
 
         if (!validator.validate(credentials.email)) {
-            throw new HttpErrors.Unauthorized('Неправильний шаблон.');
+            error.errorFields.push('email');
+            error.errorMessages.email = 'Неправильний шаблон.';
         }
 
         if (credentials.password.length < 8) {
-            throw new HttpErrors.Unauthorized('Занад-то короткий пароль.');
+            error.errorFields.push('password');
+            error.errorMessages.password = 'Занад-то короткий пароль.';
+        }
+
+        if (
+            Object.keys(error.errorMessages).length !== 0
+            && error.errorFields.length !== 0
+        ) {
+            throw new HttpErrors.BadRequest(JSON.stringify({
+                error,
+                message: 'Неправильні дані для входу.',
+            }));
         }
     }
 }
