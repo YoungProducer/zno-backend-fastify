@@ -20,6 +20,7 @@ export interface ISignUpCredentials {
 export interface ISignInCredentials {
     email: string;
     password: string;
+    remember: boolean;
 }
 
 export interface UserProfile {

@@ -20,8 +20,10 @@ class AccessService {
         this.instance = fastify;
     }
 
-    async generateToken(userProfile: UserProfile): Promise<string> {
-        const expiresIn = this.instance.config.JWT_ACCESS_EXPIRES_IN;
+    async generateToken(userProfile: UserProfile, session: boolean = false): Promise<string> {
+        const expiresIn = session
+            ? this.instance.config.JWT_SESSION_EXPIRES_IN
+            : this.instance.config.JWT_ACCESS_EXPIRES_IN;
 
         const token = this.instance.jwt.sign(_.omit(userProfile, ['iat', 'exp']), {
             expiresIn: Number(expiresIn),

@@ -105,16 +105,18 @@ async function signinHandler(
 
         const refreshToken: string = await fastify.refreshService.generateToken(userProfile);
 
-        fastify.log.debug({ config: fastify.config });
-
         reply
             .setCookie('accessToken', accessToken, {
-                maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
+                maxAge: credentials.remember
+                    ? Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE)
+                    : undefined,
                 httpOnly: true,
                 path: '/',
             })
             .setCookie('refreshToken', refreshToken, {
-                maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
+                maxAge: credentials.remember
+                    ? Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE)
+                    : undefined,
                 httpOnly: true,
                 path: '/',
             })

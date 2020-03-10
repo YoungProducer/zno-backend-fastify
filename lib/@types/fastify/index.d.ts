@@ -28,6 +28,7 @@ interface Config {
   JWT_ACCESS_COOKIES_MAX_AGE: string;
   JWT_REFRESH_EXPIRES_IN: string;
   JWT_REFRESH_COOKIES_MAX_AGE: string;
+  JWT_SESSION_EXPIRES_IN: string;
 }
 
 declare module 'fastify' {

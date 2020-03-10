@@ -17,12 +17,9 @@ import { prisma } from '../../prisma/generated/prisma-client';
 
 class RefreshService {
     instance!: FastifyInstance;
-    private expiresIn!: number;
 
     constructor(fastify: FastifyInstance) {
         this.instance = fastify;
-
-        this.expiresIn = Number(fastify.config.JWT_REFRESH_EXPIRES_IN);
     }
 
     async verifyToken(token: string): Promise<UserProfile> {
@@ -36,12 +33,16 @@ class RefreshService {
         }
     }
 
-    async generateToken(userProfile: UserProfile): Promise<string> {
+    async generateToken(userProfile: UserProfile, session: boolean = true): Promise<string> {
         if (!userProfile) {
             throw new HttpErrors.Unauthorized(
                 `Помилка генерації токену, профіль користувача відсутній.`,
             );
         }
+
+        const expiresIn = session
+            ? Number(this.instance.config.JWT_SESSION_EXPIRES_IN)
+            : Number(this.instance.config.JWT_REFRESH_EXPIRES_IN);
 
         /** Prepare data for token */
         const tokenData = {
@@ -54,7 +55,7 @@ class RefreshService {
         try {
             /** Generate token */
             const token = this.instance.jwt.sign(tokenData, {
-                expiresIn: this.expiresIn,
+                expiresIn,
             });
 
             if (userProfile.hash) {

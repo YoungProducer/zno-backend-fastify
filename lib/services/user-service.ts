@@ -20,7 +20,7 @@ class UserService {
         this.instance = fastify;
     }
 
-    async verifyCredentials(credentials: ISignInCredentials): Promise<Omit<User, 'password'>> {
+    async verifyCredentials(credentials: Pick<ISignInCredentials, 'password' | 'email'>): Promise<Omit<User, 'password'>> {
         /** Find user in data base by email */
         const foundUser = await prisma.user({
             email: credentials.email,
@@ -28,6 +28,7 @@ class UserService {
 
         if (!foundUser) {
             throw new HttpErrors.BadRequest('Користувача з таким емейлом не знайдено.');
+
         }
 
         /** Check is password correct */

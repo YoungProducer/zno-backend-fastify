@@ -8,7 +8,7 @@
     "start": "node bin/app.js",
     "dev": "ts-node --files ./bin/app.js",
     "build": "rm -rf ./dist && tsc",
-    "test": "jest --runInBand --detectOpenHandles",
+    "test": "jest --runInBand --detectOpenHandles --watchAll",
     "test-dev": "ts-node-dev --no-notify --respawn --transpileOnly ./bin/app.js"
   },
   "dependencies": {

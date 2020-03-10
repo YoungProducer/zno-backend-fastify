@@ -36,14 +36,15 @@ const schema = {
         'JWT_ACCESS_COOKIES_MAX_AGE',
         'JWT_REFRESH_EXPIRES_IN',
         'JWT_REFRESH_COOKIES_MAX_AGE',
+        'JWT_SESSION_EXPIRES_IN',
     ],
     properties: {
-        JWT_ACCESS_SECRET: { type: 'string' },
+        JWT_SECRET: { type: 'string' },
         JWT_ACCESS_EXPIRES_IN: { type: 'string' },
         JWT_ACCESS_COOKIES_MAX_AGE: { type: 'string' },
-        JWT_REFRESH_SECRET: { type: 'string' },
         JWT_REFRESH_EXPIRES_IN: { type: 'string' },
         JWT_REFRESH_COOKIES_MAX_AGE: { type: 'string' },
+        JWT_SESSION_EXPIRES_IN: { type: 'string' },
     },
 };
 

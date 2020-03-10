@@ -44,6 +44,9 @@ export const signin = {
             password: {
                 type: 'string',
             },
+            remember: {
+                type: 'boolean',
+            },
         },
         additionalProperties: false,
     },
