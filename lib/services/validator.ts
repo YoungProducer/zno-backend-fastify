@@ -34,7 +34,7 @@ class ValidatorService {
             && error.errorFields.length !== 0
         ) {
             throw new HttpErrors.BadRequest(JSON.stringify({
-                error,
+                errorData: error,
                 message: 'Неправильні дані для входу.',
             }));
         }

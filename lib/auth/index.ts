@@ -125,7 +125,10 @@ async function signinHandler(
             .send(user);
     } catch (err) {
         const error = errorHandler(err);
-        reply.send(error);
+        console.log(typeof error.error);
+        // reply.send({ ...error.error, data: error.data });
+        // const res = reply.serialize(error.error)
+        reply.send({ err});
     }
 }
 
