@@ -8,10 +8,6 @@
 import _ from 'lodash';
 
 export const errorHandler = (error: any) => {
-    // if (error.message) {
-        // error.message = error.message.replace(`"\""`, "");
-    // }
-    // console.log(JSON.parse(error.message));
     try {
         let parsedMessage;
         if (error.message) {
@@ -23,7 +19,7 @@ export const errorHandler = (error: any) => {
 
         return {
             error,
-            data: parsedMessage.errorData,
+            data: parsedMessage.errorData || undefined,
         };
     } catch (e) {
         return error;

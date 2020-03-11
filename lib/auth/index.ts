@@ -69,7 +69,7 @@ async function signupHandler(
 
     try {
         /** Validate credentials */
-        fastify.validatorService.validateSignUpCredentials(credentials);
+        await fastify.validatorService.validateSignUpCredentials(credentials);
 
         /** Hash password */
         credentials.password = await fastify.bcryptHasher.hashPassword(credentials.password);
@@ -86,7 +86,8 @@ async function signupHandler(
         return { ...user };
     } catch (err) {
         const error = errorHandler(err);
-        reply.send(error);
+        console.log(error);
+        reply.send(err);
     }
 }
 
@@ -125,10 +126,9 @@ async function signinHandler(
             .send(user);
     } catch (err) {
         const error = errorHandler(err);
-        console.log(typeof error.error);
-        // reply.send({ ...error.error, data: error.data });
-        // const res = reply.serialize(error.error)
-        reply.send({ err});
+        /** Set additional data to req body to prevent getting the 500 error */
+        req.body.error = error.data;
+        reply.send(err);
     }
 }
 
@@ -142,7 +142,7 @@ async function meHandler(
         return { ...user };
     } catch (err) {
         const error = errorHandler(err);
-        reply.send(error);
+        reply.send({ ...error });
     }
 }
 

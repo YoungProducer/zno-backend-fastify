@@ -125,6 +125,22 @@ const authenticator = async (fastify: FastifyInstance) => {
         });
 };
 
+const errorHandler = async (fastify: FastifyInstance) => {
+    fastify.setErrorHandler((error, req, reply) => {
+        if (error.statusCode) {
+            reply
+                .code(error.statusCode)
+                .send({
+                    statusCode: error.statusCode,
+                    message: error.message,
+                    data: req.body.error,
+                });
+        } else {
+            reply.send(error);
+        }
+    });
+};
+
 const instance = fastify();
 
 instance
@@ -133,6 +149,7 @@ instance
         credentials: true,
     })
     .register(require('fastify-env'), { schema })
+    .register(fp(errorHandler))
     .register(fp(authenticator))
     .register(fp(decorateFastifyInstance))
     .register(fastifyFormBody)
