@@ -17,6 +17,7 @@ export type Maybe<T> = T | undefined | null;
 
 export interface Exists {
   subject: (where?: SubjectWhereInput) => Promise<boolean>;
+  subjectConfig: (where?: SubjectConfigWhereInput) => Promise<boolean>;
   token: (where?: TokenWhereInput) => Promise<boolean>;
   user: (where?: UserWhereInput) => Promise<boolean>;
 }
@@ -59,6 +60,27 @@ export interface Prisma {
     first?: Int;
     last?: Int;
   }) => SubjectConnectionPromise;
+  subjectConfig: (
+    where: SubjectConfigWhereUniqueInput
+  ) => SubjectConfigNullablePromise;
+  subjectConfigs: (args?: {
+    where?: SubjectConfigWhereInput;
+    orderBy?: SubjectConfigOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => FragmentableArray<SubjectConfig>;
+  subjectConfigsConnection: (args?: {
+    where?: SubjectConfigWhereInput;
+    orderBy?: SubjectConfigOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => SubjectConfigConnectionPromise;
   token: (where: TokenWhereUniqueInput) => TokenNullablePromise;
   tokens: (args?: {
     where?: TokenWhereInput;
@@ -119,6 +141,26 @@ export interface Prisma {
   }) => SubjectPromise;
   deleteSubject: (where: SubjectWhereUniqueInput) => SubjectPromise;
   deleteManySubjects: (where?: SubjectWhereInput) => BatchPayloadPromise;
+  createSubjectConfig: (data: SubjectConfigCreateInput) => SubjectConfigPromise;
+  updateSubjectConfig: (args: {
+    data: SubjectConfigUpdateInput;
+    where: SubjectConfigWhereUniqueInput;
+  }) => SubjectConfigPromise;
+  updateManySubjectConfigs: (args: {
+    data: SubjectConfigUpdateManyMutationInput;
+    where?: SubjectConfigWhereInput;
+  }) => BatchPayloadPromise;
+  upsertSubjectConfig: (args: {
+    where: SubjectConfigWhereUniqueInput;
+    create: SubjectConfigCreateInput;
+    update: SubjectConfigUpdateInput;
+  }) => SubjectConfigPromise;
+  deleteSubjectConfig: (
+    where: SubjectConfigWhereUniqueInput
+  ) => SubjectConfigPromise;
+  deleteManySubjectConfigs: (
+    where?: SubjectConfigWhereInput
+  ) => BatchPayloadPromise;
   createToken: (data: TokenCreateInput) => TokenPromise;
   updateToken: (args: {
     data: TokenUpdateInput;
@@ -163,6 +205,9 @@ export interface Subscription {
   subject: (
     where?: SubjectSubscriptionWhereInput
   ) => SubjectSubscriptionPayloadSubscription;
+  subjectConfig: (
+    where?: SubjectConfigSubscriptionWhereInput
+  ) => SubjectConfigSubscriptionPayloadSubscription;
   token: (
     where?: TokenSubscriptionWhereInput
   ) => TokenSubscriptionPayloadSubscription;
@@ -183,7 +228,11 @@ export type SubjectOrderByInput =
   | "id_ASC"
   | "id_DESC"
   | "name_ASC"
-  | "name_DESC";
+  | "name_DESC"
+  | "isSubSubject_ASC"
+  | "isSubSubject_DESC";
+
+export type SubjectConfigOrderByInput = "id_ASC" | "id_DESC";
 
 export type Role = "ADMIN" | "DEFAULT_USER";
 
@@ -241,7 +290,52 @@ export interface SubjectWhereInput {
   name_not_starts_with?: Maybe<String>;
   name_ends_with?: Maybe<String>;
   name_not_ends_with?: Maybe<String>;
+  isSubSubject?: Maybe<Boolean>;
+  isSubSubject_not?: Maybe<Boolean>;
+  parent?: Maybe<SubjectWhereInput>;
   AND?: Maybe<SubjectWhereInput[] | SubjectWhereInput>;
+}
+
+export type SubjectConfigWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface SubjectConfigWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  subject?: Maybe<SubjectWhereInput>;
+  subSubjects_some?: Maybe<SubSubjectWhereInput>;
+  subSubjects_every?: Maybe<SubSubjectRestrictedWhereInput>;
+  subSubjects_none?: Maybe<SubSubjectRestrictedWhereInput>;
+  exams?: Maybe<ExamsWhereInput>;
+  AND?: Maybe<SubjectConfigWhereInput[] | SubjectConfigWhereInput>;
+}
+
+export interface SubSubjectWhereInput {
+  subject?: Maybe<SubjectWhereInput>;
+  AND?: Maybe<SubSubjectWhereInput[] | SubSubjectWhereInput>;
+}
+
+export interface SubSubjectRestrictedWhereInput {
+  AND?: Maybe<
+    SubSubjectRestrictedWhereInput[] | SubSubjectRestrictedWhereInput
+  >;
+}
+
+export interface ExamsWhereInput {
+  AND?: Maybe<ExamsWhereInput[] | ExamsWhereInput>;
 }
 
 export type TokenWhereUniqueInput = AtLeastOne<{
@@ -356,14 +450,162 @@ export type UserWhereUniqueInput = AtLeastOne<{
 export interface SubjectCreateInput {
   id?: Maybe<ID_Input>;
   name: String;
+  isSubSubject?: Maybe<Boolean>;
+  parent?: Maybe<SubjectCreateOneInput>;
+}
+
+export interface SubjectCreateOneInput {
+  create?: Maybe<SubjectCreateInput>;
+  connect?: Maybe<SubjectWhereUniqueInput>;
 }
 
 export interface SubjectUpdateInput {
   name?: Maybe<String>;
+  isSubSubject?: Maybe<Boolean>;
+  parent?: Maybe<SubjectUpdateOneInput>;
+}
+
+export interface SubjectUpdateOneInput {
+  create?: Maybe<SubjectCreateInput>;
+  update?: Maybe<SubjectUpdateDataInput>;
+  upsert?: Maybe<SubjectUpsertNestedInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<SubjectWhereUniqueInput>;
+}
+
+export interface SubjectUpdateDataInput {
+  name?: Maybe<String>;
+  isSubSubject?: Maybe<Boolean>;
+  parent?: Maybe<SubjectUpdateOneInput>;
+}
+
+export interface SubjectUpsertNestedInput {
+  update: SubjectUpdateDataInput;
+  create: SubjectCreateInput;
 }
 
 export interface SubjectUpdateManyMutationInput {
   name?: Maybe<String>;
+  isSubSubject?: Maybe<Boolean>;
+}
+
+export interface SubjectConfigCreateInput {
+  id?: Maybe<ID_Input>;
+  subject: SubjectCreateOneInput;
+  themes?: Maybe<SubjectConfigCreatethemesInput>;
+  subSubjects?: Maybe<SubSubjectCreateManyInput>;
+  exams?: Maybe<ExamsCreateOneInput>;
+}
+
+export interface SubjectConfigCreatethemesInput {
+  set?: Maybe<String[] | String>;
+}
+
+export interface SubSubjectCreateManyInput {
+  create?: Maybe<SubSubjectCreateInput[] | SubSubjectCreateInput>;
+}
+
+export interface SubSubjectCreateInput {
+  subject: SubjectCreateOneInput;
+  themes?: Maybe<SubSubjectCreatethemesInput>;
+}
+
+export interface SubSubjectCreatethemesInput {
+  set?: Maybe<String[] | String>;
+}
+
+export interface ExamsCreateOneInput {
+  create?: Maybe<ExamsCreateInput>;
+}
+
+export interface ExamsCreateInput {
+  trainings?: Maybe<ExamsCreatetrainingsInput>;
+  sessions?: Maybe<ExamsCreatesessionsInput>;
+}
+
+export interface ExamsCreatetrainingsInput {
+  set?: Maybe<String[] | String>;
+}
+
+export interface ExamsCreatesessionsInput {
+  set?: Maybe<String[] | String>;
+}
+
+export interface SubjectConfigUpdateInput {
+  subject?: Maybe<SubjectUpdateOneRequiredInput>;
+  themes?: Maybe<SubjectConfigUpdatethemesInput>;
+  subSubjects?: Maybe<SubSubjectUpdateManyInput>;
+  exams?: Maybe<ExamsUpdateOneInput>;
+}
+
+export interface SubjectUpdateOneRequiredInput {
+  create?: Maybe<SubjectCreateInput>;
+  update?: Maybe<SubjectUpdateDataInput>;
+  upsert?: Maybe<SubjectUpsertNestedInput>;
+  connect?: Maybe<SubjectWhereUniqueInput>;
+}
+
+export interface SubjectConfigUpdatethemesInput {
+  set?: Maybe<String[] | String>;
+}
+
+export interface SubSubjectUpdateManyInput {
+  create?: Maybe<SubSubjectCreateInput[] | SubSubjectCreateInput>;
+  deleteMany?: Maybe<SubSubjectScalarWhereInput[] | SubSubjectScalarWhereInput>;
+  updateMany?: Maybe<
+    | SubSubjectUpdateManyWithWhereNestedInput[]
+    | SubSubjectUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface SubSubjectScalarWhereInput {
+  AND?: Maybe<SubSubjectScalarWhereInput[] | SubSubjectScalarWhereInput>;
+  OR?: Maybe<SubSubjectScalarWhereInput[] | SubSubjectScalarWhereInput>;
+  NOT?: Maybe<SubSubjectScalarWhereInput[] | SubSubjectScalarWhereInput>;
+}
+
+export interface SubSubjectUpdateManyWithWhereNestedInput {
+  where: SubSubjectScalarWhereInput;
+  data: SubSubjectUpdateManyDataInput;
+}
+
+export interface SubSubjectUpdateManyDataInput {
+  themes?: Maybe<SubSubjectUpdatethemesInput>;
+}
+
+export interface SubSubjectUpdatethemesInput {
+  set?: Maybe<String[] | String>;
+}
+
+export interface ExamsUpdateOneInput {
+  create?: Maybe<ExamsCreateInput>;
+  update?: Maybe<ExamsUpdateDataInput>;
+  upsert?: Maybe<ExamsUpsertNestedInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+}
+
+export interface ExamsUpdateDataInput {
+  trainings?: Maybe<ExamsUpdatetrainingsInput>;
+  sessions?: Maybe<ExamsUpdatesessionsInput>;
+}
+
+export interface ExamsUpdatetrainingsInput {
+  set?: Maybe<String[] | String>;
+}
+
+export interface ExamsUpdatesessionsInput {
+  set?: Maybe<String[] | String>;
+}
+
+export interface ExamsUpsertNestedInput {
+  update: ExamsUpdateDataInput;
+  create: ExamsCreateInput;
+}
+
+export interface SubjectConfigUpdateManyMutationInput {
+  themes?: Maybe<SubjectConfigUpdatethemesInput>;
 }
 
 export interface TokenCreateInput {
@@ -549,6 +791,17 @@ export interface SubjectSubscriptionWhereInput {
   AND?: Maybe<SubjectSubscriptionWhereInput[] | SubjectSubscriptionWhereInput>;
 }
 
+export interface SubjectConfigSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<SubjectConfigWhereInput>;
+  AND?: Maybe<
+    SubjectConfigSubscriptionWhereInput[] | SubjectConfigSubscriptionWhereInput
+  >;
+}
+
 export interface TokenSubscriptionWhereInput {
   mutation_in?: Maybe<MutationType[] | MutationType>;
   updatedFields_contains?: Maybe<String>;
@@ -574,11 +827,14 @@ export interface NodeNode {
 export interface Subject {
   id: ID_Output;
   name: String;
+  isSubSubject: Boolean;
 }
 
 export interface SubjectPromise extends Promise<Subject>, Fragmentable {
   id: () => Promise<ID_Output>;
   name: () => Promise<String>;
+  isSubSubject: () => Promise<Boolean>;
+  parent: <T = SubjectPromise>() => T;
 }
 
 export interface SubjectSubscription
@@ -586,6 +842,8 @@ export interface SubjectSubscription
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
   name: () => Promise<AsyncIterator<String>>;
+  isSubSubject: () => Promise<AsyncIterator<Boolean>>;
+  parent: <T = SubjectSubscription>() => T;
 }
 
 export interface SubjectNullablePromise
@@ -593,6 +851,8 @@ export interface SubjectNullablePromise
     Fragmentable {
   id: () => Promise<ID_Output>;
   name: () => Promise<String>;
+  isSubSubject: () => Promise<Boolean>;
+  parent: <T = SubjectPromise>() => T;
 }
 
 export interface SubjectConnection {
@@ -668,6 +928,146 @@ export interface AggregateSubjectPromise
 
 export interface AggregateSubjectSubscription
   extends Promise<AsyncIterator<AggregateSubject>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface SubjectConfig {
+  id: ID_Output;
+  themes: String[];
+  subSubjects?: <T = FragmentableArray<SubSubject>>() => T;
+  exams?: Exams | null;
+}
+
+export interface SubjectConfigPromise
+  extends Promise<SubjectConfig>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  subject: <T = SubjectPromise>() => T;
+  themes: () => Promise<String[]>;
+  subSubjects: <T = FragmentableArray<SubSubject>>() => T;
+  exams: <T = ExamsPromise>() => T;
+}
+
+export interface SubjectConfigSubscription
+  extends Promise<AsyncIterator<SubjectConfig>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  subject: <T = SubjectSubscription>() => T;
+  themes: () => Promise<AsyncIterator<String[]>>;
+  subSubjects: <T = Promise<AsyncIterator<SubSubjectSubscription>>>() => T;
+  exams: <T = ExamsSubscription>() => T;
+}
+
+export interface SubjectConfigNullablePromise
+  extends Promise<SubjectConfig | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  subject: <T = SubjectPromise>() => T;
+  themes: () => Promise<String[]>;
+  subSubjects: <T = FragmentableArray<SubSubject>>() => T;
+  exams: <T = ExamsPromise>() => T;
+}
+
+export interface SubSubject {
+  themes: String[];
+}
+
+export interface SubSubjectPromise extends Promise<SubSubject>, Fragmentable {
+  subject: <T = SubjectPromise>() => T;
+  themes: () => Promise<String[]>;
+}
+
+export interface SubSubjectSubscription
+  extends Promise<AsyncIterator<SubSubject>>,
+    Fragmentable {
+  subject: <T = SubjectSubscription>() => T;
+  themes: () => Promise<AsyncIterator<String[]>>;
+}
+
+export interface SubSubjectNullablePromise
+  extends Promise<SubSubject | null>,
+    Fragmentable {
+  subject: <T = SubjectPromise>() => T;
+  themes: () => Promise<String[]>;
+}
+
+export interface Exams {
+  trainings: String[];
+  sessions: String[];
+}
+
+export interface ExamsPromise extends Promise<Exams>, Fragmentable {
+  trainings: () => Promise<String[]>;
+  sessions: () => Promise<String[]>;
+}
+
+export interface ExamsSubscription
+  extends Promise<AsyncIterator<Exams>>,
+    Fragmentable {
+  trainings: () => Promise<AsyncIterator<String[]>>;
+  sessions: () => Promise<AsyncIterator<String[]>>;
+}
+
+export interface ExamsNullablePromise
+  extends Promise<Exams | null>,
+    Fragmentable {
+  trainings: () => Promise<String[]>;
+  sessions: () => Promise<String[]>;
+}
+
+export interface SubjectConfigConnection {
+  pageInfo: PageInfo;
+  edges: SubjectConfigEdge[];
+}
+
+export interface SubjectConfigConnectionPromise
+  extends Promise<SubjectConfigConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<SubjectConfigEdge>>() => T;
+  aggregate: <T = AggregateSubjectConfigPromise>() => T;
+}
+
+export interface SubjectConfigConnectionSubscription
+  extends Promise<AsyncIterator<SubjectConfigConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<SubjectConfigEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateSubjectConfigSubscription>() => T;
+}
+
+export interface SubjectConfigEdge {
+  node: SubjectConfig;
+  cursor: String;
+}
+
+export interface SubjectConfigEdgePromise
+  extends Promise<SubjectConfigEdge>,
+    Fragmentable {
+  node: <T = SubjectConfigPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface SubjectConfigEdgeSubscription
+  extends Promise<AsyncIterator<SubjectConfigEdge>>,
+    Fragmentable {
+  node: <T = SubjectConfigSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AggregateSubjectConfig {
+  count: Int;
+}
+
+export interface AggregateSubjectConfigPromise
+  extends Promise<AggregateSubjectConfig>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateSubjectConfigSubscription
+  extends Promise<AsyncIterator<AggregateSubjectConfig>>,
     Fragmentable {
   count: () => Promise<AsyncIterator<Int>>;
 }
@@ -914,6 +1314,7 @@ export interface SubjectSubscriptionPayloadSubscription
 export interface SubjectPreviousValues {
   id: ID_Output;
   name: String;
+  isSubSubject: Boolean;
 }
 
 export interface SubjectPreviousValuesPromise
@@ -921,6 +1322,7 @@ export interface SubjectPreviousValuesPromise
     Fragmentable {
   id: () => Promise<ID_Output>;
   name: () => Promise<String>;
+  isSubSubject: () => Promise<Boolean>;
 }
 
 export interface SubjectPreviousValuesSubscription
@@ -928,6 +1330,51 @@ export interface SubjectPreviousValuesSubscription
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
   name: () => Promise<AsyncIterator<String>>;
+  isSubSubject: () => Promise<AsyncIterator<Boolean>>;
+}
+
+export interface SubjectConfigSubscriptionPayload {
+  mutation: MutationType;
+  node: SubjectConfig;
+  updatedFields: String[];
+  previousValues: SubjectConfigPreviousValues;
+}
+
+export interface SubjectConfigSubscriptionPayloadPromise
+  extends Promise<SubjectConfigSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = SubjectConfigPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = SubjectConfigPreviousValuesPromise>() => T;
+}
+
+export interface SubjectConfigSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<SubjectConfigSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = SubjectConfigSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = SubjectConfigPreviousValuesSubscription>() => T;
+}
+
+export interface SubjectConfigPreviousValues {
+  id: ID_Output;
+  themes: String[];
+}
+
+export interface SubjectConfigPreviousValuesPromise
+  extends Promise<SubjectConfigPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  themes: () => Promise<String[]>;
+}
+
+export interface SubjectConfigPreviousValuesSubscription
+  extends Promise<AsyncIterator<SubjectConfigPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  themes: () => Promise<AsyncIterator<String[]>>;
 }
 
 export interface TokenSubscriptionPayload {
@@ -1039,14 +1486,14 @@ The `String` scalar type represents textual data, represented as UTF-8 character
 export type String = string;
 
 /*
-The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
-*/
-export type Int = number;
-
-/*
 The `Boolean` scalar type represents `true` or `false`.
 */
 export type Boolean = boolean;
+
+/*
+The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
+*/
+export type Int = number;
 
 export type Long = string;
 
@@ -1070,6 +1517,18 @@ export const models: Model[] = [
   {
     name: "Subject",
     embedded: false
+  },
+  {
+    name: "SubjectConfig",
+    embedded: false
+  },
+  {
+    name: "SubSubject",
+    embedded: true
+  },
+  {
+    name: "Exams",
+    embedded: true
   }
 ];
 

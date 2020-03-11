@@ -86,7 +86,8 @@ async function signupHandler(
         return { ...user };
     } catch (err) {
         const error = errorHandler(err);
-        console.log(error);
+        /** Set additional data to req body to prevent getting the 500 error */
+        req.body.error = error.data;
         reply.send(err);
     }
 }

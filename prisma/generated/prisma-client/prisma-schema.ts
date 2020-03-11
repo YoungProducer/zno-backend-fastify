@@ -6,6 +6,10 @@ export const typeDefs = /* GraphQL */ `type AggregateSubject {
   count: Int!
 }
 
+type AggregateSubjectConfig {
+  count: Int!
+}
+
 type AggregateToken {
   count: Int!
 }
@@ -18,6 +22,58 @@ type BatchPayload {
   count: Long!
 }
 
+type Exams {
+  trainings: [String!]!
+  sessions: [String!]!
+}
+
+input ExamsCreateInput {
+  trainings: ExamsCreatetrainingsInput
+  sessions: ExamsCreatesessionsInput
+}
+
+input ExamsCreateOneInput {
+  create: ExamsCreateInput
+}
+
+input ExamsCreatesessionsInput {
+  set: [String!]
+}
+
+input ExamsCreatetrainingsInput {
+  set: [String!]
+}
+
+input ExamsUpdateDataInput {
+  trainings: ExamsUpdatetrainingsInput
+  sessions: ExamsUpdatesessionsInput
+}
+
+input ExamsUpdateOneInput {
+  create: ExamsCreateInput
+  update: ExamsUpdateDataInput
+  upsert: ExamsUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
+}
+
+input ExamsUpdatesessionsInput {
+  set: [String!]
+}
+
+input ExamsUpdatetrainingsInput {
+  set: [String!]
+}
+
+input ExamsUpsertNestedInput {
+  update: ExamsUpdateDataInput!
+  create: ExamsCreateInput!
+}
+
+input ExamsWhereInput {
+  AND: [ExamsWhereInput!]
+}
+
 scalar Long
 
 type Mutation {
@@ -27,6 +83,12 @@ type Mutation {
   upsertSubject(where: SubjectWhereUniqueInput!, create: SubjectCreateInput!, update: SubjectUpdateInput!): Subject!
   deleteSubject(where: SubjectWhereUniqueInput!): Subject
   deleteManySubjects(where: SubjectWhereInput): BatchPayload!
+  createSubjectConfig(data: SubjectConfigCreateInput!): SubjectConfig!
+  updateSubjectConfig(data: SubjectConfigUpdateInput!, where: SubjectConfigWhereUniqueInput!): SubjectConfig
+  updateManySubjectConfigs(data: SubjectConfigUpdateManyMutationInput!, where: SubjectConfigWhereInput): BatchPayload!
+  upsertSubjectConfig(where: SubjectConfigWhereUniqueInput!, create: SubjectConfigCreateInput!, update: SubjectConfigUpdateInput!): SubjectConfig!
+  deleteSubjectConfig(where: SubjectConfigWhereUniqueInput!): SubjectConfig
+  deleteManySubjectConfigs(where: SubjectConfigWhereInput): BatchPayload!
   createToken(data: TokenCreateInput!): Token!
   updateToken(data: TokenUpdateInput!, where: TokenWhereUniqueInput!): Token
   updateManyTokens(data: TokenUpdateManyMutationInput!, where: TokenWhereInput): BatchPayload!
@@ -62,6 +124,9 @@ type Query {
   subject(where: SubjectWhereUniqueInput!): Subject
   subjects(where: SubjectWhereInput, orderBy: SubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Subject]!
   subjectsConnection(where: SubjectWhereInput, orderBy: SubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SubjectConnection!
+  subjectConfig(where: SubjectConfigWhereUniqueInput!): SubjectConfig
+  subjectConfigs(where: SubjectConfigWhereInput, orderBy: SubjectConfigOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [SubjectConfig]!
+  subjectConfigsConnection(where: SubjectConfigWhereInput, orderBy: SubjectConfigOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SubjectConfigConnection!
   token(where: TokenWhereUniqueInput!): Token
   tokens(where: TokenWhereInput, orderBy: TokenOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Token]!
   tokensConnection(where: TokenWhereInput, orderBy: TokenOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TokenConnection!
@@ -79,6 +144,107 @@ enum Role {
 type Subject {
   id: ID!
   name: String!
+  isSubSubject: Boolean!
+  parent: Subject
+}
+
+type SubjectConfig {
+  id: ID!
+  subject: Subject!
+  themes: [String!]!
+  subSubjects: [SubSubject!]
+  exams: Exams
+}
+
+type SubjectConfigConnection {
+  pageInfo: PageInfo!
+  edges: [SubjectConfigEdge]!
+  aggregate: AggregateSubjectConfig!
+}
+
+input SubjectConfigCreateInput {
+  id: ID
+  subject: SubjectCreateOneInput!
+  themes: SubjectConfigCreatethemesInput
+  subSubjects: SubSubjectCreateManyInput
+  exams: ExamsCreateOneInput
+}
+
+input SubjectConfigCreatethemesInput {
+  set: [String!]
+}
+
+type SubjectConfigEdge {
+  node: SubjectConfig!
+  cursor: String!
+}
+
+enum SubjectConfigOrderByInput {
+  id_ASC
+  id_DESC
+}
+
+type SubjectConfigPreviousValues {
+  id: ID!
+  themes: [String!]!
+}
+
+type SubjectConfigSubscriptionPayload {
+  mutation: MutationType!
+  node: SubjectConfig
+  updatedFields: [String!]
+  previousValues: SubjectConfigPreviousValues
+}
+
+input SubjectConfigSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: SubjectConfigWhereInput
+  AND: [SubjectConfigSubscriptionWhereInput!]
+}
+
+input SubjectConfigUpdateInput {
+  subject: SubjectUpdateOneRequiredInput
+  themes: SubjectConfigUpdatethemesInput
+  subSubjects: SubSubjectUpdateManyInput
+  exams: ExamsUpdateOneInput
+}
+
+input SubjectConfigUpdateManyMutationInput {
+  themes: SubjectConfigUpdatethemesInput
+}
+
+input SubjectConfigUpdatethemesInput {
+  set: [String!]
+}
+
+input SubjectConfigWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  subject: SubjectWhereInput
+  subSubjects_some: SubSubjectWhereInput
+  subSubjects_every: SubSubjectRestrictedWhereInput
+  subSubjects_none: SubSubjectRestrictedWhereInput
+  exams: ExamsWhereInput
+  AND: [SubjectConfigWhereInput!]
+}
+
+input SubjectConfigWhereUniqueInput {
+  id: ID
 }
 
 type SubjectConnection {
@@ -90,6 +256,13 @@ type SubjectConnection {
 input SubjectCreateInput {
   id: ID
   name: String!
+  isSubSubject: Boolean
+  parent: SubjectCreateOneInput
+}
+
+input SubjectCreateOneInput {
+  create: SubjectCreateInput
+  connect: SubjectWhereUniqueInput
 }
 
 type SubjectEdge {
@@ -102,11 +275,14 @@ enum SubjectOrderByInput {
   id_DESC
   name_ASC
   name_DESC
+  isSubSubject_ASC
+  isSubSubject_DESC
 }
 
 type SubjectPreviousValues {
   id: ID!
   name: String!
+  isSubSubject: Boolean!
 }
 
 type SubjectSubscriptionPayload {
@@ -125,12 +301,42 @@ input SubjectSubscriptionWhereInput {
   AND: [SubjectSubscriptionWhereInput!]
 }
 
+input SubjectUpdateDataInput {
+  name: String
+  isSubSubject: Boolean
+  parent: SubjectUpdateOneInput
+}
+
 input SubjectUpdateInput {
   name: String
+  isSubSubject: Boolean
+  parent: SubjectUpdateOneInput
 }
 
 input SubjectUpdateManyMutationInput {
   name: String
+  isSubSubject: Boolean
+}
+
+input SubjectUpdateOneInput {
+  create: SubjectCreateInput
+  update: SubjectUpdateDataInput
+  upsert: SubjectUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: SubjectWhereUniqueInput
+}
+
+input SubjectUpdateOneRequiredInput {
+  create: SubjectCreateInput
+  update: SubjectUpdateDataInput
+  upsert: SubjectUpsertNestedInput
+  connect: SubjectWhereUniqueInput
+}
+
+input SubjectUpsertNestedInput {
+  update: SubjectUpdateDataInput!
+  create: SubjectCreateInput!
 }
 
 input SubjectWhereInput {
@@ -162,6 +368,9 @@ input SubjectWhereInput {
   name_not_starts_with: String
   name_ends_with: String
   name_not_ends_with: String
+  isSubSubject: Boolean
+  isSubSubject_not: Boolean
+  parent: SubjectWhereInput
   AND: [SubjectWhereInput!]
 }
 
@@ -172,8 +381,61 @@ input SubjectWhereUniqueInput {
 
 type Subscription {
   subject(where: SubjectSubscriptionWhereInput): SubjectSubscriptionPayload
+  subjectConfig(where: SubjectConfigSubscriptionWhereInput): SubjectConfigSubscriptionPayload
   token(where: TokenSubscriptionWhereInput): TokenSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+}
+
+type SubSubject {
+  subject: Subject!
+  themes: [String!]!
+}
+
+input SubSubjectCreateInput {
+  subject: SubjectCreateOneInput!
+  themes: SubSubjectCreatethemesInput
+}
+
+input SubSubjectCreateManyInput {
+  create: [SubSubjectCreateInput!]
+}
+
+input SubSubjectCreatethemesInput {
+  set: [String!]
+}
+
+input SubSubjectRestrictedWhereInput {
+  AND: [SubSubjectRestrictedWhereInput!]
+}
+
+input SubSubjectScalarWhereInput {
+  AND: [SubSubjectScalarWhereInput!]
+  OR: [SubSubjectScalarWhereInput!]
+  NOT: [SubSubjectScalarWhereInput!]
+}
+
+input SubSubjectUpdateManyDataInput {
+  themes: SubSubjectUpdatethemesInput
+}
+
+input SubSubjectUpdateManyInput {
+  create: [SubSubjectCreateInput!]
+  deleteMany: [SubSubjectScalarWhereInput!]
+  updateMany: [SubSubjectUpdateManyWithWhereNestedInput!]
+}
+
+input SubSubjectUpdateManyWithWhereNestedInput {
+  where: SubSubjectScalarWhereInput!
+  data: SubSubjectUpdateManyDataInput!
+}
+
+input SubSubjectUpdatethemesInput {
+  set: [String!]
+}
+
+input SubSubjectWhereInput {
+  subject: SubjectWhereInput
+  AND: [SubSubjectWhereInput!]
 }
 
 type Token {
