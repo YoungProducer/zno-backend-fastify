@@ -32,7 +32,7 @@ export = async function (
         fastify.get('/names', async (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
-        ) => await subjectsNamesHandler(fastify, req, reply));
+        ) => await subjectsHandler(fastify, req, reply));
     });
 };
 
@@ -53,15 +53,15 @@ const createHandler = async (
     }
 };
 
-const subjectsNamesHandler = async (
+const subjectsHandler = async (
     fastify: FastifyInstance,
     req: FastifyRequest<IncomingMessage>,
     reply: FastifyReply<ServerResponse>,
 ) => {
     try {
-        const names = await fastify.subjectService.subjectsNames();
+        const subjects = await fastify.subjectService.subjects();
 
-        return names;
+        return subjects;
     } catch (err) {
         reply.send(err);
     }

@@ -27,7 +27,7 @@ type Subject {
 
 type SubjectConfig {
   id: ID! @id
-  subject: Subject! @relation(link: INLINE)
+  subject: Subject! @relation(link: INLINE) @unique
   themes: [String!]
   subSubjects: [SubSubject!]
   exams: Exams

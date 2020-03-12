@@ -18,10 +18,17 @@ class SubjectService implements ISubjectService {
         return subject;
     }
 
-    async subjectsNames(): Promise<string[]> {
-        const names: any[] = await prisma.subjects().$fragment(`fragment SelectName on Subject { name }`);
+    async subjects(): Promise<{
+        id: string;
+        name: string;
+    }[]> {
+        const subjects: any[] = await prisma.subjects({
+            where: {
+                isSubSubject: false,
+            },
+        }).$fragment(`fragment SelectName on Subject { id name }`);
 
-        return names.map(subject => subject.name);
+        return subjects;
     }
 }
 

@@ -14,6 +14,9 @@ import { Subject } from '../../prisma/generated/prisma-client';
 export interface ISubjectService {
     // instance: FastifyInstance;
     create: (name: string) => Promise<Subject>;
-    subjectsNames: () => Promise<string[]>;
+    subjects: () => Promise<{
+        id: string;
+        name: string;
+    }[]>;
     // config: (name: string) => Promise<TSubjectConfig>;
 }

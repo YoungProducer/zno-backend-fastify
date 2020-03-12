@@ -12,16 +12,6 @@ import { TSubjectConfig } from './types';
 
 class SubjectConfigService {
     async create(config: TSubjectConfig) {
-        const subSubjects = await prisma.subjects({
-            where: {
-                parent: {
-                    name: config.name,
-                },
-            },
-        });
-
-        console.log(subSubjects);
-
         const subjectConfig = await prisma.createSubjectConfig({
             subject: {
                 connect: {
@@ -41,17 +31,6 @@ class SubjectConfigService {
                     },
                 },
             },
-            // subSubjects: {
-            //     create: subSubjects.map(subject => {
-            //         return {
-            //             subject: {
-            //                 connect: {
-            //                     id: subject.id,
-            //                 },
-            //             },
-            //         };
-            //     }),
-            // },
             subSubjects: {
                 create: config.subSubjects ? config.subSubjects.map(subject => {
                     return {
@@ -66,6 +45,34 @@ class SubjectConfigService {
         });
 
         return subjectConfig;
+    }
+
+    async subjectConfig(id: string): Promise<TSubjectConfig> {
+        const config = await prisma.subjectConfig({
+            id,
+        }).$fragment(`
+        fragment PostWithAuthorsAndComments on Post {
+            subject { name }
+            subSubjects {
+                subject { name }
+                themes
+            }
+            themes
+            exams {
+                trainings
+                sessions
+            }
+        }`) as any;
+
+        return {
+            name: config.subject.name,
+            subSubjects: config.subSubjects.map((subject: any) => ({
+                name: subject.subject.name,
+                themes: subject.themes,
+            })),
+            themes: config.themes,
+            exams: config.exams,
+        };
     }
 }
 
