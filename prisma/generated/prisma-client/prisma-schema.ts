@@ -146,6 +146,7 @@ type Subject {
   name: String!
   isSubSubject: Boolean!
   parent: Subject
+  image: String
 }
 
 type SubjectConfig {
@@ -258,6 +259,7 @@ input SubjectCreateInput {
   name: String!
   isSubSubject: Boolean
   parent: SubjectCreateOneInput
+  image: String
 }
 
 input SubjectCreateOneInput {
@@ -277,12 +279,15 @@ enum SubjectOrderByInput {
   name_DESC
   isSubSubject_ASC
   isSubSubject_DESC
+  image_ASC
+  image_DESC
 }
 
 type SubjectPreviousValues {
   id: ID!
   name: String!
   isSubSubject: Boolean!
+  image: String
 }
 
 type SubjectSubscriptionPayload {
@@ -305,17 +310,20 @@ input SubjectUpdateDataInput {
   name: String
   isSubSubject: Boolean
   parent: SubjectUpdateOneInput
+  image: String
 }
 
 input SubjectUpdateInput {
   name: String
   isSubSubject: Boolean
   parent: SubjectUpdateOneInput
+  image: String
 }
 
 input SubjectUpdateManyMutationInput {
   name: String
   isSubSubject: Boolean
+  image: String
 }
 
 input SubjectUpdateOneInput {
@@ -371,6 +379,20 @@ input SubjectWhereInput {
   isSubSubject: Boolean
   isSubSubject_not: Boolean
   parent: SubjectWhereInput
+  image: String
+  image_not: String
+  image_in: [String!]
+  image_not_in: [String!]
+  image_lt: String
+  image_lte: String
+  image_gt: String
+  image_gte: String
+  image_contains: String
+  image_not_contains: String
+  image_starts_with: String
+  image_not_starts_with: String
+  image_ends_with: String
+  image_not_ends_with: String
   AND: [SubjectWhereInput!]
 }
 

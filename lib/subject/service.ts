@@ -26,9 +26,14 @@ class SubjectService implements ISubjectService {
             where: {
                 isSubSubject: false,
             },
-        }).$fragment(`fragment SelectName on Subject { id name }`);
+        }).$fragment(`fragment SelectName on Subject { id name image }`);
 
-        return subjects;
+        return subjects.map(subject => ({
+            ...subject,
+            image: subject.image !== null
+                ? `http://localhost:4000/public/subjects-images/${subject.image}`
+                : null,
+        }));
     }
 }
 

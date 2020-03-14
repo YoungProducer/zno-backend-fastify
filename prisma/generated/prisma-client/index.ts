@@ -230,7 +230,9 @@ export type SubjectOrderByInput =
   | "name_ASC"
   | "name_DESC"
   | "isSubSubject_ASC"
-  | "isSubSubject_DESC";
+  | "isSubSubject_DESC"
+  | "image_ASC"
+  | "image_DESC";
 
 export type SubjectConfigOrderByInput = "id_ASC" | "id_DESC";
 
@@ -293,6 +295,20 @@ export interface SubjectWhereInput {
   isSubSubject?: Maybe<Boolean>;
   isSubSubject_not?: Maybe<Boolean>;
   parent?: Maybe<SubjectWhereInput>;
+  image?: Maybe<String>;
+  image_not?: Maybe<String>;
+  image_in?: Maybe<String[] | String>;
+  image_not_in?: Maybe<String[] | String>;
+  image_lt?: Maybe<String>;
+  image_lte?: Maybe<String>;
+  image_gt?: Maybe<String>;
+  image_gte?: Maybe<String>;
+  image_contains?: Maybe<String>;
+  image_not_contains?: Maybe<String>;
+  image_starts_with?: Maybe<String>;
+  image_not_starts_with?: Maybe<String>;
+  image_ends_with?: Maybe<String>;
+  image_not_ends_with?: Maybe<String>;
   AND?: Maybe<SubjectWhereInput[] | SubjectWhereInput>;
 }
 
@@ -452,6 +468,7 @@ export interface SubjectCreateInput {
   name: String;
   isSubSubject?: Maybe<Boolean>;
   parent?: Maybe<SubjectCreateOneInput>;
+  image?: Maybe<String>;
 }
 
 export interface SubjectCreateOneInput {
@@ -463,6 +480,7 @@ export interface SubjectUpdateInput {
   name?: Maybe<String>;
   isSubSubject?: Maybe<Boolean>;
   parent?: Maybe<SubjectUpdateOneInput>;
+  image?: Maybe<String>;
 }
 
 export interface SubjectUpdateOneInput {
@@ -478,6 +496,7 @@ export interface SubjectUpdateDataInput {
   name?: Maybe<String>;
   isSubSubject?: Maybe<Boolean>;
   parent?: Maybe<SubjectUpdateOneInput>;
+  image?: Maybe<String>;
 }
 
 export interface SubjectUpsertNestedInput {
@@ -488,6 +507,7 @@ export interface SubjectUpsertNestedInput {
 export interface SubjectUpdateManyMutationInput {
   name?: Maybe<String>;
   isSubSubject?: Maybe<Boolean>;
+  image?: Maybe<String>;
 }
 
 export interface SubjectConfigCreateInput {
@@ -828,6 +848,7 @@ export interface Subject {
   id: ID_Output;
   name: String;
   isSubSubject: Boolean;
+  image?: String;
 }
 
 export interface SubjectPromise extends Promise<Subject>, Fragmentable {
@@ -835,6 +856,7 @@ export interface SubjectPromise extends Promise<Subject>, Fragmentable {
   name: () => Promise<String>;
   isSubSubject: () => Promise<Boolean>;
   parent: <T = SubjectPromise>() => T;
+  image: () => Promise<String>;
 }
 
 export interface SubjectSubscription
@@ -844,6 +866,7 @@ export interface SubjectSubscription
   name: () => Promise<AsyncIterator<String>>;
   isSubSubject: () => Promise<AsyncIterator<Boolean>>;
   parent: <T = SubjectSubscription>() => T;
+  image: () => Promise<AsyncIterator<String>>;
 }
 
 export interface SubjectNullablePromise
@@ -853,6 +876,7 @@ export interface SubjectNullablePromise
   name: () => Promise<String>;
   isSubSubject: () => Promise<Boolean>;
   parent: <T = SubjectPromise>() => T;
+  image: () => Promise<String>;
 }
 
 export interface SubjectConnection {
@@ -1315,6 +1339,7 @@ export interface SubjectPreviousValues {
   id: ID_Output;
   name: String;
   isSubSubject: Boolean;
+  image?: String;
 }
 
 export interface SubjectPreviousValuesPromise
@@ -1323,6 +1348,7 @@ export interface SubjectPreviousValuesPromise
   id: () => Promise<ID_Output>;
   name: () => Promise<String>;
   isSubSubject: () => Promise<Boolean>;
+  image: () => Promise<String>;
 }
 
 export interface SubjectPreviousValuesSubscription
@@ -1331,6 +1357,7 @@ export interface SubjectPreviousValuesSubscription
   id: () => Promise<AsyncIterator<ID_Output>>;
   name: () => Promise<AsyncIterator<String>>;
   isSubSubject: () => Promise<AsyncIterator<Boolean>>;
+  image: () => Promise<AsyncIterator<String>>;
 }
 
 export interface SubjectConfigSubscriptionPayload {

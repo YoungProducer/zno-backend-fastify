@@ -29,11 +29,11 @@ export = async function (
             reply: FastifyReply<ServerResponse>,
         ) => await createHandler(fastify, req, reply));
 
-        fastify.get('/names', async (
-            req: FastifyRequest<IncomingMessage>,
-            reply: FastifyReply<ServerResponse>,
-        ) => await subjectsHandler(fastify, req, reply));
     });
+    fastify.get('/subjects', async (
+        req: FastifyRequest<IncomingMessage>,
+        reply: FastifyReply<ServerResponse>,
+    ) => await subjectsHandler(fastify, req, reply));
 };
 
 const createHandler = async (

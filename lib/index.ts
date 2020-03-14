@@ -2,12 +2,14 @@
 import 'reflect-metadata';
 
 /** External imports */
+import path from 'path';
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, SchemaCompiler } from 'fastify';
 import fp from 'fastify-plugin';
 import fastifyFormBody from 'fastify-formbody';
 import fastifyCors from 'fastify-cors';
 import jwt from 'fastify-jwt';
 import fastifyCookie from 'fastify-cookie';
+import fastifyStatic from 'fastify-static';
 import { IncomingMessage, ServerResponse } from 'http';
 import _ from 'lodash';
 
@@ -154,6 +156,10 @@ instance
     .register(fp(decorateFastifyInstance))
     .register(fastifyFormBody)
     .register(fastifyCookie)
+    .register(fastifyStatic, {
+        root: path.join(__dirname, '../public'),
+        prefix: '/public',
+    })
     .register(authController, { prefix: '/auth/user' })
     .register(subjectController, { prefix: '/subject' });
 

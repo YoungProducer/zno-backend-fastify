@@ -23,6 +23,7 @@ type Subject {
   name: String! @unique
   isSubSubject: Boolean! @default(value: false)
   parent: Subject @relation(link: INLINE)
+  image: String
 }
 
 type SubjectConfig {
