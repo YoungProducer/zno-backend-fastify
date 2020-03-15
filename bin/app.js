@@ -11,7 +11,7 @@ const instancePath = mode === 'development'
 const app = require(instancePath).instance
 
 // Start listening on 3000 port
-app.listen(4000, (err) => {
+app.listen(process.env.PORT || 4000, (err) => {
     if (err) throw err;
 
     console.log(`Application is ready and listening on http://localhost:4000`);
