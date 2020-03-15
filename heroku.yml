@@ -3,3 +3,5 @@ build:
         tag: 1.34
     docker:
         web: Dockerfile
+    run:
+        web: node /bin/app.js
