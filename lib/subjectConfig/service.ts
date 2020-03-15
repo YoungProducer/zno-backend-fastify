@@ -47,22 +47,23 @@ class SubjectConfigService {
         return subjectConfig;
     }
 
-    async subjectConfig(id: string): Promise<TSubjectConfig> {
-        const config = await prisma.subjectConfig({
-            id,
-        }).$fragment(`
-        fragment PostWithAuthorsAndComments on Post {
-            subject { name }
-            subSubjects {
-                subject { name }
-                themes
-            }
-            themes
-            exams {
-                trainings
-                sessions
-            }
-        }`) as any;
+    async config(id: string): Promise<TSubjectConfig> {
+        const config = await prisma
+            .subject({ id })
+            .config()
+            .$fragment(`
+                fragment PostWithAuthorsAndComments on Post {
+                    subject { name }
+                    subSubjects {
+                        subject { name }
+                        themes
+                    }
+                    themes
+                    exams {
+                        trainings
+                        sessions
+                    }
+                }`) as any;
 
         return {
             name: config.subject.name,

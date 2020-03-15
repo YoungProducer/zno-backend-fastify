@@ -24,11 +24,12 @@ type Subject {
   isSubSubject: Boolean! @default(value: false)
   parent: Subject @relation(link: INLINE)
   image: String
+  config: SubjectConfig
 }
 
 type SubjectConfig {
   id: ID! @id
-  subject: Subject! @relation(link: INLINE) @unique
+  subject: Subject! @relation(link: INLINE)
   themes: [String!]
   subSubjects: [SubSubject!]
   exams: Exams

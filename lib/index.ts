@@ -24,8 +24,10 @@ import jwtAccess from './plugins/jwtAccess';
 
 import authController from './auth';
 import subjectController from './subject';
+import subjectConfigController from './subjectConfig';
 import AuthService from './auth/service';
 import SubjectService from './subject/service';
+import SubjectConfigService from './subjectConfig/service';
 
 /** Import env config */
 require('dotenv').config();
@@ -71,6 +73,9 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
 
     const subjectService = new SubjectService();
     fastify.decorate('subjectService', subjectService);
+
+    const subjectConfigService = new SubjectConfigService();
+    fastify.decorate('subjectConfigService', subjectConfigService);
 
     fastify.decorate('authPreHandler', async (
         req: FastifyRequest<IncomingMessage>,
@@ -161,6 +166,7 @@ instance
         prefix: '/public',
     })
     .register(authController, { prefix: '/auth/user' })
-    .register(subjectController, { prefix: '/subject' });
+    .register(subjectController, { prefix: '/subject' })
+    .register(subjectConfigController, { prefix: '/subject-config' });
 
 export { instance };

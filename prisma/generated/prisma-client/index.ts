@@ -309,12 +309,9 @@ export interface SubjectWhereInput {
   image_not_starts_with?: Maybe<String>;
   image_ends_with?: Maybe<String>;
   image_not_ends_with?: Maybe<String>;
+  config?: Maybe<SubjectConfigWhereInput>;
   AND?: Maybe<SubjectWhereInput[] | SubjectWhereInput>;
 }
-
-export type SubjectConfigWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
 
 export interface SubjectConfigWhereInput {
   id?: Maybe<ID_Input>;
@@ -353,6 +350,10 @@ export interface SubSubjectRestrictedWhereInput {
 export interface ExamsWhereInput {
   AND?: Maybe<ExamsWhereInput[] | ExamsWhereInput>;
 }
+
+export type SubjectConfigWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
 
 export type TokenWhereUniqueInput = AtLeastOne<{
   id: Maybe<ID_Input>;
@@ -469,6 +470,7 @@ export interface SubjectCreateInput {
   isSubSubject?: Maybe<Boolean>;
   parent?: Maybe<SubjectCreateOneInput>;
   image?: Maybe<String>;
+  config?: Maybe<SubjectConfigCreateOneWithoutSubjectInput>;
 }
 
 export interface SubjectCreateOneInput {
@@ -476,43 +478,13 @@ export interface SubjectCreateOneInput {
   connect?: Maybe<SubjectWhereUniqueInput>;
 }
 
-export interface SubjectUpdateInput {
-  name?: Maybe<String>;
-  isSubSubject?: Maybe<Boolean>;
-  parent?: Maybe<SubjectUpdateOneInput>;
-  image?: Maybe<String>;
+export interface SubjectConfigCreateOneWithoutSubjectInput {
+  create?: Maybe<SubjectConfigCreateWithoutSubjectInput>;
+  connect?: Maybe<SubjectConfigWhereUniqueInput>;
 }
 
-export interface SubjectUpdateOneInput {
-  create?: Maybe<SubjectCreateInput>;
-  update?: Maybe<SubjectUpdateDataInput>;
-  upsert?: Maybe<SubjectUpsertNestedInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<SubjectWhereUniqueInput>;
-}
-
-export interface SubjectUpdateDataInput {
-  name?: Maybe<String>;
-  isSubSubject?: Maybe<Boolean>;
-  parent?: Maybe<SubjectUpdateOneInput>;
-  image?: Maybe<String>;
-}
-
-export interface SubjectUpsertNestedInput {
-  update: SubjectUpdateDataInput;
-  create: SubjectCreateInput;
-}
-
-export interface SubjectUpdateManyMutationInput {
-  name?: Maybe<String>;
-  isSubSubject?: Maybe<Boolean>;
-  image?: Maybe<String>;
-}
-
-export interface SubjectConfigCreateInput {
+export interface SubjectConfigCreateWithoutSubjectInput {
   id?: Maybe<ID_Input>;
-  subject: SubjectCreateOneInput;
   themes?: Maybe<SubjectConfigCreatethemesInput>;
   subSubjects?: Maybe<SubSubjectCreateManyInput>;
   exams?: Maybe<ExamsCreateOneInput>;
@@ -552,18 +524,44 @@ export interface ExamsCreatesessionsInput {
   set?: Maybe<String[] | String>;
 }
 
-export interface SubjectConfigUpdateInput {
-  subject?: Maybe<SubjectUpdateOneRequiredInput>;
-  themes?: Maybe<SubjectConfigUpdatethemesInput>;
-  subSubjects?: Maybe<SubSubjectUpdateManyInput>;
-  exams?: Maybe<ExamsUpdateOneInput>;
+export interface SubjectUpdateInput {
+  name?: Maybe<String>;
+  isSubSubject?: Maybe<Boolean>;
+  parent?: Maybe<SubjectUpdateOneInput>;
+  image?: Maybe<String>;
+  config?: Maybe<SubjectConfigUpdateOneWithoutSubjectInput>;
 }
 
-export interface SubjectUpdateOneRequiredInput {
+export interface SubjectUpdateOneInput {
   create?: Maybe<SubjectCreateInput>;
   update?: Maybe<SubjectUpdateDataInput>;
   upsert?: Maybe<SubjectUpsertNestedInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
   connect?: Maybe<SubjectWhereUniqueInput>;
+}
+
+export interface SubjectUpdateDataInput {
+  name?: Maybe<String>;
+  isSubSubject?: Maybe<Boolean>;
+  parent?: Maybe<SubjectUpdateOneInput>;
+  image?: Maybe<String>;
+  config?: Maybe<SubjectConfigUpdateOneWithoutSubjectInput>;
+}
+
+export interface SubjectConfigUpdateOneWithoutSubjectInput {
+  create?: Maybe<SubjectConfigCreateWithoutSubjectInput>;
+  update?: Maybe<SubjectConfigUpdateWithoutSubjectDataInput>;
+  upsert?: Maybe<SubjectConfigUpsertWithoutSubjectInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<SubjectConfigWhereUniqueInput>;
+}
+
+export interface SubjectConfigUpdateWithoutSubjectDataInput {
+  themes?: Maybe<SubjectConfigUpdatethemesInput>;
+  subSubjects?: Maybe<SubSubjectUpdateManyInput>;
+  exams?: Maybe<ExamsUpdateOneInput>;
 }
 
 export interface SubjectConfigUpdatethemesInput {
@@ -622,6 +620,69 @@ export interface ExamsUpdatesessionsInput {
 export interface ExamsUpsertNestedInput {
   update: ExamsUpdateDataInput;
   create: ExamsCreateInput;
+}
+
+export interface SubjectConfigUpsertWithoutSubjectInput {
+  update: SubjectConfigUpdateWithoutSubjectDataInput;
+  create: SubjectConfigCreateWithoutSubjectInput;
+}
+
+export interface SubjectUpsertNestedInput {
+  update: SubjectUpdateDataInput;
+  create: SubjectCreateInput;
+}
+
+export interface SubjectUpdateManyMutationInput {
+  name?: Maybe<String>;
+  isSubSubject?: Maybe<Boolean>;
+  image?: Maybe<String>;
+}
+
+export interface SubjectConfigCreateInput {
+  id?: Maybe<ID_Input>;
+  subject: SubjectCreateOneWithoutConfigInput;
+  themes?: Maybe<SubjectConfigCreatethemesInput>;
+  subSubjects?: Maybe<SubSubjectCreateManyInput>;
+  exams?: Maybe<ExamsCreateOneInput>;
+}
+
+export interface SubjectCreateOneWithoutConfigInput {
+  create?: Maybe<SubjectCreateWithoutConfigInput>;
+  connect?: Maybe<SubjectWhereUniqueInput>;
+}
+
+export interface SubjectCreateWithoutConfigInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  isSubSubject?: Maybe<Boolean>;
+  parent?: Maybe<SubjectCreateOneInput>;
+  image?: Maybe<String>;
+}
+
+export interface SubjectConfigUpdateInput {
+  subject?: Maybe<SubjectUpdateOneRequiredWithoutConfigInput>;
+  themes?: Maybe<SubjectConfigUpdatethemesInput>;
+  subSubjects?: Maybe<SubSubjectUpdateManyInput>;
+  exams?: Maybe<ExamsUpdateOneInput>;
+}
+
+export interface SubjectUpdateOneRequiredWithoutConfigInput {
+  create?: Maybe<SubjectCreateWithoutConfigInput>;
+  update?: Maybe<SubjectUpdateWithoutConfigDataInput>;
+  upsert?: Maybe<SubjectUpsertWithoutConfigInput>;
+  connect?: Maybe<SubjectWhereUniqueInput>;
+}
+
+export interface SubjectUpdateWithoutConfigDataInput {
+  name?: Maybe<String>;
+  isSubSubject?: Maybe<Boolean>;
+  parent?: Maybe<SubjectUpdateOneInput>;
+  image?: Maybe<String>;
+}
+
+export interface SubjectUpsertWithoutConfigInput {
+  update: SubjectUpdateWithoutConfigDataInput;
+  create: SubjectCreateWithoutConfigInput;
 }
 
 export interface SubjectConfigUpdateManyMutationInput {
@@ -857,6 +918,7 @@ export interface SubjectPromise extends Promise<Subject>, Fragmentable {
   isSubSubject: () => Promise<Boolean>;
   parent: <T = SubjectPromise>() => T;
   image: () => Promise<String>;
+  config: <T = SubjectConfigPromise>() => T;
 }
 
 export interface SubjectSubscription
@@ -867,6 +929,7 @@ export interface SubjectSubscription
   isSubSubject: () => Promise<AsyncIterator<Boolean>>;
   parent: <T = SubjectSubscription>() => T;
   image: () => Promise<AsyncIterator<String>>;
+  config: <T = SubjectConfigSubscription>() => T;
 }
 
 export interface SubjectNullablePromise
@@ -877,83 +940,7 @@ export interface SubjectNullablePromise
   isSubSubject: () => Promise<Boolean>;
   parent: <T = SubjectPromise>() => T;
   image: () => Promise<String>;
-}
-
-export interface SubjectConnection {
-  pageInfo: PageInfo;
-  edges: SubjectEdge[];
-}
-
-export interface SubjectConnectionPromise
-  extends Promise<SubjectConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<SubjectEdge>>() => T;
-  aggregate: <T = AggregateSubjectPromise>() => T;
-}
-
-export interface SubjectConnectionSubscription
-  extends Promise<AsyncIterator<SubjectConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<SubjectEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateSubjectSubscription>() => T;
-}
-
-export interface PageInfo {
-  hasNextPage: Boolean;
-  hasPreviousPage: Boolean;
-  startCursor?: String;
-  endCursor?: String;
-}
-
-export interface PageInfoPromise extends Promise<PageInfo>, Fragmentable {
-  hasNextPage: () => Promise<Boolean>;
-  hasPreviousPage: () => Promise<Boolean>;
-  startCursor: () => Promise<String>;
-  endCursor: () => Promise<String>;
-}
-
-export interface PageInfoSubscription
-  extends Promise<AsyncIterator<PageInfo>>,
-    Fragmentable {
-  hasNextPage: () => Promise<AsyncIterator<Boolean>>;
-  hasPreviousPage: () => Promise<AsyncIterator<Boolean>>;
-  startCursor: () => Promise<AsyncIterator<String>>;
-  endCursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface SubjectEdge {
-  node: Subject;
-  cursor: String;
-}
-
-export interface SubjectEdgePromise extends Promise<SubjectEdge>, Fragmentable {
-  node: <T = SubjectPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface SubjectEdgeSubscription
-  extends Promise<AsyncIterator<SubjectEdge>>,
-    Fragmentable {
-  node: <T = SubjectSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateSubject {
-  count: Int;
-}
-
-export interface AggregateSubjectPromise
-  extends Promise<AggregateSubject>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateSubjectSubscription
-  extends Promise<AsyncIterator<AggregateSubject>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
+  config: <T = SubjectConfigPromise>() => T;
 }
 
 export interface SubjectConfig {
@@ -1038,6 +1025,83 @@ export interface ExamsNullablePromise
     Fragmentable {
   trainings: () => Promise<String[]>;
   sessions: () => Promise<String[]>;
+}
+
+export interface SubjectConnection {
+  pageInfo: PageInfo;
+  edges: SubjectEdge[];
+}
+
+export interface SubjectConnectionPromise
+  extends Promise<SubjectConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<SubjectEdge>>() => T;
+  aggregate: <T = AggregateSubjectPromise>() => T;
+}
+
+export interface SubjectConnectionSubscription
+  extends Promise<AsyncIterator<SubjectConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<SubjectEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateSubjectSubscription>() => T;
+}
+
+export interface PageInfo {
+  hasNextPage: Boolean;
+  hasPreviousPage: Boolean;
+  startCursor?: String;
+  endCursor?: String;
+}
+
+export interface PageInfoPromise extends Promise<PageInfo>, Fragmentable {
+  hasNextPage: () => Promise<Boolean>;
+  hasPreviousPage: () => Promise<Boolean>;
+  startCursor: () => Promise<String>;
+  endCursor: () => Promise<String>;
+}
+
+export interface PageInfoSubscription
+  extends Promise<AsyncIterator<PageInfo>>,
+    Fragmentable {
+  hasNextPage: () => Promise<AsyncIterator<Boolean>>;
+  hasPreviousPage: () => Promise<AsyncIterator<Boolean>>;
+  startCursor: () => Promise<AsyncIterator<String>>;
+  endCursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface SubjectEdge {
+  node: Subject;
+  cursor: String;
+}
+
+export interface SubjectEdgePromise extends Promise<SubjectEdge>, Fragmentable {
+  node: <T = SubjectPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface SubjectEdgeSubscription
+  extends Promise<AsyncIterator<SubjectEdge>>,
+    Fragmentable {
+  node: <T = SubjectSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AggregateSubject {
+  count: Int;
+}
+
+export interface AggregateSubjectPromise
+  extends Promise<AggregateSubject>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateSubjectSubscription
+  extends Promise<AsyncIterator<AggregateSubject>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
 }
 
 export interface SubjectConfigConnection {

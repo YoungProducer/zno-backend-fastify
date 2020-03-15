@@ -147,6 +147,7 @@ type Subject {
   isSubSubject: Boolean!
   parent: Subject
   image: String
+  config: SubjectConfig
 }
 
 type SubjectConfig {
@@ -165,14 +166,26 @@ type SubjectConfigConnection {
 
 input SubjectConfigCreateInput {
   id: ID
-  subject: SubjectCreateOneInput!
+  subject: SubjectCreateOneWithoutConfigInput!
   themes: SubjectConfigCreatethemesInput
   subSubjects: SubSubjectCreateManyInput
   exams: ExamsCreateOneInput
 }
 
+input SubjectConfigCreateOneWithoutSubjectInput {
+  create: SubjectConfigCreateWithoutSubjectInput
+  connect: SubjectConfigWhereUniqueInput
+}
+
 input SubjectConfigCreatethemesInput {
   set: [String!]
+}
+
+input SubjectConfigCreateWithoutSubjectInput {
+  id: ID
+  themes: SubjectConfigCreatethemesInput
+  subSubjects: SubSubjectCreateManyInput
+  exams: ExamsCreateOneInput
 }
 
 type SubjectConfigEdge {
@@ -207,7 +220,7 @@ input SubjectConfigSubscriptionWhereInput {
 }
 
 input SubjectConfigUpdateInput {
-  subject: SubjectUpdateOneRequiredInput
+  subject: SubjectUpdateOneRequiredWithoutConfigInput
   themes: SubjectConfigUpdatethemesInput
   subSubjects: SubSubjectUpdateManyInput
   exams: ExamsUpdateOneInput
@@ -217,8 +230,28 @@ input SubjectConfigUpdateManyMutationInput {
   themes: SubjectConfigUpdatethemesInput
 }
 
+input SubjectConfigUpdateOneWithoutSubjectInput {
+  create: SubjectConfigCreateWithoutSubjectInput
+  update: SubjectConfigUpdateWithoutSubjectDataInput
+  upsert: SubjectConfigUpsertWithoutSubjectInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: SubjectConfigWhereUniqueInput
+}
+
 input SubjectConfigUpdatethemesInput {
   set: [String!]
+}
+
+input SubjectConfigUpdateWithoutSubjectDataInput {
+  themes: SubjectConfigUpdatethemesInput
+  subSubjects: SubSubjectUpdateManyInput
+  exams: ExamsUpdateOneInput
+}
+
+input SubjectConfigUpsertWithoutSubjectInput {
+  update: SubjectConfigUpdateWithoutSubjectDataInput!
+  create: SubjectConfigCreateWithoutSubjectInput!
 }
 
 input SubjectConfigWhereInput {
@@ -260,11 +293,25 @@ input SubjectCreateInput {
   isSubSubject: Boolean
   parent: SubjectCreateOneInput
   image: String
+  config: SubjectConfigCreateOneWithoutSubjectInput
 }
 
 input SubjectCreateOneInput {
   create: SubjectCreateInput
   connect: SubjectWhereUniqueInput
+}
+
+input SubjectCreateOneWithoutConfigInput {
+  create: SubjectCreateWithoutConfigInput
+  connect: SubjectWhereUniqueInput
+}
+
+input SubjectCreateWithoutConfigInput {
+  id: ID
+  name: String!
+  isSubSubject: Boolean
+  parent: SubjectCreateOneInput
+  image: String
 }
 
 type SubjectEdge {
@@ -311,6 +358,7 @@ input SubjectUpdateDataInput {
   isSubSubject: Boolean
   parent: SubjectUpdateOneInput
   image: String
+  config: SubjectConfigUpdateOneWithoutSubjectInput
 }
 
 input SubjectUpdateInput {
@@ -318,6 +366,7 @@ input SubjectUpdateInput {
   isSubSubject: Boolean
   parent: SubjectUpdateOneInput
   image: String
+  config: SubjectConfigUpdateOneWithoutSubjectInput
 }
 
 input SubjectUpdateManyMutationInput {
@@ -335,16 +384,28 @@ input SubjectUpdateOneInput {
   connect: SubjectWhereUniqueInput
 }
 
-input SubjectUpdateOneRequiredInput {
-  create: SubjectCreateInput
-  update: SubjectUpdateDataInput
-  upsert: SubjectUpsertNestedInput
+input SubjectUpdateOneRequiredWithoutConfigInput {
+  create: SubjectCreateWithoutConfigInput
+  update: SubjectUpdateWithoutConfigDataInput
+  upsert: SubjectUpsertWithoutConfigInput
   connect: SubjectWhereUniqueInput
+}
+
+input SubjectUpdateWithoutConfigDataInput {
+  name: String
+  isSubSubject: Boolean
+  parent: SubjectUpdateOneInput
+  image: String
 }
 
 input SubjectUpsertNestedInput {
   update: SubjectUpdateDataInput!
   create: SubjectCreateInput!
+}
+
+input SubjectUpsertWithoutConfigInput {
+  update: SubjectUpdateWithoutConfigDataInput!
+  create: SubjectCreateWithoutConfigInput!
 }
 
 input SubjectWhereInput {
@@ -393,6 +454,7 @@ input SubjectWhereInput {
   image_not_starts_with: String
   image_ends_with: String
   image_not_ends_with: String
+  config: SubjectConfigWhereInput
   AND: [SubjectWhereInput!]
 }
 
