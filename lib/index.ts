@@ -30,7 +30,7 @@ import SubjectService from './subject/service';
 import SubjectConfigService from './subjectConfig/service';
 
 /** Import env config */
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') require('dotenv').config();
 
 const schema = {
     type: 'object',
