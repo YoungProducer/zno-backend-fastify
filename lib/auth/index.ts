@@ -48,6 +48,15 @@ export = async function (
         reply,
     ));
 
+    fastify.post('/logout', async (
+        req: FastifyRequest<IncomingMessage>,
+        reply: FastifyReply<ServerResponse>,
+    ) => await logoutHandler(
+        fastify,
+        req,
+        reply,
+    ));
+
     fastify.register(async (fastify: FastifyInstance) => {
         fastify.addHook('preHandler', async (
             req: FastifyRequest<IncomingMessage>,
@@ -167,6 +176,30 @@ async function refreshHandler(
                 path: '/',
             })
             .send(userProfile);
+    } catch (err) {
+        reply.send(err);
+    }
+}
+
+async function logoutHandler(
+    fastify: FastifyInstance,
+    req: FastifyRequest<IncomingMessage>,
+    reply: FastifyReply<ServerResponse>,
+) {
+    try {
+        await fastify.authService.logout(req);
+
+        reply
+            .clearCookie('accessToken', {
+                httpOnly: true,
+                path: '/',
+            })
+            .clearCookie('refreshToken', {
+                httpOnly: true,
+                path: '/',
+            })
+            .code(200)
+            .send('Success');
     } catch (err) {
         reply.send(err);
     }

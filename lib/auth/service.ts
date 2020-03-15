@@ -14,6 +14,7 @@ import _ from 'lodash';
 /** Application's imports */
 import { UserProfile } from '../services/types';
 import { IAuthService, IRefreshReturnData } from './types';
+import { prisma } from '../../prisma/generated/prisma-client';
 
 class AuthService implements IAuthService {
     instance!: FastifyInstance;
@@ -41,6 +42,18 @@ class AuthService implements IAuthService {
             refreshToken: newRefreshToken,
             userProfile: _.omit(userProfile, 'hash'),
         };
+    }
+
+    async logout(req: FastifyRequest<IncomingMessage>) {
+        /** Extract refresh token from cookies */
+        const refreshToken = req.cookies['refreshToken'];
+
+        /** Verify token */
+        const userProfile: UserProfile = await this.instance.refreshService.verifyToken(refreshToken);
+
+        await prisma.deleteToken({
+            loginId: userProfile.hash,
+        });
     }
 }
 
