@@ -1,4 +1,4 @@
 ARG tag
 FROM prismagraphql/prisma:$tag
 COPY ./configs/deploy/prerun_hook.sh /app/prerun_hook.sh
-CMD ["/bin/sh" "-c" "/app/start.sh"]
+CMD /bin/sh -c /app/start.sh
