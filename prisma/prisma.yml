@@ -1,4 +1,4 @@
-endpoint: https://zno-train.herokuapp.com/zno-backend/dev
+endpoint: https://zno-prisma-server.herokuapp.com/zno-backend/dev
 datamodel: datamodel.prisma
 databaseType: document
 secret: my-secret-42
