@@ -1,9 +1,5 @@
 version: '3'
 services:
-  web: 
-    build: .
-    depends_on:
-      - prisma
   prisma:
     image: prismagraphql/prisma:1.34
     restart: always

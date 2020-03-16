@@ -2,6 +2,6 @@ build:
     config:
         tag: 1.34
     docker:
-        web: Dockerfile
+        web: docker-compose.yml
 run:
     web: node /bin/app.js
