@@ -1630,7 +1630,7 @@ export const models: Model[] = [
 export const Prisma = makePrismaClientClass<ClientConstructor<Prisma>>({
   typeDefs,
   models,
-  endpoint: `http://0.0.0.0:4466/zno-backend/dev`,
+  endpoint: `https://zno-prisma-server.herokuapp.com/zno-backend/dev`,
   secret: `my-secret-42`
 });
 export const prisma = new Prisma();
