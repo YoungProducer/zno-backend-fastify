@@ -22,6 +22,9 @@ class SubjectService implements ISubjectService {
         id: string;
         name: string;
     }[]> {
+        const mode = process.env.NODE_ENV || 'production';
+        const currentUrl = process.env.API_ENDPOINT;
+
         const subjects: any[] = await prisma.subjects({
             where: {
                 isSubSubject: false,
@@ -31,7 +34,7 @@ class SubjectService implements ISubjectService {
         return subjects.map(subject => ({
             ...subject,
             image: subject.image !== null
-                ? `http://localhost:4000/public/subjects-images/${subject.image}`
+                ? `http://${mode === 'production' ? currentUrl : 'localhost:4000'}/public/subjects-images/${subject.image}`
                 : null,
         }));
     }
