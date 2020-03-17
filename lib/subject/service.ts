@@ -34,7 +34,7 @@ class SubjectService implements ISubjectService {
         return subjects.map(subject => ({
             ...subject,
             image: subject.image !== null
-                ? `http://${mode === 'production' ? currentUrl : 'localhost:4000'}/public/subjects-images/${subject.image}`
+                ? `${mode === 'production' ? currentUrl : 'http://localhost:4000'}/public/subjects-images/${subject.image}`
                 : null,
         }));
     }
