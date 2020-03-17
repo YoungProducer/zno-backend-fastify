@@ -30,6 +30,7 @@ interface Config {
   JWT_REFRESH_EXPIRES_IN: string;
   JWT_REFRESH_COOKIES_MAX_AGE: string;
   JWT_SESSION_EXPIRES_IN: string;
+  S3_BUCKET: string;
 }
 
 declare module 'fastify' {

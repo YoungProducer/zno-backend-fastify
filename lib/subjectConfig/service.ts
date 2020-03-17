@@ -5,6 +5,7 @@
 
 /** External imports */
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import aws from 'aws-sdk';
 
 /** Application's imports */
 import { prisma, SubSubjectCreateInput } from '../../prisma/generated/prisma-client';
