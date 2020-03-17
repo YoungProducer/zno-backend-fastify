@@ -161,12 +161,30 @@ instance
     .register(fp(decorateFastifyInstance))
     .register(fastifyFormBody)
     .register(fastifyCookie)
-    .register(fastifyStatic, {
-        root: path.join(__dirname, '../public'),
-        prefix: '/public',
+    .register((instance, opts, next) => {
+        const mode = process.env.NODE_ENV || 'production';
+
+        const clientPath = mode === 'development'
+            ? '../../client/public'
+            : '../../../client/build';
+
+        instance.register(require('fastify-static'), {
+            root: path.join(__dirname, clientPath),
+            prefix: '/',
+        })
+
+        next();
     })
-    .register(authController, { prefix: '/auth/user' })
-    .register(subjectController, { prefix: '/subject' })
-    .register(subjectConfigController, { prefix: '/subject-config' });
+    .register((instance, opts, next) => {
+        instance.register(require('fastify-static'), {
+            root: path.join(__dirname, '../public'),
+            prefix: '/public',
+        })
+
+        next();
+    })
+    .register(authController, { prefix: 'api/auth/user' })
+    .register(subjectController, { prefix: 'api/subject' })
+    .register(subjectConfigController, { prefix: 'api/subject-config' });
 
 export { instance };
