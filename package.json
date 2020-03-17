@@ -6,7 +6,7 @@
   "author": "YoungProducer <sashabezrukovownmail@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "install": "yarn --cwd ./client/package.json install && yarn --cwd ./server/package.json install",
+    "install": "yarn --cwd ./client install && yarn --cwd ./server install",
     "client-dev": "yarn --cwd ./client start",
     "server-dev": "yarn --cwd ./server test-dev",
     "build-app": "yarn --cwd ./client build && yarn --cwd ./server build",
