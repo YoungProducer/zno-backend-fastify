@@ -1,6 +1,8 @@
 # Build folder and files #
 ##########################
 builds/
+client/build/
+server/build/
 
 # Development folders and files #
 #################################
