@@ -43,6 +43,7 @@ const schema = {
         'JWT_REFRESH_COOKIES_MAX_AGE',
         'JWT_SESSION_EXPIRES_IN',
         'S3_BUCKET',
+        'CLIENT_ENDPOINT',
     ],
     properties: {
         JWT_SECRET: { type: 'string' },
@@ -52,6 +53,7 @@ const schema = {
         JWT_REFRESH_COOKIES_MAX_AGE: { type: 'string' },
         JWT_SESSION_EXPIRES_IN: { type: 'string' },
         S3_BUCKET: { type: 'string' },
+        CLIENT_ENDPOINT: { type: 'string' },
     },
 };
 
@@ -105,6 +107,10 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                 const newAccessToken = await fastify.accessService.generateToken(_.omit(userProfile, 'hash'));
                 const newRefreshToken = await fastify.refreshService.generateToken(userProfile);
 
+                const clientEndpoint = fastify.config.CLIENT_ENDPOINT
+                    ? fastify.config.CLIENT_ENDPOINT
+                    : undefined;
+
                 /** Set profile to req body */
                 req.params.userProfile = _.omit(userProfile, 'hash');
 
@@ -114,11 +120,13 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                         maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
                         httpOnly: true,
                         path: '/',
+                        domain: clientEndpoint,
                     })
                     .setCookie('refreshToken', newRefreshToken, {
                         maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
                         httpOnly: true,
                         path: '/',
+                        domain: clientEndpoint,
                     });
             } catch (err) {
                 reply.send(err);

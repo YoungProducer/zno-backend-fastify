@@ -118,6 +118,10 @@ async function signinHandler(
 
         const refreshToken: string = await fastify.refreshService.generateToken(userProfile);
 
+        const clientEndpoint = fastify.config.CLIENT_ENDPOINT
+            ? fastify.config.CLIENT_ENDPOINT
+            : undefined;
+
         reply
             .setCookie('accessToken', accessToken, {
                 maxAge: credentials.remember
@@ -125,6 +129,7 @@ async function signinHandler(
                     : undefined,
                 httpOnly: true,
                 path: '/',
+                domain: clientEndpoint,
             })
             .setCookie('refreshToken', refreshToken, {
                 maxAge: credentials.remember
@@ -132,6 +137,7 @@ async function signinHandler(
                     : undefined,
                 httpOnly: true,
                 path: '/',
+                domain: clientEndpoint,
             })
             .send(user);
     } catch (err) {
@@ -164,16 +170,22 @@ async function refreshHandler(
     try {
         const { accessToken, refreshToken, userProfile }: IRefreshReturnData = await fastify.authService.refresh(req);
 
+        const clientEndpoint = fastify.config.CLIENT_ENDPOINT
+            ? fastify.config.CLIENT_ENDPOINT
+            : undefined;
+
         reply
             .setCookie('accessToken', accessToken, {
                 maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
                 httpOnly: true,
                 path: '/',
+                domain: clientEndpoint,
             })
             .setCookie('refreshToken', refreshToken, {
                 maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
                 httpOnly: true,
                 path: '/',
+                domain: clientEndpoint,
             })
             .send(userProfile);
     } catch (err) {
@@ -189,14 +201,20 @@ async function logoutHandler(
     try {
         await fastify.authService.logout(req);
 
+        const clientEndpoint = fastify.config.CLIENT_ENDPOINT
+            ? fastify.config.CLIENT_ENDPOINT
+            : undefined;
+
         reply
             .clearCookie('accessToken', {
                 httpOnly: true,
                 path: '/',
+                domain: clientEndpoint,
             })
             .clearCookie('refreshToken', {
                 httpOnly: true,
                 path: '/',
+                domain: clientEndpoint,
             })
             .code(200)
             .send('Success');
