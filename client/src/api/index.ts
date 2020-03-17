@@ -23,7 +23,7 @@ class Api implements IApi {
         const mode = process.env.NODE_ENV || 'production';
 
         const baseURL = mode === 'production'
-            ? `${process.env.API_ENDPOINT}/api`
+            ? `${process.env.API_ENDPOINT}api`
             : 'http://localhost:4000/api';
 
         this.axiosInstance = axios.create({
