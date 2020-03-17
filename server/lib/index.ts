@@ -150,6 +150,12 @@ const errorHandler = async (fastify: FastifyInstance) => {
 
 const instance = fastify();
 
+const mode = process.env.NODE_ENV || 'production';
+
+const clientPath = mode === 'development'
+    ? '../../client/public'
+    : '../../../client/build';
+
 instance
     .register(fastifyCors, {
         origin: ['http://localhost:3000', 'http://localhost:8080'],
@@ -162,16 +168,15 @@ instance
     .register(fastifyFormBody)
     .register(fastifyCookie)
     .register((instance, opts, next) => {
-        const mode = process.env.NODE_ENV || 'production';
-
-        const clientPath = mode === 'development'
-            ? '../../client/public'
-            : '../../../client/build';
-
         instance.register(require('fastify-static'), {
             root: path.join(__dirname, clientPath),
             prefix: '/',
-        })
+        });
+
+        // instance.get('/', async (req: FastifyRequest<IncomingMessage>, reply: FastifyReply<ServerResponse>) => {
+        //     // reply.sendFile(path.join(__dirname, `${clientPath}/index.html`));
+        //     reply.sendFile(path.resolve(__dirname, clientPath, ));
+        // });
 
         next();
     })
@@ -179,7 +184,7 @@ instance
         instance.register(require('fastify-static'), {
             root: path.join(__dirname, '../public'),
             prefix: '/public',
-        })
+        });
 
         next();
     })
