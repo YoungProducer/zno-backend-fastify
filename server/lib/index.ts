@@ -167,19 +167,19 @@ instance
     .register(fp(decorateFastifyInstance))
     .register(fastifyFormBody)
     .register(fastifyCookie)
-    .register((instance, opts, next) => {
-        instance.register(require('fastify-static'), {
-            root: path.join(__dirname, clientPath),
-            prefix: '/',
-        });
+    // .register((instance, opts, next) => {
+    //     instance.register(require('fastify-static'), {
+    //         root: path.join(__dirname, clientPath),
+    //         prefix: '/',
+    //     });
 
-        // instance.get('/', async (req: FastifyRequest<IncomingMessage>, reply: FastifyReply<ServerResponse>) => {
-        //     // reply.sendFile(path.join(__dirname, `${clientPath}/index.html`));
-        //     reply.sendFile(path.resolve(__dirname, clientPath, ));
-        // });
+    //     // instance.get('/', async (req: FastifyRequest<IncomingMessage>, reply: FastifyReply<ServerResponse>) => {
+    //     //     // reply.sendFile(path.join(__dirname, `${clientPath}/index.html`));
+    //     //     reply.sendFile(path.resolve(__dirname, clientPath, ));
+    //     // });
 
-        next();
-    })
+    //     next();
+    // })
     .register((instance, opts, next) => {
         instance.register(require('fastify-static'), {
             root: path.join(__dirname, '../public'),
