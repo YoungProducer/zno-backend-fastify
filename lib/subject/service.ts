@@ -8,6 +8,7 @@
 /** External imports */
 import { FastifyInstance } from 'fastify';
 import aws from 'aws-sdk';
+import HttpErros from 'http-errors';
 
 /** Application's imports */
 import { prisma, Subject } from '../../prisma/generated/prisma-client';
@@ -81,6 +82,87 @@ class SubjectService implements ISubjectService {
         console.log(mappedSubjects);
 
         return mappedSubjects;
+    }
+
+    async checkIsSubjectHaveImage(id: string): Promise<string | false> {
+        /** Find subject in database */
+        const subject = await prisma.subject({ id });
+
+        /** Check is subject exist */
+        if (!subject) {
+            throw new HttpErros.BadRequest(`Invalid subject id. Subject with id: ${id} doesn't exist.`);
+        }
+
+        /** Check is image exist */
+        if (subject.image && subject.image !== null) return subject.image;
+        return false;
+    }
+
+    async deleteImage(imageName: string, id?: string): Promise<string> {
+        /** Define delete params */
+        const deleteParams = {
+            Bucket: this.instance.config.S3_BUCKET,
+            Key: imageName,
+        };
+
+        await this.s3.deleteObject(deleteParams).promise();
+
+        if (id) {
+            await prisma.updateSubject({
+                data: {
+                    image: null,
+                },
+                where: {
+                    id,
+                },
+            });
+        }
+
+        this.s3.deleteObject(deleteParams, (err, data) => {
+            if (err) {
+                throw err;
+            }
+        });
+
+        return imageName;
+    }
+
+    async uploadImage(id: string, image: any) {
+        const exists = await this.checkIsSubjectHaveImage(id);
+
+        if (exists) {
+            await this.deleteImage(exists);
+        }
+
+        const uploadParams = {
+            Bucket: this.instance.config.S3_BUCKET,
+            Body: image.data,
+            Key: `subjects-images/${image.name}`,
+            ContentType: image.mimetype,
+        };
+
+        const data = await this.s3.upload(uploadParams).promise();
+
+        return await prisma.updateSubject({
+            where: { id },
+            data: { image: data.Key },
+        });
+
+        // this.s3.upload(uploadParams, async (err: any, data: any) => {
+        //     if (err) {
+        //         console.log("Error", err);
+        //     } if (data) {
+        //         console.log("Upload Success", data.Location);
+        //         await prisma.updateSubject({
+        //             where: {
+        //                 id,
+        //             },
+        //             data: {
+        //                 image: data.Key,
+        //             },
+        //         });
+        //     }
+        // });
     }
 }
 

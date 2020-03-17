@@ -43,7 +43,7 @@ const schema = {
         'JWT_REFRESH_COOKIES_MAX_AGE',
         'JWT_SESSION_EXPIRES_IN',
         'S3_BUCKET',
-        'CLIENT_ENDPOINT',
+        // 'CLIENT_ENDPOINT',
     ],
     properties: {
         JWT_SECRET: { type: 'string' },
@@ -178,23 +178,7 @@ instance
     .register(fp(decorateFastifyInstance))
     .register(fastifyFormBody)
     .register(fastifyCookie)
-    // .register((instance, opts, next) => {
-    //     instance.register(require('fastify-static'), {
-    //         root: path.join(__dirname, clientPath),
-    //         prefix: '/',
-    //     });
-
-    //     // instance.get('/', async (req: FastifyRequest<IncomingMessage>, reply: FastifyReply<ServerResponse>) => {
-    //     //     // reply.sendFile(path.join(__dirname, `${clientPath}/index.html`));
-    //     //     reply.sendFile(path.resolve(__dirname, clientPath, ));
-    //     // });
-
-    //     next();
-    // })
-    // .register(require('fastify-static'), {
-    //     root: path.join(__dirname, '../public/'),
-    //     prefix: '/public/',
-    // })
+    .register(require('fastify-file-upload'))
     .get('/file/*', async (req, reply) => {
         const fileName: string = req.params['*'];
 
@@ -214,7 +198,7 @@ instance
         };
 
         try {
-            const data = await s3.getSignedUrlPromise('getObject', params)
+            const data = await s3.getSignedUrlPromise('getObject', params);
             
             const returnData = {
                 signedRequest: data,
