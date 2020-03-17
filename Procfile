@@ -1,1 +1,1 @@
-web: node /server/bin/app.js
+web: yarn start-app
