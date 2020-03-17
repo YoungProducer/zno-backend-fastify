@@ -158,7 +158,7 @@ const clientPath = mode === 'development'
 
 instance
     .register(fastifyCors, {
-        origin: ['http://localhost:3000', 'http://localhost:8080', 'https://zno-client.herokuapp.com/'],
+        origin: ['http://localhost:3000', 'http://localhost:8080', 'https://zno-client.herokuapp.com'],
         credentials: true,
     })
     .register(require('fastify-env'), { schema })
