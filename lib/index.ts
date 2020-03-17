@@ -182,7 +182,7 @@ instance
     // })
     .register(require('fastify-static'), {
         root: path.join(__dirname, '../public'),
-        prefix: '/public',
+        prefix: '/public/',
     })
     .register(authController, { prefix: 'api/auth/user' })
     .register(subjectController, { prefix: 'api/subject' })
