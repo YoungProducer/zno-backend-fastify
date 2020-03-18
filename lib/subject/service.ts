@@ -21,8 +21,8 @@ class SubjectService implements ISubjectService {
     constructor(fastify: FastifyInstance) {
         this.instance = fastify;
         this.s3 = new aws.S3({
-            accessKeyId: 'AKIAIGBFC5KT3KI5QLCQ',
-            secretAccessKey: '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',
+            accessKeyId: fastify.config.AWS_ACCESS_KEY_ID,
+            secretAccessKey: fastify.config.AWS_SECRET_ACCESS_KEY,
             signatureVersion: 'v4',
             region: 'eu-central-1',
         });

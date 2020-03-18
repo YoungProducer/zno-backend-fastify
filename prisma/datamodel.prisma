@@ -45,5 +45,23 @@ type Exams @embedded {
   sessions: [String]
 }
 
+type TestSuite {
+  id: ID! @id
+  subject: Subject! @relation(name: "MainSubjectRelation", link: INLINE)
+  subSubject: Subject @relation(name: "SubSubjectRelation", link: INLINE)
+  theme: String
+  session: String
+  training: String
+  answers: [String!]
+  tasks: [TestSuiteImage!]! @relation(name: "TasksImagesRelation", link: INLINE)
+  explanations: [TestSuiteImage!] @relation(name: "ExplanationImagesRelation", link: INLINE)
+}
+
+type TestSuiteImage {
+  id: ID! @id
+  testSuite: TestSuite! @relation(name: "TasksImagesRelation")
+  image: String! @unique
+}
+
 
 

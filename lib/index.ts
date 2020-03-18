@@ -26,9 +26,11 @@ import jwtAccess from './plugins/jwtAccess';
 import authController from './auth';
 import subjectController from './subject';
 import subjectConfigController from './subjectConfig';
+import testSuiteController from './testSuite';
 import AuthService from './auth/service';
 import SubjectService from './subject/service';
 import SubjectConfigService from './subjectConfig/service';
+import TestSuiteService from './testSuite/service';
 
 /** Import env config */
 if (process.env.NODE_ENV !== 'production') require('dotenv').config();
@@ -43,6 +45,8 @@ const schema = {
         'JWT_REFRESH_COOKIES_MAX_AGE',
         'JWT_SESSION_EXPIRES_IN',
         'S3_BUCKET',
+        'AWS_ACCESS_KEY_ID',
+        'AWS_SECRET_ACCESS_KEY',
         // 'CLIENT_ENDPOINT',
     ],
     properties: {
@@ -54,6 +58,8 @@ const schema = {
         JWT_SESSION_EXPIRES_IN: { type: 'string' },
         S3_BUCKET: { type: 'string' },
         CLIENT_ENDPOINT: { type: 'string' },
+        AWS_ACCESS_KEY_ID: { type: 'string' },
+        AWS_SECRET_ACCESS_KEY: { type: 'string' },
     },
 };
 
@@ -81,6 +87,9 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
 
     const subjectConfigService = new SubjectConfigService();
     fastify.decorate('subjectConfigService', subjectConfigService);
+
+    const testSuiteService = new TestSuiteService(fastify);
+    fastify.decorate('testSuiteService', testSuiteService);
 
     fastify.decorate('authPreHandler', async (
         req: FastifyRequest<IncomingMessage>,
@@ -199,7 +208,7 @@ instance
 
         try {
             const data = await s3.getSignedUrlPromise('getObject', params);
-            
+
             const returnData = {
                 signedRequest: data,
                 url: `https://zno-train.s3.amazonaws.com/${fileName}`,
@@ -211,7 +220,8 @@ instance
         }
     })
     .register(authController, { prefix: 'api/auth/user' })
-    .register(subjectController, { prefix: 'api/subject' })
-    .register(subjectConfigController, { prefix: 'api/subject-config' });
+    .register(subjectController, { prefix: 'api/' })
+    .register(subjectConfigController, { prefix: 'api/' })
+    .register(testSuiteController, { prefix: 'api/' });
 
 export { instance };

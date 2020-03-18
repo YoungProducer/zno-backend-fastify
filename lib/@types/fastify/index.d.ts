@@ -22,6 +22,7 @@ import AuthService from '../../auth/service';
 import { TJwtAccess } from '../../plugins/jwtAccess';
 import SubjectService from '../../subject/service';
 import SubjectConfigService from '../../subjectConfig/service';
+import TestSuiteService from '../../testSuite/service';
 
 interface Config {
   JWT_SECRET: string;
@@ -31,6 +32,8 @@ interface Config {
   JWT_REFRESH_COOKIES_MAX_AGE: string;
   JWT_SESSION_EXPIRES_IN: string;
   S3_BUCKET: string;
+  AWS_ACCESS_KEY_ID: string;
+  AWS_SECRET_ACCESS_KEY: string;
   CLIENT_ENDPOINT?: string;
 }
 
@@ -48,6 +51,7 @@ declare module 'fastify' {
     authService: AuthService;
     subjectService: SubjectService;
     subjectConfigService: SubjectConfigService;
+    testSuiteService: TestSuiteService;
     authPreHandler: TJwtAccess;
     config: Config;
   }

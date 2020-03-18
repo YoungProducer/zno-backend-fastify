@@ -10,6 +10,14 @@ type AggregateSubjectConfig {
   count: Int!
 }
 
+type AggregateTestSuite {
+  count: Int!
+}
+
+type AggregateTestSuiteImage {
+  count: Int!
+}
+
 type AggregateToken {
   count: Int!
 }
@@ -89,6 +97,18 @@ type Mutation {
   upsertSubjectConfig(where: SubjectConfigWhereUniqueInput!, create: SubjectConfigCreateInput!, update: SubjectConfigUpdateInput!): SubjectConfig!
   deleteSubjectConfig(where: SubjectConfigWhereUniqueInput!): SubjectConfig
   deleteManySubjectConfigs(where: SubjectConfigWhereInput): BatchPayload!
+  createTestSuite(data: TestSuiteCreateInput!): TestSuite!
+  updateTestSuite(data: TestSuiteUpdateInput!, where: TestSuiteWhereUniqueInput!): TestSuite
+  updateManyTestSuites(data: TestSuiteUpdateManyMutationInput!, where: TestSuiteWhereInput): BatchPayload!
+  upsertTestSuite(where: TestSuiteWhereUniqueInput!, create: TestSuiteCreateInput!, update: TestSuiteUpdateInput!): TestSuite!
+  deleteTestSuite(where: TestSuiteWhereUniqueInput!): TestSuite
+  deleteManyTestSuites(where: TestSuiteWhereInput): BatchPayload!
+  createTestSuiteImage(data: TestSuiteImageCreateInput!): TestSuiteImage!
+  updateTestSuiteImage(data: TestSuiteImageUpdateInput!, where: TestSuiteImageWhereUniqueInput!): TestSuiteImage
+  updateManyTestSuiteImages(data: TestSuiteImageUpdateManyMutationInput!, where: TestSuiteImageWhereInput): BatchPayload!
+  upsertTestSuiteImage(where: TestSuiteImageWhereUniqueInput!, create: TestSuiteImageCreateInput!, update: TestSuiteImageUpdateInput!): TestSuiteImage!
+  deleteTestSuiteImage(where: TestSuiteImageWhereUniqueInput!): TestSuiteImage
+  deleteManyTestSuiteImages(where: TestSuiteImageWhereInput): BatchPayload!
   createToken(data: TokenCreateInput!): Token!
   updateToken(data: TokenUpdateInput!, where: TokenWhereUniqueInput!): Token
   updateManyTokens(data: TokenUpdateManyMutationInput!, where: TokenWhereInput): BatchPayload!
@@ -127,6 +147,12 @@ type Query {
   subjectConfig(where: SubjectConfigWhereUniqueInput!): SubjectConfig
   subjectConfigs(where: SubjectConfigWhereInput, orderBy: SubjectConfigOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [SubjectConfig]!
   subjectConfigsConnection(where: SubjectConfigWhereInput, orderBy: SubjectConfigOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SubjectConfigConnection!
+  testSuite(where: TestSuiteWhereUniqueInput!): TestSuite
+  testSuites(where: TestSuiteWhereInput, orderBy: TestSuiteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TestSuite]!
+  testSuitesConnection(where: TestSuiteWhereInput, orderBy: TestSuiteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TestSuiteConnection!
+  testSuiteImage(where: TestSuiteImageWhereUniqueInput!): TestSuiteImage
+  testSuiteImages(where: TestSuiteImageWhereInput, orderBy: TestSuiteImageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TestSuiteImage]!
+  testSuiteImagesConnection(where: TestSuiteImageWhereInput, orderBy: TestSuiteImageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TestSuiteImageConnection!
   token(where: TokenWhereUniqueInput!): Token
   tokens(where: TokenWhereInput, orderBy: TokenOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Token]!
   tokensConnection(where: TokenWhereInput, orderBy: TokenOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TokenConnection!
@@ -384,6 +410,13 @@ input SubjectUpdateOneInput {
   connect: SubjectWhereUniqueInput
 }
 
+input SubjectUpdateOneRequiredInput {
+  create: SubjectCreateInput
+  update: SubjectUpdateDataInput
+  upsert: SubjectUpsertNestedInput
+  connect: SubjectWhereUniqueInput
+}
+
 input SubjectUpdateOneRequiredWithoutConfigInput {
   create: SubjectCreateWithoutConfigInput
   update: SubjectUpdateWithoutConfigDataInput
@@ -466,6 +499,8 @@ input SubjectWhereUniqueInput {
 type Subscription {
   subject(where: SubjectSubscriptionWhereInput): SubjectSubscriptionPayload
   subjectConfig(where: SubjectConfigSubscriptionWhereInput): SubjectConfigSubscriptionPayload
+  testSuite(where: TestSuiteSubscriptionWhereInput): TestSuiteSubscriptionPayload
+  testSuiteImage(where: TestSuiteImageSubscriptionWhereInput): TestSuiteImageSubscriptionPayload
   token(where: TokenSubscriptionWhereInput): TokenSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
@@ -520,6 +555,419 @@ input SubSubjectUpdatethemesInput {
 input SubSubjectWhereInput {
   subject: SubjectWhereInput
   AND: [SubSubjectWhereInput!]
+}
+
+type TestSuite {
+  id: ID!
+  subject: Subject!
+  subSubject: Subject
+  theme: String
+  session: String
+  training: String
+  answers: [String!]!
+  tasks(where: TestSuiteImageWhereInput, orderBy: TestSuiteImageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TestSuiteImage!]
+  explanations(where: TestSuiteImageWhereInput, orderBy: TestSuiteImageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TestSuiteImage!]
+}
+
+type TestSuiteConnection {
+  pageInfo: PageInfo!
+  edges: [TestSuiteEdge]!
+  aggregate: AggregateTestSuite!
+}
+
+input TestSuiteCreateanswersInput {
+  set: [String!]
+}
+
+input TestSuiteCreateInput {
+  id: ID
+  subject: SubjectCreateOneInput!
+  subSubject: SubjectCreateOneInput
+  theme: String
+  session: String
+  training: String
+  answers: TestSuiteCreateanswersInput
+  tasks: TestSuiteImageCreateManyWithoutTestSuiteInput
+  explanations: TestSuiteImageCreateManyInput
+}
+
+input TestSuiteCreateOneWithoutTasksInput {
+  create: TestSuiteCreateWithoutTasksInput
+  connect: TestSuiteWhereUniqueInput
+}
+
+input TestSuiteCreateWithoutTasksInput {
+  id: ID
+  subject: SubjectCreateOneInput!
+  subSubject: SubjectCreateOneInput
+  theme: String
+  session: String
+  training: String
+  answers: TestSuiteCreateanswersInput
+  explanations: TestSuiteImageCreateManyInput
+}
+
+type TestSuiteEdge {
+  node: TestSuite!
+  cursor: String!
+}
+
+type TestSuiteImage {
+  id: ID!
+  testSuite: TestSuite!
+  image: String!
+}
+
+type TestSuiteImageConnection {
+  pageInfo: PageInfo!
+  edges: [TestSuiteImageEdge]!
+  aggregate: AggregateTestSuiteImage!
+}
+
+input TestSuiteImageCreateInput {
+  id: ID
+  testSuite: TestSuiteCreateOneWithoutTasksInput!
+  image: String!
+}
+
+input TestSuiteImageCreateManyInput {
+  create: [TestSuiteImageCreateInput!]
+  connect: [TestSuiteImageWhereUniqueInput!]
+}
+
+input TestSuiteImageCreateManyWithoutTestSuiteInput {
+  create: [TestSuiteImageCreateWithoutTestSuiteInput!]
+  connect: [TestSuiteImageWhereUniqueInput!]
+}
+
+input TestSuiteImageCreateWithoutTestSuiteInput {
+  id: ID
+  image: String!
+}
+
+type TestSuiteImageEdge {
+  node: TestSuiteImage!
+  cursor: String!
+}
+
+enum TestSuiteImageOrderByInput {
+  id_ASC
+  id_DESC
+  image_ASC
+  image_DESC
+}
+
+type TestSuiteImagePreviousValues {
+  id: ID!
+  image: String!
+}
+
+input TestSuiteImageScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  image: String
+  image_not: String
+  image_in: [String!]
+  image_not_in: [String!]
+  image_lt: String
+  image_lte: String
+  image_gt: String
+  image_gte: String
+  image_contains: String
+  image_not_contains: String
+  image_starts_with: String
+  image_not_starts_with: String
+  image_ends_with: String
+  image_not_ends_with: String
+  AND: [TestSuiteImageScalarWhereInput!]
+  OR: [TestSuiteImageScalarWhereInput!]
+  NOT: [TestSuiteImageScalarWhereInput!]
+}
+
+type TestSuiteImageSubscriptionPayload {
+  mutation: MutationType!
+  node: TestSuiteImage
+  updatedFields: [String!]
+  previousValues: TestSuiteImagePreviousValues
+}
+
+input TestSuiteImageSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: TestSuiteImageWhereInput
+  AND: [TestSuiteImageSubscriptionWhereInput!]
+}
+
+input TestSuiteImageUpdateDataInput {
+  testSuite: TestSuiteUpdateOneRequiredWithoutTasksInput
+  image: String
+}
+
+input TestSuiteImageUpdateInput {
+  testSuite: TestSuiteUpdateOneRequiredWithoutTasksInput
+  image: String
+}
+
+input TestSuiteImageUpdateManyDataInput {
+  image: String
+}
+
+input TestSuiteImageUpdateManyInput {
+  create: [TestSuiteImageCreateInput!]
+  update: [TestSuiteImageUpdateWithWhereUniqueNestedInput!]
+  upsert: [TestSuiteImageUpsertWithWhereUniqueNestedInput!]
+  delete: [TestSuiteImageWhereUniqueInput!]
+  connect: [TestSuiteImageWhereUniqueInput!]
+  set: [TestSuiteImageWhereUniqueInput!]
+  disconnect: [TestSuiteImageWhereUniqueInput!]
+  deleteMany: [TestSuiteImageScalarWhereInput!]
+  updateMany: [TestSuiteImageUpdateManyWithWhereNestedInput!]
+}
+
+input TestSuiteImageUpdateManyMutationInput {
+  image: String
+}
+
+input TestSuiteImageUpdateManyWithoutTestSuiteInput {
+  create: [TestSuiteImageCreateWithoutTestSuiteInput!]
+  delete: [TestSuiteImageWhereUniqueInput!]
+  connect: [TestSuiteImageWhereUniqueInput!]
+  set: [TestSuiteImageWhereUniqueInput!]
+  disconnect: [TestSuiteImageWhereUniqueInput!]
+  update: [TestSuiteImageUpdateWithWhereUniqueWithoutTestSuiteInput!]
+  upsert: [TestSuiteImageUpsertWithWhereUniqueWithoutTestSuiteInput!]
+  deleteMany: [TestSuiteImageScalarWhereInput!]
+  updateMany: [TestSuiteImageUpdateManyWithWhereNestedInput!]
+}
+
+input TestSuiteImageUpdateManyWithWhereNestedInput {
+  where: TestSuiteImageScalarWhereInput!
+  data: TestSuiteImageUpdateManyDataInput!
+}
+
+input TestSuiteImageUpdateWithoutTestSuiteDataInput {
+  image: String
+}
+
+input TestSuiteImageUpdateWithWhereUniqueNestedInput {
+  where: TestSuiteImageWhereUniqueInput!
+  data: TestSuiteImageUpdateDataInput!
+}
+
+input TestSuiteImageUpdateWithWhereUniqueWithoutTestSuiteInput {
+  where: TestSuiteImageWhereUniqueInput!
+  data: TestSuiteImageUpdateWithoutTestSuiteDataInput!
+}
+
+input TestSuiteImageUpsertWithWhereUniqueNestedInput {
+  where: TestSuiteImageWhereUniqueInput!
+  update: TestSuiteImageUpdateDataInput!
+  create: TestSuiteImageCreateInput!
+}
+
+input TestSuiteImageUpsertWithWhereUniqueWithoutTestSuiteInput {
+  where: TestSuiteImageWhereUniqueInput!
+  update: TestSuiteImageUpdateWithoutTestSuiteDataInput!
+  create: TestSuiteImageCreateWithoutTestSuiteInput!
+}
+
+input TestSuiteImageWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  testSuite: TestSuiteWhereInput
+  image: String
+  image_not: String
+  image_in: [String!]
+  image_not_in: [String!]
+  image_lt: String
+  image_lte: String
+  image_gt: String
+  image_gte: String
+  image_contains: String
+  image_not_contains: String
+  image_starts_with: String
+  image_not_starts_with: String
+  image_ends_with: String
+  image_not_ends_with: String
+  AND: [TestSuiteImageWhereInput!]
+}
+
+input TestSuiteImageWhereUniqueInput {
+  id: ID
+  image: String
+}
+
+enum TestSuiteOrderByInput {
+  id_ASC
+  id_DESC
+  theme_ASC
+  theme_DESC
+  session_ASC
+  session_DESC
+  training_ASC
+  training_DESC
+}
+
+type TestSuitePreviousValues {
+  id: ID!
+  theme: String
+  session: String
+  training: String
+  answers: [String!]!
+}
+
+type TestSuiteSubscriptionPayload {
+  mutation: MutationType!
+  node: TestSuite
+  updatedFields: [String!]
+  previousValues: TestSuitePreviousValues
+}
+
+input TestSuiteSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: TestSuiteWhereInput
+  AND: [TestSuiteSubscriptionWhereInput!]
+}
+
+input TestSuiteUpdateanswersInput {
+  set: [String!]
+}
+
+input TestSuiteUpdateInput {
+  subject: SubjectUpdateOneRequiredInput
+  subSubject: SubjectUpdateOneInput
+  theme: String
+  session: String
+  training: String
+  answers: TestSuiteUpdateanswersInput
+  tasks: TestSuiteImageUpdateManyWithoutTestSuiteInput
+  explanations: TestSuiteImageUpdateManyInput
+}
+
+input TestSuiteUpdateManyMutationInput {
+  theme: String
+  session: String
+  training: String
+  answers: TestSuiteUpdateanswersInput
+}
+
+input TestSuiteUpdateOneRequiredWithoutTasksInput {
+  create: TestSuiteCreateWithoutTasksInput
+  update: TestSuiteUpdateWithoutTasksDataInput
+  upsert: TestSuiteUpsertWithoutTasksInput
+  connect: TestSuiteWhereUniqueInput
+}
+
+input TestSuiteUpdateWithoutTasksDataInput {
+  subject: SubjectUpdateOneRequiredInput
+  subSubject: SubjectUpdateOneInput
+  theme: String
+  session: String
+  training: String
+  answers: TestSuiteUpdateanswersInput
+  explanations: TestSuiteImageUpdateManyInput
+}
+
+input TestSuiteUpsertWithoutTasksInput {
+  update: TestSuiteUpdateWithoutTasksDataInput!
+  create: TestSuiteCreateWithoutTasksInput!
+}
+
+input TestSuiteWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  subject: SubjectWhereInput
+  subSubject: SubjectWhereInput
+  theme: String
+  theme_not: String
+  theme_in: [String!]
+  theme_not_in: [String!]
+  theme_lt: String
+  theme_lte: String
+  theme_gt: String
+  theme_gte: String
+  theme_contains: String
+  theme_not_contains: String
+  theme_starts_with: String
+  theme_not_starts_with: String
+  theme_ends_with: String
+  theme_not_ends_with: String
+  session: String
+  session_not: String
+  session_in: [String!]
+  session_not_in: [String!]
+  session_lt: String
+  session_lte: String
+  session_gt: String
+  session_gte: String
+  session_contains: String
+  session_not_contains: String
+  session_starts_with: String
+  session_not_starts_with: String
+  session_ends_with: String
+  session_not_ends_with: String
+  training: String
+  training_not: String
+  training_in: [String!]
+  training_not_in: [String!]
+  training_lt: String
+  training_lte: String
+  training_gt: String
+  training_gte: String
+  training_contains: String
+  training_not_contains: String
+  training_starts_with: String
+  training_not_starts_with: String
+  training_ends_with: String
+  training_not_ends_with: String
+  tasks_some: TestSuiteImageWhereInput
+  explanations_some: TestSuiteImageWhereInput
+  AND: [TestSuiteWhereInput!]
+}
+
+input TestSuiteWhereUniqueInput {
+  id: ID
 }
 
 type Token {

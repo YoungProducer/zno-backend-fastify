@@ -24,22 +24,22 @@ export = async function (
             return;
         });
 
-        fastify.post('/create', async (
+        fastify.post('subject', async (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
         ) => await createHandler(fastify, req, reply));
 
-        fastify.post('/update-image', async (
+        fastify.patch('subject/image', async (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
         ) => await updateSubjectImageHandler(fastify, req, reply));
 
-        fastify.delete('/delete-image', async (
+        fastify.delete('subject/image', async (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
         ) => await deleteSubjectImageHandler(fastify, req, reply));
     });
-    fastify.get('/subjects', async (
+    fastify.get('subject', async (
         req: FastifyRequest<IncomingMessage>,
         reply: FastifyReply<ServerResponse>,
     ) => await subjectsHandler(fastify, req, reply));

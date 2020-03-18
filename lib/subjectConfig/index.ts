@@ -21,7 +21,7 @@ export = async function (
             return;
         });
 
-        fastify.get('/config/:subject', async (
+        fastify.get('subject-config/:subject', async (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
         ) => await configHandler(fastify, req, reply));
