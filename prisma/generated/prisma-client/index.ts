@@ -463,7 +463,6 @@ export type SubjectConfigWhereUniqueInput = AtLeastOne<{
 
 export type TestSuiteWhereUniqueInput = AtLeastOne<{
   id: Maybe<ID_Input>;
-  path?: Maybe<String>;
 }>;
 
 export interface TestSuiteImageWhereInput {
@@ -597,20 +596,6 @@ export interface AnswerWhereInput {
   taskId_lte?: Maybe<Int>;
   taskId_gt?: Maybe<Int>;
   taskId_gte?: Maybe<Int>;
-  answer?: Maybe<String>;
-  answer_not?: Maybe<String>;
-  answer_in?: Maybe<String[] | String>;
-  answer_not_in?: Maybe<String[] | String>;
-  answer_lt?: Maybe<String>;
-  answer_lte?: Maybe<String>;
-  answer_gt?: Maybe<String>;
-  answer_gte?: Maybe<String>;
-  answer_contains?: Maybe<String>;
-  answer_not_contains?: Maybe<String>;
-  answer_starts_with?: Maybe<String>;
-  answer_not_starts_with?: Maybe<String>;
-  answer_ends_with?: Maybe<String>;
-  answer_not_ends_with?: Maybe<String>;
   AND?: Maybe<AnswerWhereInput[] | AnswerWhereInput>;
 }
 
@@ -623,20 +608,6 @@ export interface AnswerRestrictedWhereInput {
   taskId_lte?: Maybe<Int>;
   taskId_gt?: Maybe<Int>;
   taskId_gte?: Maybe<Int>;
-  answer?: Maybe<String>;
-  answer_not?: Maybe<String>;
-  answer_in?: Maybe<String[] | String>;
-  answer_not_in?: Maybe<String[] | String>;
-  answer_lt?: Maybe<String>;
-  answer_lte?: Maybe<String>;
-  answer_gt?: Maybe<String>;
-  answer_gte?: Maybe<String>;
-  answer_contains?: Maybe<String>;
-  answer_not_contains?: Maybe<String>;
-  answer_starts_with?: Maybe<String>;
-  answer_not_starts_with?: Maybe<String>;
-  answer_ends_with?: Maybe<String>;
-  answer_not_ends_with?: Maybe<String>;
   AND?: Maybe<AnswerRestrictedWhereInput[] | AnswerRestrictedWhereInput>;
 }
 
@@ -998,7 +969,11 @@ export interface AnswerCreateManyInput {
 
 export interface AnswerCreateInput {
   taskId: Int;
-  answer: String;
+  answer?: Maybe<AnswerCreateanswerInput>;
+}
+
+export interface AnswerCreateanswerInput {
+  set?: Maybe<String[] | String>;
 }
 
 export interface TestSuiteImageCreateManyWithoutTestSuiteInput {
@@ -1085,20 +1060,6 @@ export interface AnswerScalarWhereInput {
   taskId_lte?: Maybe<Int>;
   taskId_gt?: Maybe<Int>;
   taskId_gte?: Maybe<Int>;
-  answer?: Maybe<String>;
-  answer_not?: Maybe<String>;
-  answer_in?: Maybe<String[] | String>;
-  answer_not_in?: Maybe<String[] | String>;
-  answer_lt?: Maybe<String>;
-  answer_lte?: Maybe<String>;
-  answer_gt?: Maybe<String>;
-  answer_gte?: Maybe<String>;
-  answer_contains?: Maybe<String>;
-  answer_not_contains?: Maybe<String>;
-  answer_starts_with?: Maybe<String>;
-  answer_not_starts_with?: Maybe<String>;
-  answer_ends_with?: Maybe<String>;
-  answer_not_ends_with?: Maybe<String>;
   AND?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
   OR?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
   NOT?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
@@ -1111,7 +1072,11 @@ export interface AnswerUpdateManyWithWhereNestedInput {
 
 export interface AnswerUpdateManyDataInput {
   taskId?: Maybe<Int>;
-  answer?: Maybe<String>;
+  answer?: Maybe<AnswerUpdateanswerInput>;
+}
+
+export interface AnswerUpdateanswerInput {
+  set?: Maybe<String[] | String>;
 }
 
 export interface TestSuiteImageUpdateManyWithoutTestSuiteInput {
@@ -1907,26 +1872,26 @@ export interface TestSuiteNullablePromise
 
 export interface Answer {
   taskId: Int;
-  answer: String;
+  answer: String[];
 }
 
 export interface AnswerPromise extends Promise<Answer>, Fragmentable {
   taskId: () => Promise<Int>;
-  answer: () => Promise<String>;
+  answer: () => Promise<String[]>;
 }
 
 export interface AnswerSubscription
   extends Promise<AsyncIterator<Answer>>,
     Fragmentable {
   taskId: () => Promise<AsyncIterator<Int>>;
-  answer: () => Promise<AsyncIterator<String>>;
+  answer: () => Promise<AsyncIterator<String[]>>;
 }
 
 export interface AnswerNullablePromise
   extends Promise<Answer | null>,
     Fragmentable {
   taskId: () => Promise<Int>;
-  answer: () => Promise<String>;
+  answer: () => Promise<String[]>;
 }
 
 export interface TestSuiteImage {

@@ -19,6 +19,7 @@ import {
 import {
     createTestSuite,
     getTestSuite,
+    uploadImages,
 } from './schema';
 
 export = async function (
@@ -35,7 +36,7 @@ export = async function (
         reply: FastifyReply<ServerResponse>,
     ) => await getTestSuiteHandler(fastify, req, reply));
 
-    fastify.put('test-suite/images', async (
+    fastify.put('test-suite/:id/images/:type', { schema: uploadImages }, async (
         req: FastifyRequest<IncomingMessage>,
         reply: FastifyReply<ServerResponse>,
     ) => await uploadImagesHandler(fastify, req, reply));
@@ -49,10 +50,10 @@ const createTestSuiteHandler = async (
     const credentials: ICreateTestSuiteHandlerCredentials = req.body;
 
     /** Exclude images from credentials */
-    const clearCredentials = _.pick(credentials, ['subjectId', 'subSubjectId', 'sessions', 'trainings', 'theme']);
+    const clearCredentials = _.pick(credentials, ['subjectId', 'subSubjectId', 'sessions', 'trainings', 'theme', 'answers']);
 
     /** Exclude all properties except images from credentials */
-    const clearImages = _.omit(credentials, ['subjectId', 'subSubjectId', 'sessions', 'trainings', 'theme']);
+    const clearImages = _.omit(credentials, ['subjectId', 'subSubjectId', 'sessions', 'trainings', 'theme', 'answers']);
 
     /** Get clearImages entries */
     const clearImagesEntries = Object.entries(clearImages);
@@ -112,7 +113,10 @@ const uploadImagesHandler = async (
     reply: FastifyReply<ServerResponse>,
 ) => {
     /** Extract credentials from body */
-    const credentials: IUploadImagesHandlerCredentials = req.body;
+    const credentials: IUploadImagesHandlerCredentials = {
+        ...req.body,
+        ...req.params,
+    };
 
     /**
      * Remove id key from credentials object

@@ -55,7 +55,7 @@ type TestSuite {
   answers: [Answer!]
   tasks: [TestSuiteImage!]! @relation(name: "TasksImagesRelation", link: INLINE)
   explanations: [TestSuiteImage!] @relation(name: "ExplanationImagesRelation", link: INLINE)
-  path: String! @unique
+  path: String!
 }
 
 type TestSuiteImage {
@@ -67,7 +67,7 @@ type TestSuiteImage {
 
 type Answer @embedded {
   taskId: Int!
-  answer: String!
+  answer: [String!]
 }
 
 

@@ -28,12 +28,16 @@ type AggregateUser {
 
 type Answer {
   taskId: Int!
-  answer: String!
+  answer: [String!]!
+}
+
+input AnswerCreateanswerInput {
+  set: [String!]
 }
 
 input AnswerCreateInput {
   taskId: Int!
-  answer: String!
+  answer: AnswerCreateanswerInput
 }
 
 input AnswerCreateManyInput {
@@ -49,20 +53,6 @@ input AnswerRestrictedWhereInput {
   taskId_lte: Int
   taskId_gt: Int
   taskId_gte: Int
-  answer: String
-  answer_not: String
-  answer_in: [String!]
-  answer_not_in: [String!]
-  answer_lt: String
-  answer_lte: String
-  answer_gt: String
-  answer_gte: String
-  answer_contains: String
-  answer_not_contains: String
-  answer_starts_with: String
-  answer_not_starts_with: String
-  answer_ends_with: String
-  answer_not_ends_with: String
   AND: [AnswerRestrictedWhereInput!]
 }
 
@@ -75,28 +65,18 @@ input AnswerScalarWhereInput {
   taskId_lte: Int
   taskId_gt: Int
   taskId_gte: Int
-  answer: String
-  answer_not: String
-  answer_in: [String!]
-  answer_not_in: [String!]
-  answer_lt: String
-  answer_lte: String
-  answer_gt: String
-  answer_gte: String
-  answer_contains: String
-  answer_not_contains: String
-  answer_starts_with: String
-  answer_not_starts_with: String
-  answer_ends_with: String
-  answer_not_ends_with: String
   AND: [AnswerScalarWhereInput!]
   OR: [AnswerScalarWhereInput!]
   NOT: [AnswerScalarWhereInput!]
 }
 
+input AnswerUpdateanswerInput {
+  set: [String!]
+}
+
 input AnswerUpdateManyDataInput {
   taskId: Int
-  answer: String
+  answer: AnswerUpdateanswerInput
 }
 
 input AnswerUpdateManyInput {
@@ -119,20 +99,6 @@ input AnswerWhereInput {
   taskId_lte: Int
   taskId_gt: Int
   taskId_gte: Int
-  answer: String
-  answer_not: String
-  answer_in: [String!]
-  answer_not_in: [String!]
-  answer_lt: String
-  answer_lte: String
-  answer_gt: String
-  answer_gte: String
-  answer_contains: String
-  answer_not_contains: String
-  answer_starts_with: String
-  answer_not_starts_with: String
-  answer_ends_with: String
-  answer_not_ends_with: String
   AND: [AnswerWhereInput!]
 }
 
@@ -1121,7 +1087,6 @@ input TestSuiteWhereInput {
 
 input TestSuiteWhereUniqueInput {
   id: ID
-  path: String
 }
 
 type Token {

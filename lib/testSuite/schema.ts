@@ -25,6 +25,13 @@ export const createTestSuite = {
             training: {
                 type: 'string',
             },
+            answers: {
+                type: 'array',
+                item: {
+                    type: 'array',
+                    item: { type: 'string' },
+                },
+            },
         },
     },
 };
@@ -39,6 +46,17 @@ export const getTestSuite = {
             theme: { type: 'string' },
             session: { type: 'string' },
             training: { type: 'string' },
+        },
+    },
+};
+
+export const uploadImages = {
+    params: {
+        type: 'object',
+        required: ['id', 'type'],
+        properties: {
+            id: { type: 'string' },
+            type: { type: 'string' },
         },
     },
 };

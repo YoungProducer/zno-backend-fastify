@@ -21,6 +21,10 @@ export interface ICreateTestSuiteHandlerCredentials {
      */
     theme?: string;
     /**
+     * Array of answers.
+     */
+    answers: (string[])[];
+    /**
      * Array of images.
      */
     [attr: string]: string;
@@ -41,6 +45,10 @@ export interface ICreateTestSuiteCredentials {
      * If this test suite related to themes this field should have name of theme.
      */
     theme?: string;
+    /**
+     * Array of answers.
+     */
+    answers: (string[])[];
     /**
      * Array of tasks images.
      * Optional property.

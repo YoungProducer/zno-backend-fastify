@@ -29,7 +29,7 @@ class TestSuiteService {
     }
 
     async create(credentials: ICreateTestSuiteCredentials): Promise<TestSuite> {
-        const { subjectId, subSubjectId, tasksImages, explanationsImages, ...other } = credentials;
+        const { subjectId, subSubjectId, tasksImages, explanationsImages, answers, ...other } = credentials;
 
         /** Get subject and sub-subject objects */
         const subject = await prisma.subject({ id: subjectId });
@@ -67,6 +67,14 @@ class TestSuiteService {
                 connect: {
                     id: subSubjectId,
                 },
+            },
+            answers: {
+                create: answers.map((answer, index) => ({
+                    answer: {
+                        set: answer,
+                    },
+                    taskId: index,
+                })),
             },
             ...other,
         });
