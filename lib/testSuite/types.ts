@@ -5,6 +5,27 @@
  * Declare main types and interfaces for test suite service and controller.
  */
 
+export interface ICreateTestSuiteHandlerCredentials {
+    subjectId: string;
+    subSubjectId?: string;
+    /**
+     * If this test suite related to exams sessions this field should have name of session.
+     */
+    session?: string;
+    /**
+     * If this test suite related to exams trainings this field should have name of training.
+     */
+    training?: string;
+    /**
+     * If this test suite related to themes this field should have name of theme.
+     */
+    theme?: string;
+    /**
+     * Array of images.
+     */
+    [attr: string]: string;
+}
+
 export interface ICreateTestSuiteCredentials {
     subjectId: string;
     subSubjectId?: string;
@@ -20,6 +41,16 @@ export interface ICreateTestSuiteCredentials {
      * If this test suite related to themes this field should have name of theme.
      */
     theme?: string;
+    /**
+     * Array of tasks images.
+     * Optional property.
+     */
+    tasksImages?: any[];
+    /**
+     * Array of explanations images.
+     * Optional property.
+     */
+    explanationsImages?: any[];
 }
 
 export interface IGetTestSuiteCredentials {
@@ -37,4 +68,34 @@ export interface IGetTestSuiteCredentials {
      * If this test suite related to themes this field should have name of theme.
      */
     theme?: string;
+}
+
+export interface IUploadImagesHandlerCredentials {
+    /**
+     * Id of test suite.
+     */
+    id: string;
+    /**
+     * Type of image: task or explanation.
+     */
+    type: 'task' | 'explanation';
+    /**
+     * Array of images
+     */
+    [attr: string]: string;
+}
+
+export interface IUploadImagesCredentials {
+    /**
+     * Id of test suite.
+     */
+    id: string;
+    /**
+     * Array of images
+     */
+    images: any[];
+    /**
+     * Type of image: task or explanation.
+     */
+    type: 'task' | 'explanation';
 }

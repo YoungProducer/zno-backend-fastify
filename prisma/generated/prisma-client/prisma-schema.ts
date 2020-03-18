@@ -26,6 +26,116 @@ type AggregateUser {
   count: Int!
 }
 
+type Answer {
+  taskId: Int!
+  answer: String!
+}
+
+input AnswerCreateInput {
+  taskId: Int!
+  answer: String!
+}
+
+input AnswerCreateManyInput {
+  create: [AnswerCreateInput!]
+}
+
+input AnswerRestrictedWhereInput {
+  taskId: Int
+  taskId_not: Int
+  taskId_in: [Int!]
+  taskId_not_in: [Int!]
+  taskId_lt: Int
+  taskId_lte: Int
+  taskId_gt: Int
+  taskId_gte: Int
+  answer: String
+  answer_not: String
+  answer_in: [String!]
+  answer_not_in: [String!]
+  answer_lt: String
+  answer_lte: String
+  answer_gt: String
+  answer_gte: String
+  answer_contains: String
+  answer_not_contains: String
+  answer_starts_with: String
+  answer_not_starts_with: String
+  answer_ends_with: String
+  answer_not_ends_with: String
+  AND: [AnswerRestrictedWhereInput!]
+}
+
+input AnswerScalarWhereInput {
+  taskId: Int
+  taskId_not: Int
+  taskId_in: [Int!]
+  taskId_not_in: [Int!]
+  taskId_lt: Int
+  taskId_lte: Int
+  taskId_gt: Int
+  taskId_gte: Int
+  answer: String
+  answer_not: String
+  answer_in: [String!]
+  answer_not_in: [String!]
+  answer_lt: String
+  answer_lte: String
+  answer_gt: String
+  answer_gte: String
+  answer_contains: String
+  answer_not_contains: String
+  answer_starts_with: String
+  answer_not_starts_with: String
+  answer_ends_with: String
+  answer_not_ends_with: String
+  AND: [AnswerScalarWhereInput!]
+  OR: [AnswerScalarWhereInput!]
+  NOT: [AnswerScalarWhereInput!]
+}
+
+input AnswerUpdateManyDataInput {
+  taskId: Int
+  answer: String
+}
+
+input AnswerUpdateManyInput {
+  create: [AnswerCreateInput!]
+  deleteMany: [AnswerScalarWhereInput!]
+  updateMany: [AnswerUpdateManyWithWhereNestedInput!]
+}
+
+input AnswerUpdateManyWithWhereNestedInput {
+  where: AnswerScalarWhereInput!
+  data: AnswerUpdateManyDataInput!
+}
+
+input AnswerWhereInput {
+  taskId: Int
+  taskId_not: Int
+  taskId_in: [Int!]
+  taskId_not_in: [Int!]
+  taskId_lt: Int
+  taskId_lte: Int
+  taskId_gt: Int
+  taskId_gte: Int
+  answer: String
+  answer_not: String
+  answer_in: [String!]
+  answer_not_in: [String!]
+  answer_lt: String
+  answer_lte: String
+  answer_gt: String
+  answer_gte: String
+  answer_contains: String
+  answer_not_contains: String
+  answer_starts_with: String
+  answer_not_starts_with: String
+  answer_ends_with: String
+  answer_not_ends_with: String
+  AND: [AnswerWhereInput!]
+}
+
 type BatchPayload {
   count: Long!
 }
@@ -564,19 +674,16 @@ type TestSuite {
   theme: String
   session: String
   training: String
-  answers: [String!]!
+  answers: [Answer!]
   tasks(where: TestSuiteImageWhereInput, orderBy: TestSuiteImageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TestSuiteImage!]
   explanations(where: TestSuiteImageWhereInput, orderBy: TestSuiteImageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TestSuiteImage!]
+  path: String!
 }
 
 type TestSuiteConnection {
   pageInfo: PageInfo!
   edges: [TestSuiteEdge]!
   aggregate: AggregateTestSuite!
-}
-
-input TestSuiteCreateanswersInput {
-  set: [String!]
 }
 
 input TestSuiteCreateInput {
@@ -586,9 +693,10 @@ input TestSuiteCreateInput {
   theme: String
   session: String
   training: String
-  answers: TestSuiteCreateanswersInput
+  answers: AnswerCreateManyInput
   tasks: TestSuiteImageCreateManyWithoutTestSuiteInput
   explanations: TestSuiteImageCreateManyInput
+  path: String!
 }
 
 input TestSuiteCreateOneWithoutTasksInput {
@@ -603,8 +711,9 @@ input TestSuiteCreateWithoutTasksInput {
   theme: String
   session: String
   training: String
-  answers: TestSuiteCreateanswersInput
+  answers: AnswerCreateManyInput
   explanations: TestSuiteImageCreateManyInput
+  path: String!
 }
 
 type TestSuiteEdge {
@@ -614,6 +723,7 @@ type TestSuiteEdge {
 
 type TestSuiteImage {
   id: ID!
+  taskId: Int!
   testSuite: TestSuite!
   image: String!
 }
@@ -626,6 +736,7 @@ type TestSuiteImageConnection {
 
 input TestSuiteImageCreateInput {
   id: ID
+  taskId: Int!
   testSuite: TestSuiteCreateOneWithoutTasksInput!
   image: String!
 }
@@ -642,6 +753,7 @@ input TestSuiteImageCreateManyWithoutTestSuiteInput {
 
 input TestSuiteImageCreateWithoutTestSuiteInput {
   id: ID
+  taskId: Int!
   image: String!
 }
 
@@ -653,12 +765,15 @@ type TestSuiteImageEdge {
 enum TestSuiteImageOrderByInput {
   id_ASC
   id_DESC
+  taskId_ASC
+  taskId_DESC
   image_ASC
   image_DESC
 }
 
 type TestSuiteImagePreviousValues {
   id: ID!
+  taskId: Int!
   image: String!
 }
 
@@ -677,6 +792,14 @@ input TestSuiteImageScalarWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
+  taskId: Int
+  taskId_not: Int
+  taskId_in: [Int!]
+  taskId_not_in: [Int!]
+  taskId_lt: Int
+  taskId_lte: Int
+  taskId_gt: Int
+  taskId_gte: Int
   image: String
   image_not: String
   image_in: [String!]
@@ -713,16 +836,19 @@ input TestSuiteImageSubscriptionWhereInput {
 }
 
 input TestSuiteImageUpdateDataInput {
+  taskId: Int
   testSuite: TestSuiteUpdateOneRequiredWithoutTasksInput
   image: String
 }
 
 input TestSuiteImageUpdateInput {
+  taskId: Int
   testSuite: TestSuiteUpdateOneRequiredWithoutTasksInput
   image: String
 }
 
 input TestSuiteImageUpdateManyDataInput {
+  taskId: Int
   image: String
 }
 
@@ -739,6 +865,7 @@ input TestSuiteImageUpdateManyInput {
 }
 
 input TestSuiteImageUpdateManyMutationInput {
+  taskId: Int
   image: String
 }
 
@@ -760,6 +887,7 @@ input TestSuiteImageUpdateManyWithWhereNestedInput {
 }
 
 input TestSuiteImageUpdateWithoutTestSuiteDataInput {
+  taskId: Int
   image: String
 }
 
@@ -800,6 +928,14 @@ input TestSuiteImageWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
+  taskId: Int
+  taskId_not: Int
+  taskId_in: [Int!]
+  taskId_not_in: [Int!]
+  taskId_lt: Int
+  taskId_lte: Int
+  taskId_gt: Int
+  taskId_gte: Int
   testSuite: TestSuiteWhereInput
   image: String
   image_not: String
@@ -832,6 +968,8 @@ enum TestSuiteOrderByInput {
   session_DESC
   training_ASC
   training_DESC
+  path_ASC
+  path_DESC
 }
 
 type TestSuitePreviousValues {
@@ -839,7 +977,7 @@ type TestSuitePreviousValues {
   theme: String
   session: String
   training: String
-  answers: [String!]!
+  path: String!
 }
 
 type TestSuiteSubscriptionPayload {
@@ -858,26 +996,23 @@ input TestSuiteSubscriptionWhereInput {
   AND: [TestSuiteSubscriptionWhereInput!]
 }
 
-input TestSuiteUpdateanswersInput {
-  set: [String!]
-}
-
 input TestSuiteUpdateInput {
   subject: SubjectUpdateOneRequiredInput
   subSubject: SubjectUpdateOneInput
   theme: String
   session: String
   training: String
-  answers: TestSuiteUpdateanswersInput
+  answers: AnswerUpdateManyInput
   tasks: TestSuiteImageUpdateManyWithoutTestSuiteInput
   explanations: TestSuiteImageUpdateManyInput
+  path: String
 }
 
 input TestSuiteUpdateManyMutationInput {
   theme: String
   session: String
   training: String
-  answers: TestSuiteUpdateanswersInput
+  path: String
 }
 
 input TestSuiteUpdateOneRequiredWithoutTasksInput {
@@ -893,8 +1028,9 @@ input TestSuiteUpdateWithoutTasksDataInput {
   theme: String
   session: String
   training: String
-  answers: TestSuiteUpdateanswersInput
+  answers: AnswerUpdateManyInput
   explanations: TestSuiteImageUpdateManyInput
+  path: String
 }
 
 input TestSuiteUpsertWithoutTasksInput {
@@ -961,13 +1097,31 @@ input TestSuiteWhereInput {
   training_not_starts_with: String
   training_ends_with: String
   training_not_ends_with: String
+  answers_some: AnswerWhereInput
+  answers_every: AnswerRestrictedWhereInput
+  answers_none: AnswerRestrictedWhereInput
   tasks_some: TestSuiteImageWhereInput
   explanations_some: TestSuiteImageWhereInput
+  path: String
+  path_not: String
+  path_in: [String!]
+  path_not_in: [String!]
+  path_lt: String
+  path_lte: String
+  path_gt: String
+  path_gte: String
+  path_contains: String
+  path_not_contains: String
+  path_starts_with: String
+  path_not_starts_with: String
+  path_ends_with: String
+  path_not_ends_with: String
   AND: [TestSuiteWhereInput!]
 }
 
 input TestSuiteWhereUniqueInput {
   id: ID
+  path: String
 }
 
 type Token {

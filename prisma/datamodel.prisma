@@ -52,15 +52,22 @@ type TestSuite {
   theme: String
   session: String
   training: String
-  answers: [String!]
+  answers: [Answer!]
   tasks: [TestSuiteImage!]! @relation(name: "TasksImagesRelation", link: INLINE)
   explanations: [TestSuiteImage!] @relation(name: "ExplanationImagesRelation", link: INLINE)
+  path: String! @unique
 }
 
 type TestSuiteImage {
   id: ID! @id
+  taskId: Int!
   testSuite: TestSuite! @relation(name: "TasksImagesRelation")
   image: String! @unique
+}
+
+type Answer @embedded {
+  taskId: Int!
+  answer: String!
 }
 
 

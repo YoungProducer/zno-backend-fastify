@@ -325,6 +325,8 @@ export type SubjectConfigOrderByInput = "id_ASC" | "id_DESC";
 export type TestSuiteImageOrderByInput =
   | "id_ASC"
   | "id_DESC"
+  | "taskId_ASC"
+  | "taskId_DESC"
   | "image_ASC"
   | "image_DESC";
 
@@ -336,7 +338,9 @@ export type TestSuiteOrderByInput =
   | "session_ASC"
   | "session_DESC"
   | "training_ASC"
-  | "training_DESC";
+  | "training_DESC"
+  | "path_ASC"
+  | "path_DESC";
 
 export type Role = "ADMIN" | "DEFAULT_USER";
 
@@ -459,6 +463,7 @@ export type SubjectConfigWhereUniqueInput = AtLeastOne<{
 
 export type TestSuiteWhereUniqueInput = AtLeastOne<{
   id: Maybe<ID_Input>;
+  path?: Maybe<String>;
 }>;
 
 export interface TestSuiteImageWhereInput {
@@ -476,6 +481,14 @@ export interface TestSuiteImageWhereInput {
   id_not_starts_with?: Maybe<ID_Input>;
   id_ends_with?: Maybe<ID_Input>;
   id_not_ends_with?: Maybe<ID_Input>;
+  taskId?: Maybe<Int>;
+  taskId_not?: Maybe<Int>;
+  taskId_in?: Maybe<Int[] | Int>;
+  taskId_not_in?: Maybe<Int[] | Int>;
+  taskId_lt?: Maybe<Int>;
+  taskId_lte?: Maybe<Int>;
+  taskId_gt?: Maybe<Int>;
+  taskId_gte?: Maybe<Int>;
   testSuite?: Maybe<TestSuiteWhereInput>;
   image?: Maybe<String>;
   image_not?: Maybe<String>;
@@ -553,9 +566,78 @@ export interface TestSuiteWhereInput {
   training_not_starts_with?: Maybe<String>;
   training_ends_with?: Maybe<String>;
   training_not_ends_with?: Maybe<String>;
+  answers_some?: Maybe<AnswerWhereInput>;
+  answers_every?: Maybe<AnswerRestrictedWhereInput>;
+  answers_none?: Maybe<AnswerRestrictedWhereInput>;
   tasks_some?: Maybe<TestSuiteImageWhereInput>;
   explanations_some?: Maybe<TestSuiteImageWhereInput>;
+  path?: Maybe<String>;
+  path_not?: Maybe<String>;
+  path_in?: Maybe<String[] | String>;
+  path_not_in?: Maybe<String[] | String>;
+  path_lt?: Maybe<String>;
+  path_lte?: Maybe<String>;
+  path_gt?: Maybe<String>;
+  path_gte?: Maybe<String>;
+  path_contains?: Maybe<String>;
+  path_not_contains?: Maybe<String>;
+  path_starts_with?: Maybe<String>;
+  path_not_starts_with?: Maybe<String>;
+  path_ends_with?: Maybe<String>;
+  path_not_ends_with?: Maybe<String>;
   AND?: Maybe<TestSuiteWhereInput[] | TestSuiteWhereInput>;
+}
+
+export interface AnswerWhereInput {
+  taskId?: Maybe<Int>;
+  taskId_not?: Maybe<Int>;
+  taskId_in?: Maybe<Int[] | Int>;
+  taskId_not_in?: Maybe<Int[] | Int>;
+  taskId_lt?: Maybe<Int>;
+  taskId_lte?: Maybe<Int>;
+  taskId_gt?: Maybe<Int>;
+  taskId_gte?: Maybe<Int>;
+  answer?: Maybe<String>;
+  answer_not?: Maybe<String>;
+  answer_in?: Maybe<String[] | String>;
+  answer_not_in?: Maybe<String[] | String>;
+  answer_lt?: Maybe<String>;
+  answer_lte?: Maybe<String>;
+  answer_gt?: Maybe<String>;
+  answer_gte?: Maybe<String>;
+  answer_contains?: Maybe<String>;
+  answer_not_contains?: Maybe<String>;
+  answer_starts_with?: Maybe<String>;
+  answer_not_starts_with?: Maybe<String>;
+  answer_ends_with?: Maybe<String>;
+  answer_not_ends_with?: Maybe<String>;
+  AND?: Maybe<AnswerWhereInput[] | AnswerWhereInput>;
+}
+
+export interface AnswerRestrictedWhereInput {
+  taskId?: Maybe<Int>;
+  taskId_not?: Maybe<Int>;
+  taskId_in?: Maybe<Int[] | Int>;
+  taskId_not_in?: Maybe<Int[] | Int>;
+  taskId_lt?: Maybe<Int>;
+  taskId_lte?: Maybe<Int>;
+  taskId_gt?: Maybe<Int>;
+  taskId_gte?: Maybe<Int>;
+  answer?: Maybe<String>;
+  answer_not?: Maybe<String>;
+  answer_in?: Maybe<String[] | String>;
+  answer_not_in?: Maybe<String[] | String>;
+  answer_lt?: Maybe<String>;
+  answer_lte?: Maybe<String>;
+  answer_gt?: Maybe<String>;
+  answer_gte?: Maybe<String>;
+  answer_contains?: Maybe<String>;
+  answer_not_contains?: Maybe<String>;
+  answer_starts_with?: Maybe<String>;
+  answer_not_starts_with?: Maybe<String>;
+  answer_ends_with?: Maybe<String>;
+  answer_not_ends_with?: Maybe<String>;
+  AND?: Maybe<AnswerRestrictedWhereInput[] | AnswerRestrictedWhereInput>;
 }
 
 export type TestSuiteImageWhereUniqueInput = AtLeastOne<{
@@ -904,13 +986,19 @@ export interface TestSuiteCreateInput {
   theme?: Maybe<String>;
   session?: Maybe<String>;
   training?: Maybe<String>;
-  answers?: Maybe<TestSuiteCreateanswersInput>;
+  answers?: Maybe<AnswerCreateManyInput>;
   tasks?: Maybe<TestSuiteImageCreateManyWithoutTestSuiteInput>;
   explanations?: Maybe<TestSuiteImageCreateManyInput>;
+  path: String;
 }
 
-export interface TestSuiteCreateanswersInput {
-  set?: Maybe<String[] | String>;
+export interface AnswerCreateManyInput {
+  create?: Maybe<AnswerCreateInput[] | AnswerCreateInput>;
+}
+
+export interface AnswerCreateInput {
+  taskId: Int;
+  answer: String;
 }
 
 export interface TestSuiteImageCreateManyWithoutTestSuiteInput {
@@ -925,6 +1013,7 @@ export interface TestSuiteImageCreateManyWithoutTestSuiteInput {
 
 export interface TestSuiteImageCreateWithoutTestSuiteInput {
   id?: Maybe<ID_Input>;
+  taskId: Int;
   image: String;
 }
 
@@ -937,6 +1026,7 @@ export interface TestSuiteImageCreateManyInput {
 
 export interface TestSuiteImageCreateInput {
   id?: Maybe<ID_Input>;
+  taskId: Int;
   testSuite: TestSuiteCreateOneWithoutTasksInput;
   image: String;
 }
@@ -953,8 +1043,9 @@ export interface TestSuiteCreateWithoutTasksInput {
   theme?: Maybe<String>;
   session?: Maybe<String>;
   training?: Maybe<String>;
-  answers?: Maybe<TestSuiteCreateanswersInput>;
+  answers?: Maybe<AnswerCreateManyInput>;
   explanations?: Maybe<TestSuiteImageCreateManyInput>;
+  path: String;
 }
 
 export interface TestSuiteUpdateInput {
@@ -963,9 +1054,10 @@ export interface TestSuiteUpdateInput {
   theme?: Maybe<String>;
   session?: Maybe<String>;
   training?: Maybe<String>;
-  answers?: Maybe<TestSuiteUpdateanswersInput>;
+  answers?: Maybe<AnswerUpdateManyInput>;
   tasks?: Maybe<TestSuiteImageUpdateManyWithoutTestSuiteInput>;
   explanations?: Maybe<TestSuiteImageUpdateManyInput>;
+  path?: Maybe<String>;
 }
 
 export interface SubjectUpdateOneRequiredInput {
@@ -975,8 +1067,51 @@ export interface SubjectUpdateOneRequiredInput {
   connect?: Maybe<SubjectWhereUniqueInput>;
 }
 
-export interface TestSuiteUpdateanswersInput {
-  set?: Maybe<String[] | String>;
+export interface AnswerUpdateManyInput {
+  create?: Maybe<AnswerCreateInput[] | AnswerCreateInput>;
+  deleteMany?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
+  updateMany?: Maybe<
+    | AnswerUpdateManyWithWhereNestedInput[]
+    | AnswerUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface AnswerScalarWhereInput {
+  taskId?: Maybe<Int>;
+  taskId_not?: Maybe<Int>;
+  taskId_in?: Maybe<Int[] | Int>;
+  taskId_not_in?: Maybe<Int[] | Int>;
+  taskId_lt?: Maybe<Int>;
+  taskId_lte?: Maybe<Int>;
+  taskId_gt?: Maybe<Int>;
+  taskId_gte?: Maybe<Int>;
+  answer?: Maybe<String>;
+  answer_not?: Maybe<String>;
+  answer_in?: Maybe<String[] | String>;
+  answer_not_in?: Maybe<String[] | String>;
+  answer_lt?: Maybe<String>;
+  answer_lte?: Maybe<String>;
+  answer_gt?: Maybe<String>;
+  answer_gte?: Maybe<String>;
+  answer_contains?: Maybe<String>;
+  answer_not_contains?: Maybe<String>;
+  answer_starts_with?: Maybe<String>;
+  answer_not_starts_with?: Maybe<String>;
+  answer_ends_with?: Maybe<String>;
+  answer_not_ends_with?: Maybe<String>;
+  AND?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
+  OR?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
+  NOT?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
+}
+
+export interface AnswerUpdateManyWithWhereNestedInput {
+  where: AnswerScalarWhereInput;
+  data: AnswerUpdateManyDataInput;
+}
+
+export interface AnswerUpdateManyDataInput {
+  taskId?: Maybe<Int>;
+  answer?: Maybe<String>;
 }
 
 export interface TestSuiteImageUpdateManyWithoutTestSuiteInput {
@@ -1019,6 +1154,7 @@ export interface TestSuiteImageUpdateWithWhereUniqueWithoutTestSuiteInput {
 }
 
 export interface TestSuiteImageUpdateWithoutTestSuiteDataInput {
+  taskId?: Maybe<Int>;
   image?: Maybe<String>;
 }
 
@@ -1043,6 +1179,14 @@ export interface TestSuiteImageScalarWhereInput {
   id_not_starts_with?: Maybe<ID_Input>;
   id_ends_with?: Maybe<ID_Input>;
   id_not_ends_with?: Maybe<ID_Input>;
+  taskId?: Maybe<Int>;
+  taskId_not?: Maybe<Int>;
+  taskId_in?: Maybe<Int[] | Int>;
+  taskId_not_in?: Maybe<Int[] | Int>;
+  taskId_lt?: Maybe<Int>;
+  taskId_lte?: Maybe<Int>;
+  taskId_gt?: Maybe<Int>;
+  taskId_gte?: Maybe<Int>;
   image?: Maybe<String>;
   image_not?: Maybe<String>;
   image_in?: Maybe<String[] | String>;
@@ -1072,6 +1216,7 @@ export interface TestSuiteImageUpdateManyWithWhereNestedInput {
 }
 
 export interface TestSuiteImageUpdateManyDataInput {
+  taskId?: Maybe<Int>;
   image?: Maybe<String>;
 }
 
@@ -1112,6 +1257,7 @@ export interface TestSuiteImageUpdateWithWhereUniqueNestedInput {
 }
 
 export interface TestSuiteImageUpdateDataInput {
+  taskId?: Maybe<Int>;
   testSuite?: Maybe<TestSuiteUpdateOneRequiredWithoutTasksInput>;
   image?: Maybe<String>;
 }
@@ -1129,8 +1275,9 @@ export interface TestSuiteUpdateWithoutTasksDataInput {
   theme?: Maybe<String>;
   session?: Maybe<String>;
   training?: Maybe<String>;
-  answers?: Maybe<TestSuiteUpdateanswersInput>;
+  answers?: Maybe<AnswerUpdateManyInput>;
   explanations?: Maybe<TestSuiteImageUpdateManyInput>;
+  path?: Maybe<String>;
 }
 
 export interface TestSuiteUpsertWithoutTasksInput {
@@ -1148,15 +1295,17 @@ export interface TestSuiteUpdateManyMutationInput {
   theme?: Maybe<String>;
   session?: Maybe<String>;
   training?: Maybe<String>;
-  answers?: Maybe<TestSuiteUpdateanswersInput>;
+  path?: Maybe<String>;
 }
 
 export interface TestSuiteImageUpdateInput {
+  taskId?: Maybe<Int>;
   testSuite?: Maybe<TestSuiteUpdateOneRequiredWithoutTasksInput>;
   image?: Maybe<String>;
 }
 
 export interface TestSuiteImageUpdateManyMutationInput {
+  taskId?: Maybe<Int>;
   image?: Maybe<String>;
 }
 
@@ -1659,7 +1808,8 @@ export interface TestSuite {
   theme?: String;
   session?: String;
   training?: String;
-  answers: String[];
+  answers?: <T = FragmentableArray<Answer>>() => T;
+  path: String;
 }
 
 export interface TestSuitePromise extends Promise<TestSuite>, Fragmentable {
@@ -1669,7 +1819,7 @@ export interface TestSuitePromise extends Promise<TestSuite>, Fragmentable {
   theme: () => Promise<String>;
   session: () => Promise<String>;
   training: () => Promise<String>;
-  answers: () => Promise<String[]>;
+  answers: <T = FragmentableArray<Answer>>() => T;
   tasks: <T = FragmentableArray<TestSuiteImage>>(args?: {
     where?: TestSuiteImageWhereInput;
     orderBy?: TestSuiteImageOrderByInput;
@@ -1688,6 +1838,7 @@ export interface TestSuitePromise extends Promise<TestSuite>, Fragmentable {
     first?: Int;
     last?: Int;
   }) => T;
+  path: () => Promise<String>;
 }
 
 export interface TestSuiteSubscription
@@ -1699,7 +1850,7 @@ export interface TestSuiteSubscription
   theme: () => Promise<AsyncIterator<String>>;
   session: () => Promise<AsyncIterator<String>>;
   training: () => Promise<AsyncIterator<String>>;
-  answers: () => Promise<AsyncIterator<String[]>>;
+  answers: <T = Promise<AsyncIterator<AnswerSubscription>>>() => T;
   tasks: <T = Promise<AsyncIterator<TestSuiteImageSubscription>>>(args?: {
     where?: TestSuiteImageWhereInput;
     orderBy?: TestSuiteImageOrderByInput;
@@ -1720,6 +1871,7 @@ export interface TestSuiteSubscription
     first?: Int;
     last?: Int;
   }) => T;
+  path: () => Promise<AsyncIterator<String>>;
 }
 
 export interface TestSuiteNullablePromise
@@ -1731,7 +1883,7 @@ export interface TestSuiteNullablePromise
   theme: () => Promise<String>;
   session: () => Promise<String>;
   training: () => Promise<String>;
-  answers: () => Promise<String[]>;
+  answers: <T = FragmentableArray<Answer>>() => T;
   tasks: <T = FragmentableArray<TestSuiteImage>>(args?: {
     where?: TestSuiteImageWhereInput;
     orderBy?: TestSuiteImageOrderByInput;
@@ -1750,10 +1902,36 @@ export interface TestSuiteNullablePromise
     first?: Int;
     last?: Int;
   }) => T;
+  path: () => Promise<String>;
+}
+
+export interface Answer {
+  taskId: Int;
+  answer: String;
+}
+
+export interface AnswerPromise extends Promise<Answer>, Fragmentable {
+  taskId: () => Promise<Int>;
+  answer: () => Promise<String>;
+}
+
+export interface AnswerSubscription
+  extends Promise<AsyncIterator<Answer>>,
+    Fragmentable {
+  taskId: () => Promise<AsyncIterator<Int>>;
+  answer: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AnswerNullablePromise
+  extends Promise<Answer | null>,
+    Fragmentable {
+  taskId: () => Promise<Int>;
+  answer: () => Promise<String>;
 }
 
 export interface TestSuiteImage {
   id: ID_Output;
+  taskId: Int;
   image: String;
 }
 
@@ -1761,6 +1939,7 @@ export interface TestSuiteImagePromise
   extends Promise<TestSuiteImage>,
     Fragmentable {
   id: () => Promise<ID_Output>;
+  taskId: () => Promise<Int>;
   testSuite: <T = TestSuitePromise>() => T;
   image: () => Promise<String>;
 }
@@ -1769,6 +1948,7 @@ export interface TestSuiteImageSubscription
   extends Promise<AsyncIterator<TestSuiteImage>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
+  taskId: () => Promise<AsyncIterator<Int>>;
   testSuite: <T = TestSuiteSubscription>() => T;
   image: () => Promise<AsyncIterator<String>>;
 }
@@ -1777,6 +1957,7 @@ export interface TestSuiteImageNullablePromise
   extends Promise<TestSuiteImage | null>,
     Fragmentable {
   id: () => Promise<ID_Output>;
+  taskId: () => Promise<Int>;
   testSuite: <T = TestSuitePromise>() => T;
   image: () => Promise<String>;
 }
@@ -2231,7 +2412,7 @@ export interface TestSuitePreviousValues {
   theme?: String;
   session?: String;
   training?: String;
-  answers: String[];
+  path: String;
 }
 
 export interface TestSuitePreviousValuesPromise
@@ -2241,7 +2422,7 @@ export interface TestSuitePreviousValuesPromise
   theme: () => Promise<String>;
   session: () => Promise<String>;
   training: () => Promise<String>;
-  answers: () => Promise<String[]>;
+  path: () => Promise<String>;
 }
 
 export interface TestSuitePreviousValuesSubscription
@@ -2251,7 +2432,7 @@ export interface TestSuitePreviousValuesSubscription
   theme: () => Promise<AsyncIterator<String>>;
   session: () => Promise<AsyncIterator<String>>;
   training: () => Promise<AsyncIterator<String>>;
-  answers: () => Promise<AsyncIterator<String[]>>;
+  path: () => Promise<AsyncIterator<String>>;
 }
 
 export interface TestSuiteImageSubscriptionPayload {
@@ -2281,6 +2462,7 @@ export interface TestSuiteImageSubscriptionPayloadSubscription
 
 export interface TestSuiteImagePreviousValues {
   id: ID_Output;
+  taskId: Int;
   image: String;
 }
 
@@ -2288,6 +2470,7 @@ export interface TestSuiteImagePreviousValuesPromise
   extends Promise<TestSuiteImagePreviousValues>,
     Fragmentable {
   id: () => Promise<ID_Output>;
+  taskId: () => Promise<Int>;
   image: () => Promise<String>;
 }
 
@@ -2295,6 +2478,7 @@ export interface TestSuiteImagePreviousValuesSubscription
   extends Promise<AsyncIterator<TestSuiteImagePreviousValues>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
+  taskId: () => Promise<AsyncIterator<Int>>;
   image: () => Promise<AsyncIterator<String>>;
 }
 
@@ -2458,6 +2642,10 @@ export const models: Model[] = [
   {
     name: "TestSuiteImage",
     embedded: false
+  },
+  {
+    name: "Answer",
+    embedded: true
   }
 ];
 
