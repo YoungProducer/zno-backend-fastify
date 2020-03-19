@@ -60,3 +60,14 @@ export const uploadImages = {
         },
     },
 };
+
+export const getTestSuiteImages = {
+    params: {
+        type: 'object',
+        required: ['id', 'type'],
+        properties: {
+            id: { type: 'string' },
+            type: { type: 'string' },
+        },
+    },
+};

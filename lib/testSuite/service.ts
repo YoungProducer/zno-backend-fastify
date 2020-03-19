@@ -12,7 +12,12 @@ import HttpErrors from 'http-errors';
 
 /** Application's imports */
 import { prisma, TestSuite } from '../../prisma/generated/prisma-client';
-import { ICreateTestSuiteCredentials, IGetTestSuiteCredentials, IUploadImagesCredentials } from './types';
+import {
+    ICreateTestSuiteCredentials,
+    IGetTestSuiteCredentials,
+    IUploadImagesCredentials,
+    IGetTestSuiteImagesCredentials,
+} from './types';
 
 class TestSuiteService {
     s3!: AWS.S3;
@@ -69,12 +74,14 @@ class TestSuiteService {
                 },
             },
             answers: {
-                create: answers.map((answer, index) => ({
-                    answer: {
-                        set: answer,
-                    },
-                    taskId: index,
-                })),
+                create: answers
+                    ? answers.map((answer, index) => ({
+                        answer: {
+                            set: answer,
+                        },
+                        taskId: index,
+                    }))
+                    : [],
             },
             ...other,
         });
@@ -181,6 +188,25 @@ class TestSuiteService {
         }));
 
         return data;
+    }
+
+    async getTestSuiteImages(credentials: IGetTestSuiteImagesCredentials) {
+        /** Select test suite iy type mages bfrom database */
+        const images = credentials.type === 'task'
+            ? await prisma.testSuite({ id: credentials.id }).tasks()
+            : await prisma.testSuite({ id: credentials.id }).explanations();
+
+        const data = images.map(async (image) => {
+            const getParams = {
+                Bucket: this.instance.config.S3_BUCKET,
+                Key: image.image,
+                Expires: 3600,
+            };
+
+            return await this.s3.getSignedUrlPromise('getObject', getParams);
+        });
+
+        return Promise.all(data);
     }
 }
 

@@ -15,11 +15,13 @@ import {
     ICreateTestSuiteHandlerCredentials,
     IGetTestSuiteCredentials,
     IUploadImagesHandlerCredentials,
+    IGetTestSuiteImagesCredentials,
 } from './types';
 import {
     createTestSuite,
     getTestSuite,
     uploadImages,
+    getTestSuiteImages,
 } from './schema';
 
 export = async function (
@@ -40,6 +42,11 @@ export = async function (
         req: FastifyRequest<IncomingMessage>,
         reply: FastifyReply<ServerResponse>,
     ) => await uploadImagesHandler(fastify, req, reply));
+
+    fastify.get('test-suite/:id/images/:type', { schema: getTestSuiteImages }, async (
+        req: FastifyRequest<IncomingMessage>,
+        reply: FastifyReply<ServerResponse>,
+    ) => await getTestSuiteImagesHandler(fastify, req, reply));
 };
 
 const createTestSuiteHandler = async (
@@ -141,4 +148,21 @@ const uploadImagesHandler = async (
     reply
         .code(201)
         .send(uploadedImagesData);
+};
+
+const getTestSuiteImagesHandler = async (
+    fastify: FastifyInstance,
+    req: FastifyRequest<IncomingMessage>,
+    reply: FastifyReply<ServerResponse>,
+) => {
+    /** Extract credentials from request params */
+    const credentials: IGetTestSuiteImagesCredentials = req.params as IGetTestSuiteImagesCredentials;
+
+    try {
+        const images = await fastify.testSuiteService.getTestSuiteImages(credentials);
+
+        reply.send(images);
+    } catch (err) {
+        reply.send(err);
+    }
 };

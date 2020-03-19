@@ -5,6 +5,8 @@
  * Declare main types and interfaces for test suite service and controller.
  */
 
+export type TImageType = 'task' | 'explanation';
+
 export interface ICreateTestSuiteHandlerCredentials {
     subjectId: string;
     subSubjectId?: string;
@@ -86,7 +88,7 @@ export interface IUploadImagesHandlerCredentials {
     /**
      * Type of image: task or explanation.
      */
-    type: 'task' | 'explanation';
+    type: TImageType;
     /**
      * Array of images
      */
@@ -105,5 +107,17 @@ export interface IUploadImagesCredentials {
     /**
      * Type of image: task or explanation.
      */
-    type: 'task' | 'explanation';
+    type: TImageType;
+}
+
+export interface IGetTestSuiteImagesCredentials {
+    /**
+     * Test suite id.
+     */
+    id: string;
+    /**
+     * Image type,
+     * allows to select images for tasks or explanations.
+     */
+    type: TImageType;
 }
