@@ -219,7 +219,7 @@ instance
             reply.send(err);
         }
     })
-    .register(authController, { prefix: 'api/auth/user' })
+    .register(authController, { prefix: 'api/auth/' })
     .register(subjectController, { prefix: 'api/' })
     .register(subjectConfigController, { prefix: 'api/' })
     .register(testSuiteController, { prefix: 'api/' });
