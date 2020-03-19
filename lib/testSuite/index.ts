@@ -28,25 +28,34 @@ export = async function (
     fastify: FastifyInstance,
     opts: any,
 ) {
-    fastify.post('test-suite', { schema: createTestSuite }, async (
-        req: FastifyRequest<IncomingMessage>,
-        reply: FastifyReply<ServerResponse>,
-    ) => await createTestSuiteHandler(fastify, req, reply));
+    fastify.register(async (fastify: FastifyInstance) => {
+        fastify.addHook('preHandler', async (
+            req: FastifyRequest<IncomingMessage>,
+            reply: FastifyReply<ServerResponse>,
+        ) => {
+            await fastify.authPreHandler(req, reply);
+            return;
+        });
+        fastify.post('test-suite', { schema: createTestSuite }, async (
+            req: FastifyRequest<IncomingMessage>,
+            reply: FastifyReply<ServerResponse>,
+        ) => await createTestSuiteHandler(fastify, req, reply));
 
-    fastify.get('test-suite', { schema: getTestSuite }, async (
-        req: FastifyRequest<IncomingMessage>,
-        reply: FastifyReply<ServerResponse>,
-    ) => await getTestSuiteHandler(fastify, req, reply));
+        fastify.get('test-suite', { schema: getTestSuite }, async (
+            req: FastifyRequest<IncomingMessage>,
+            reply: FastifyReply<ServerResponse>,
+        ) => await getTestSuiteHandler(fastify, req, reply));
 
-    fastify.put('test-suite/:id/images/:type', { schema: uploadImages }, async (
-        req: FastifyRequest<IncomingMessage>,
-        reply: FastifyReply<ServerResponse>,
-    ) => await uploadImagesHandler(fastify, req, reply));
+        fastify.put('test-suite/:id/images/:type', { schema: uploadImages }, async (
+            req: FastifyRequest<IncomingMessage>,
+            reply: FastifyReply<ServerResponse>,
+        ) => await uploadImagesHandler(fastify, req, reply));
 
-    fastify.get('test-suite/:id/images/:type', { schema: getTestSuiteImages }, async (
-        req: FastifyRequest<IncomingMessage>,
-        reply: FastifyReply<ServerResponse>,
-    ) => await getTestSuiteImagesHandler(fastify, req, reply));
+        fastify.get('test-suite/:id/images/:type', { schema: getTestSuiteImages }, async (
+            req: FastifyRequest<IncomingMessage>,
+            reply: FastifyReply<ServerResponse>,
+        ) => await getTestSuiteImagesHandler(fastify, req, reply));
+    });
 };
 
 const createTestSuiteHandler = async (
