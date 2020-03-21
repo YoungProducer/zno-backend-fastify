@@ -1,6 +1,7 @@
 /** Declare interface for subject */
 export interface ISubject {
     name: string;
+    id: string;
     themes?: string[];
 }
 

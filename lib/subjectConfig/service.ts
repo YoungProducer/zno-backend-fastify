@@ -54,9 +54,9 @@ class SubjectConfigService {
             .config()
             .$fragment(`
                 fragment PostWithAuthorsAndComments on Post {
-                    subject { name }
+                    subject { id name }
                     subSubjects {
-                        subject { name }
+                        subject { id name }
                         themes
                     }
                     themes
@@ -68,7 +68,9 @@ class SubjectConfigService {
 
         return {
             name: config.subject.name,
+            id: config.subject.id,
             subSubjects: config.subSubjects.map((subject: any) => ({
+                id: subject.subject.id,
                 name: subject.subject.name,
                 themes: subject.themes,
             })),
