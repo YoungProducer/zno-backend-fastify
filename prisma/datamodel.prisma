@@ -65,9 +65,16 @@ type TestSuiteImage {
   image: String! @unique
 }
 
+enum AnswerType {
+  SINGLE,
+  RELATIONS,
+  TEXT,
+}
+
 type Answer @embedded {
   taskId: Int!
   answer: [String!]
+  type: AnswerType!
 }
 
 

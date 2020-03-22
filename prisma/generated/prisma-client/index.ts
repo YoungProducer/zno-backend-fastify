@@ -322,6 +322,8 @@ export type SubjectOrderByInput =
 
 export type SubjectConfigOrderByInput = "id_ASC" | "id_DESC";
 
+export type AnswerType = "SINGLE" | "RELATIONS" | "TEXT";
+
 export type TestSuiteImageOrderByInput =
   | "id_ASC"
   | "id_DESC"
@@ -596,6 +598,10 @@ export interface AnswerWhereInput {
   taskId_lte?: Maybe<Int>;
   taskId_gt?: Maybe<Int>;
   taskId_gte?: Maybe<Int>;
+  type?: Maybe<AnswerType>;
+  type_not?: Maybe<AnswerType>;
+  type_in?: Maybe<AnswerType[] | AnswerType>;
+  type_not_in?: Maybe<AnswerType[] | AnswerType>;
   AND?: Maybe<AnswerWhereInput[] | AnswerWhereInput>;
 }
 
@@ -608,6 +614,10 @@ export interface AnswerRestrictedWhereInput {
   taskId_lte?: Maybe<Int>;
   taskId_gt?: Maybe<Int>;
   taskId_gte?: Maybe<Int>;
+  type?: Maybe<AnswerType>;
+  type_not?: Maybe<AnswerType>;
+  type_in?: Maybe<AnswerType[] | AnswerType>;
+  type_not_in?: Maybe<AnswerType[] | AnswerType>;
   AND?: Maybe<AnswerRestrictedWhereInput[] | AnswerRestrictedWhereInput>;
 }
 
@@ -970,6 +980,7 @@ export interface AnswerCreateManyInput {
 export interface AnswerCreateInput {
   taskId: Int;
   answer?: Maybe<AnswerCreateanswerInput>;
+  type: AnswerType;
 }
 
 export interface AnswerCreateanswerInput {
@@ -1060,6 +1071,10 @@ export interface AnswerScalarWhereInput {
   taskId_lte?: Maybe<Int>;
   taskId_gt?: Maybe<Int>;
   taskId_gte?: Maybe<Int>;
+  type?: Maybe<AnswerType>;
+  type_not?: Maybe<AnswerType>;
+  type_in?: Maybe<AnswerType[] | AnswerType>;
+  type_not_in?: Maybe<AnswerType[] | AnswerType>;
   AND?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
   OR?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
   NOT?: Maybe<AnswerScalarWhereInput[] | AnswerScalarWhereInput>;
@@ -1073,6 +1088,7 @@ export interface AnswerUpdateManyWithWhereNestedInput {
 export interface AnswerUpdateManyDataInput {
   taskId?: Maybe<Int>;
   answer?: Maybe<AnswerUpdateanswerInput>;
+  type?: Maybe<AnswerType>;
 }
 
 export interface AnswerUpdateanswerInput {
@@ -1873,11 +1889,13 @@ export interface TestSuiteNullablePromise
 export interface Answer {
   taskId: Int;
   answer: String[];
+  type: AnswerType;
 }
 
 export interface AnswerPromise extends Promise<Answer>, Fragmentable {
   taskId: () => Promise<Int>;
   answer: () => Promise<String[]>;
+  type: () => Promise<AnswerType>;
 }
 
 export interface AnswerSubscription
@@ -1885,6 +1903,7 @@ export interface AnswerSubscription
     Fragmentable {
   taskId: () => Promise<AsyncIterator<Int>>;
   answer: () => Promise<AsyncIterator<String[]>>;
+  type: () => Promise<AsyncIterator<AnswerType>>;
 }
 
 export interface AnswerNullablePromise
@@ -1892,6 +1911,7 @@ export interface AnswerNullablePromise
     Fragmentable {
   taskId: () => Promise<Int>;
   answer: () => Promise<String[]>;
+  type: () => Promise<AnswerType>;
 }
 
 export interface TestSuiteImage {
@@ -2609,6 +2629,10 @@ export const models: Model[] = [
     embedded: false
   },
   {
+    name: "AnswerType",
+    embedded: false
+  },
+  {
     name: "Answer",
     embedded: true
   }
@@ -2621,7 +2645,7 @@ export const models: Model[] = [
 export const Prisma = makePrismaClientClass<ClientConstructor<Prisma>>({
   typeDefs,
   models,
-  endpoint: `https://zno-prisma-server.herokuapp.com/zno-backend/dev`,
+  endpoint: `https://zno-train-76230d1bff.herokuapp.com/zno-backend/dev`,
   secret: `my-secret-42`
 });
 export const prisma = new Prisma();

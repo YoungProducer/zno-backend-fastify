@@ -29,6 +29,7 @@ type AggregateUser {
 type Answer {
   taskId: Int!
   answer: [String!]!
+  type: AnswerType!
 }
 
 input AnswerCreateanswerInput {
@@ -38,6 +39,7 @@ input AnswerCreateanswerInput {
 input AnswerCreateInput {
   taskId: Int!
   answer: AnswerCreateanswerInput
+  type: AnswerType!
 }
 
 input AnswerCreateManyInput {
@@ -53,6 +55,10 @@ input AnswerRestrictedWhereInput {
   taskId_lte: Int
   taskId_gt: Int
   taskId_gte: Int
+  type: AnswerType
+  type_not: AnswerType
+  type_in: [AnswerType!]
+  type_not_in: [AnswerType!]
   AND: [AnswerRestrictedWhereInput!]
 }
 
@@ -65,9 +71,19 @@ input AnswerScalarWhereInput {
   taskId_lte: Int
   taskId_gt: Int
   taskId_gte: Int
+  type: AnswerType
+  type_not: AnswerType
+  type_in: [AnswerType!]
+  type_not_in: [AnswerType!]
   AND: [AnswerScalarWhereInput!]
   OR: [AnswerScalarWhereInput!]
   NOT: [AnswerScalarWhereInput!]
+}
+
+enum AnswerType {
+  SINGLE
+  RELATIONS
+  TEXT
 }
 
 input AnswerUpdateanswerInput {
@@ -77,6 +93,7 @@ input AnswerUpdateanswerInput {
 input AnswerUpdateManyDataInput {
   taskId: Int
   answer: AnswerUpdateanswerInput
+  type: AnswerType
 }
 
 input AnswerUpdateManyInput {
@@ -99,6 +116,10 @@ input AnswerWhereInput {
   taskId_lte: Int
   taskId_gt: Int
   taskId_gte: Int
+  type: AnswerType
+  type_not: AnswerType
+  type_in: [AnswerType!]
+  type_not_in: [AnswerType!]
   AND: [AnswerWhereInput!]
 }
 

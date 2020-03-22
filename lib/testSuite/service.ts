@@ -77,8 +77,9 @@ class TestSuiteService {
                 create: answers
                     ? answers.map((answer, index) => ({
                         answer: {
-                            set: answer,
+                            set: answer.answer,
                         },
+                        type: answer.type,
                         taskId: index,
                     }))
                     : [],
