@@ -122,6 +122,17 @@ async function signinHandler(
             ? fastify.config.CLIENT_ENDPOINT
             : undefined;
 
+        if (!user.emailConfirmed) {
+            reply.setCookie('emailConfirmed', 'false', {
+                maxAge: credentials.remember
+                    ? Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE)
+                    : undefined,
+                httpOnly: false,
+                path: '/',
+                domain: clientEndpoint,
+            });
+        }
+
         reply
             .setCookie('accessToken', accessToken, {
                 maxAge: credentials.remember

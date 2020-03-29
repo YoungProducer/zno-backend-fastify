@@ -37,13 +37,13 @@ class SubjectService implements ISubjectService {
     getImages(subjects: {
         id: string;
         name: string;
-        image: string;
+        icon: string;
     }[]): Promise<string[]> {
         return new Promise((resolve, reject) => {
             const images = subjects.map(async subject => {
                 return await this.s3.getSignedUrlPromise('getObject', {
                     Bucket: this.instance.config.S3_BUCKET,
-                    Key: subject.image,
+                    Key: subject.icon,
                     Expires: 60,
                 });
             });
@@ -52,7 +52,7 @@ class SubjectService implements ISubjectService {
         });
     }
 
-    async subjects(): Promise<{
+    async subjects(subSubjects: boolean): Promise<{
         id: string;
         name: string;
     }[]> {
@@ -61,9 +61,9 @@ class SubjectService implements ISubjectService {
 
         const subjects: any[] = await prisma.subjects({
             where: {
-                isSubSubject: false,
+                isSubSubject: subSubjects,
             },
-        }).$fragment(`fragment SelectName on Subject { id name image }`);
+        }).$fragment(`fragment SelectName on Subject { id name icon }`);
 
         // const images = await subjects.map(async (subject) => {
         //     return await this.s3.getSignedUrlPromise('getObject', {
@@ -72,16 +72,18 @@ class SubjectService implements ISubjectService {
         //         Expires: 60,
         //     });
         // });
-        const images = await this.getImages(subjects);
+        if (!subSubjects) {
+            const images = await this.getImages(subjects);
 
-        const mappedSubjects = subjects.map((subject, index) => ({
-            ...subject,
-            image: images[index],
-        }));
+            const mappedSubjects = subjects.map((subject, index) => ({
+                ...subject,
+                image: images[index],
+            }));
 
-        console.log(mappedSubjects);
+            return mappedSubjects;
+        }
 
-        return mappedSubjects;
+        return subjects;
     }
 
     async checkIsSubjectHaveImage(id: string): Promise<string | false> {

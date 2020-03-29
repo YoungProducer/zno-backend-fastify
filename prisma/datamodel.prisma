@@ -2,6 +2,9 @@ type User {
   id: ID! @id
   email: String! @unique
   password: String!
+  name: String
+  lastName: String
+  emailConfirmed: Boolean @default(value: false)
   role: Role!
   refreshTokens: [Token!]!
 }
@@ -24,6 +27,7 @@ type Subject {
   isSubSubject: Boolean! @default(value: false)
   parent: Subject @relation(link: INLINE)
   image: String
+  icon: String
   config: SubjectConfig
 }
 
@@ -53,16 +57,21 @@ type TestSuite {
   session: String
   training: String
   answers: [Answer!]
-  tasks: [TestSuiteImage!]! @relation(name: "TasksImagesRelation", link: INLINE)
-  explanations: [TestSuiteImage!] @relation(name: "ExplanationImagesRelation", link: INLINE)
+  images: [TestSuiteImage!]! @relation(name: "TestSuiteImagesRelation", link: INLINE)
   path: String!
+}
+
+enum ImageType {
+  TASK,
+  EXPLANATION,
 }
 
 type TestSuiteImage {
   id: ID! @id
   taskId: Int!
-  testSuite: TestSuite! @relation(name: "TasksImagesRelation")
+  testSuite: TestSuite! @relation(name: "TestSuiteImagesRelation")
   image: String! @unique
+  type: ImageType!
 }
 
 enum AnswerType {

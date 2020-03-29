@@ -23,19 +23,21 @@ import {
     uploadImages,
     getTestSuiteImages,
 } from './schema';
+import { ImageType } from '../../prisma/generated/prisma-client';
 
 export = async function (
     fastify: FastifyInstance,
     opts: any,
 ) {
-    fastify.register(async (fastify: FastifyInstance) => {
-        fastify.addHook('preHandler', async (
-            req: FastifyRequest<IncomingMessage>,
-            reply: FastifyReply<ServerResponse>,
-        ) => {
-            await fastify.authPreHandler(req, reply);
-            return;
-        });
+    // fastify.register(async (fastify: FastifyInstance) => {
+    //     fastify.addHook('preHandler', async (
+    //         req: FastifyRequest<IncomingMessage>,
+    //         reply: FastifyReply<ServerResponse>,
+    //     ) => {
+    //         await fastify.authPreHandler(req, reply);
+    //         return;
+    //     });
+
         fastify.post('test-suite', { schema: createTestSuite }, async (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
@@ -55,7 +57,7 @@ export = async function (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
         ) => await getTestSuiteImagesHandler(fastify, req, reply));
-    });
+    // });
 };
 
 const createTestSuiteHandler = async (
@@ -65,14 +67,18 @@ const createTestSuiteHandler = async (
 ) => {
     const credentials: ICreateTestSuiteHandlerCredentials = req.body;
 
+    console.log({ raw: req.raw.rawTrailers });
+
     /** Exclude images from credentials */
-    const clearCredentials = _.pick(credentials, ['subjectId', 'subSubjectId', 'sessions', 'trainings', 'theme', 'answers']);
+    const clearCredentials = _.pick(credentials, ['subjectName', 'subSubjectName', 'session', 'training', 'theme', 'answers']);
 
     /** Exclude all properties except images from credentials */
-    const clearImages = _.omit(credentials, ['subjectId', 'subSubjectId', 'sessions', 'trainings', 'theme', 'answers']);
+    const clearImages = _.omit(credentials, ['subjectName', 'subSubjectName', 'session', 'training', 'theme', 'answers']);
 
     /** Get clearImages entries */
     const clearImagesEntries = Object.entries(clearImages);
+
+    console.log(clearImages);
 
     /** Divide tasks and explanations images */
     const tasksImages = clearImagesEntries.reduce((acc: any[], curr: [string, any]) => {
@@ -89,11 +95,14 @@ const createTestSuiteHandler = async (
         return acc;
     }, []);
 
+    console.log(tasksImages, explanationsImages);
+
     try {
         const testSuite = await fastify.testSuiteService.create({
             ...clearCredentials,
             tasksImages,
             explanationsImages,
+            answers: JSON.parse(clearCredentials.answers),
         });
 
         reply
@@ -134,6 +143,8 @@ const uploadImagesHandler = async (
         ...req.params,
     };
 
+    credentials.type = credentials.type.toUpperCase() as ImageType;
+
     /**
      * Remove id key from credentials object
      * this function will returns object with images
@@ -166,6 +177,8 @@ const getTestSuiteImagesHandler = async (
 ) => {
     /** Extract credentials from request params */
     const credentials: IGetTestSuiteImagesCredentials = req.params as IGetTestSuiteImagesCredentials;
+
+    credentials.type = credentials.type.toUpperCase() as ImageType;
 
     try {
         const images = await fastify.testSuiteService.getTestSuiteImages(credentials);

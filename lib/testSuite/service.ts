@@ -18,6 +18,7 @@ import {
     IUploadImagesCredentials,
     IGetTestSuiteImagesCredentials,
 } from './types';
+import { makeId } from '../utils/makeId';
 
 class TestSuiteService {
     s3!: AWS.S3;
@@ -34,22 +35,22 @@ class TestSuiteService {
     }
 
     async create(credentials: ICreateTestSuiteCredentials): Promise<TestSuite> {
-        const { subjectId, subSubjectId, tasksImages, explanationsImages, answers, ...other } = credentials;
+        const { subjectName, subSubjectName, tasksImages, explanationsImages, answers, ...other } = credentials;
 
-        /** Get subject and sub-subject objects */
-        const subject = await prisma.subject({ id: subjectId });
-        const subSubject = await prisma.subject({ id: subSubjectId });
+        // /** Get subject and sub-subject objects */
+        // const subject = await prisma.subject({ name: subjectName });
+        // const subSubject = await prisma.subject({ name: subSubjectName });
 
-        /** Check is subject with this id exist */
-        if (subject === null) {
-            throw new HttpErrors[404](`Предмета з таким id: ${subjectId} не існує.`);
-        }
+        // /** Check is subject with this id exist */
+        // if (subject === null) {
+        //     throw new HttpErrors[404](`Предмета з таким id: ${subjectId} не існує.`);
+        // }
 
         /** Path where s3 Bucket will storage images related to this test suite */
-        let path = `test-suites/${subject.name}`;
+        let path = `test-suites/${subjectName}`;
 
-        if (subSubject) {
-            path = path.concat(`/${subSubject.name}`);
+        if (subSubjectName) {
+            path = path.concat(`/${subSubjectName}`);
         }
 
         if (credentials.theme) {
@@ -60,19 +61,22 @@ class TestSuiteService {
             path = path.concat(`/exams/sessions/${credentials.session}`);
         }
 
+        answers.map(answer => console.log(answer));
+        console.log(typeof answers, answers);
+
         /** Create test suite */
         const testSuite = await prisma.createTestSuite({
             path,
             subject: {
                 connect: {
-                    id: subjectId,
+                    name: subjectName,
                 },
             },
-            subSubject: {
-                connect: {
-                    id: subSubjectId,
-                },
-            },
+            // subSubject: {
+            //     connect: {
+            //         name: subSubjectName,
+            //     },
+            // },
             answers: {
                 create: answers
                     ? answers.map((answer, index) => ({
@@ -92,7 +96,7 @@ class TestSuiteService {
             await this.uploadImages({
                 id: testSuite.id,
                 images: tasksImages,
-                type: 'task',
+                type: 'TASK',
             });
         }
 
@@ -101,7 +105,7 @@ class TestSuiteService {
             await this.uploadImages({
                 id: testSuite.id,
                 images: explanationsImages,
-                type: 'explanation',
+                type: 'EXPLANATION',
             });
         }
 
@@ -112,17 +116,30 @@ class TestSuiteService {
         /** Destruct credentials object */
         const { subjectId, subSubjectId, ...other } = credentials;
 
-        const testSuites = await prisma.testSuites({
-            where: {
-                subject: {
-                    id: subjectId,
+        let testSuites;
+
+        if (!subSubjectId) {
+            testSuites = await prisma.testSuites({
+                where: {
+                    subject: {
+                        id: subjectId,
+                    },
+                    ...other,
                 },
-                subSubject: {
-                    id: subSubjectId,
+            });
+        } else {
+            testSuites = await prisma.testSuites({
+                where: {
+                    subject: {
+                        id: subjectId,
+                    },
+                    subSubject: {
+                        id: subSubjectId,
+                    },
+                    ...other,
                 },
-                ...other,
-            },
-        });
+            });
+        }
 
         if (!testSuites || testSuites.length < 1) {
             throw new HttpErrors.NotFound('Тесту з таким параметрами не знайдено.');
@@ -138,6 +155,7 @@ class TestSuiteService {
                 testSuite: {
                     id: credentials.id,
                 },
+                type: credentials.type,
             },
             orderBy: 'id_ASC',
             last: 1,
@@ -164,7 +182,7 @@ class TestSuiteService {
             /** Create upload params */
             const uploadParams = {
                 Bucket: this.instance.config.S3_BUCKET,
-                Key: `${path}/${credentials.type}/${image.name}`,
+                Key: `${path}/${credentials.type}/${index}_${makeId(16)}.svg`,
                 Body: image.data,
                 ContentType: image.mimetype,
             };
@@ -181,6 +199,7 @@ class TestSuiteService {
                 },
                 image: uploadParams.Key,
                 taskId: latsTaskIndex + index,
+                type: credentials.type,
             });
 
             return object;
@@ -191,17 +210,15 @@ class TestSuiteService {
         return data;
     }
 
-    async getTestSuiteImages(credentials: IGetTestSuiteImagesCredentials) {
-        /** Select test suite iy type mages bfrom database */
-        const images = credentials.type === 'task'
-            ? await prisma.testSuite({ id: credentials.id }).tasks()
-            : await prisma.testSuite({ id: credentials.id }).explanations();
+    async getTestSuiteImages({ type, id }: IGetTestSuiteImagesCredentials) {
+        /** Select test suite images by type from database */
+        const images = await prisma.testSuite({ id }).images({ where: { type }, orderBy: 'taskId_ASC' });
 
         const data = images.map(async (image) => {
             const getParams = {
                 Bucket: this.instance.config.S3_BUCKET,
                 Key: image.image,
-                Expires: 3600,
+                Expires: 11000,
             };
 
             return await this.s3.getSignedUrlPromise('getObject', getParams);

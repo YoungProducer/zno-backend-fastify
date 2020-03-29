@@ -179,6 +179,11 @@ input ExamsWhereInput {
   AND: [ExamsWhereInput!]
 }
 
+enum ImageType {
+  TASK
+  EXPLANATION
+}
+
 scalar Long
 
 type Mutation {
@@ -270,6 +275,7 @@ type Subject {
   isSubSubject: Boolean!
   parent: Subject
   image: String
+  icon: String
   config: SubjectConfig
 }
 
@@ -416,6 +422,7 @@ input SubjectCreateInput {
   isSubSubject: Boolean
   parent: SubjectCreateOneInput
   image: String
+  icon: String
   config: SubjectConfigCreateOneWithoutSubjectInput
 }
 
@@ -435,6 +442,7 @@ input SubjectCreateWithoutConfigInput {
   isSubSubject: Boolean
   parent: SubjectCreateOneInput
   image: String
+  icon: String
 }
 
 type SubjectEdge {
@@ -451,6 +459,8 @@ enum SubjectOrderByInput {
   isSubSubject_DESC
   image_ASC
   image_DESC
+  icon_ASC
+  icon_DESC
 }
 
 type SubjectPreviousValues {
@@ -458,6 +468,7 @@ type SubjectPreviousValues {
   name: String!
   isSubSubject: Boolean!
   image: String
+  icon: String
 }
 
 type SubjectSubscriptionPayload {
@@ -481,6 +492,7 @@ input SubjectUpdateDataInput {
   isSubSubject: Boolean
   parent: SubjectUpdateOneInput
   image: String
+  icon: String
   config: SubjectConfigUpdateOneWithoutSubjectInput
 }
 
@@ -489,6 +501,7 @@ input SubjectUpdateInput {
   isSubSubject: Boolean
   parent: SubjectUpdateOneInput
   image: String
+  icon: String
   config: SubjectConfigUpdateOneWithoutSubjectInput
 }
 
@@ -496,6 +509,7 @@ input SubjectUpdateManyMutationInput {
   name: String
   isSubSubject: Boolean
   image: String
+  icon: String
 }
 
 input SubjectUpdateOneInput {
@@ -526,6 +540,7 @@ input SubjectUpdateWithoutConfigDataInput {
   isSubSubject: Boolean
   parent: SubjectUpdateOneInput
   image: String
+  icon: String
 }
 
 input SubjectUpsertNestedInput {
@@ -584,6 +599,20 @@ input SubjectWhereInput {
   image_not_starts_with: String
   image_ends_with: String
   image_not_ends_with: String
+  icon: String
+  icon_not: String
+  icon_in: [String!]
+  icon_not_in: [String!]
+  icon_lt: String
+  icon_lte: String
+  icon_gt: String
+  icon_gte: String
+  icon_contains: String
+  icon_not_contains: String
+  icon_starts_with: String
+  icon_not_starts_with: String
+  icon_ends_with: String
+  icon_not_ends_with: String
   config: SubjectConfigWhereInput
   AND: [SubjectWhereInput!]
 }
@@ -662,8 +691,7 @@ type TestSuite {
   session: String
   training: String
   answers: [Answer!]
-  tasks(where: TestSuiteImageWhereInput, orderBy: TestSuiteImageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TestSuiteImage!]
-  explanations(where: TestSuiteImageWhereInput, orderBy: TestSuiteImageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TestSuiteImage!]
+  images(where: TestSuiteImageWhereInput, orderBy: TestSuiteImageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TestSuiteImage!]
   path: String!
 }
 
@@ -681,17 +709,16 @@ input TestSuiteCreateInput {
   session: String
   training: String
   answers: AnswerCreateManyInput
-  tasks: TestSuiteImageCreateManyWithoutTestSuiteInput
-  explanations: TestSuiteImageCreateManyInput
+  images: TestSuiteImageCreateManyWithoutTestSuiteInput
   path: String!
 }
 
-input TestSuiteCreateOneWithoutTasksInput {
-  create: TestSuiteCreateWithoutTasksInput
+input TestSuiteCreateOneWithoutImagesInput {
+  create: TestSuiteCreateWithoutImagesInput
   connect: TestSuiteWhereUniqueInput
 }
 
-input TestSuiteCreateWithoutTasksInput {
+input TestSuiteCreateWithoutImagesInput {
   id: ID
   subject: SubjectCreateOneInput!
   subSubject: SubjectCreateOneInput
@@ -699,7 +726,6 @@ input TestSuiteCreateWithoutTasksInput {
   session: String
   training: String
   answers: AnswerCreateManyInput
-  explanations: TestSuiteImageCreateManyInput
   path: String!
 }
 
@@ -713,6 +739,7 @@ type TestSuiteImage {
   taskId: Int!
   testSuite: TestSuite!
   image: String!
+  type: ImageType!
 }
 
 type TestSuiteImageConnection {
@@ -724,13 +751,9 @@ type TestSuiteImageConnection {
 input TestSuiteImageCreateInput {
   id: ID
   taskId: Int!
-  testSuite: TestSuiteCreateOneWithoutTasksInput!
+  testSuite: TestSuiteCreateOneWithoutImagesInput!
   image: String!
-}
-
-input TestSuiteImageCreateManyInput {
-  create: [TestSuiteImageCreateInput!]
-  connect: [TestSuiteImageWhereUniqueInput!]
+  type: ImageType!
 }
 
 input TestSuiteImageCreateManyWithoutTestSuiteInput {
@@ -742,6 +765,7 @@ input TestSuiteImageCreateWithoutTestSuiteInput {
   id: ID
   taskId: Int!
   image: String!
+  type: ImageType!
 }
 
 type TestSuiteImageEdge {
@@ -756,12 +780,15 @@ enum TestSuiteImageOrderByInput {
   taskId_DESC
   image_ASC
   image_DESC
+  type_ASC
+  type_DESC
 }
 
 type TestSuiteImagePreviousValues {
   id: ID!
   taskId: Int!
   image: String!
+  type: ImageType!
 }
 
 input TestSuiteImageScalarWhereInput {
@@ -801,6 +828,10 @@ input TestSuiteImageScalarWhereInput {
   image_not_starts_with: String
   image_ends_with: String
   image_not_ends_with: String
+  type: ImageType
+  type_not: ImageType
+  type_in: [ImageType!]
+  type_not_in: [ImageType!]
   AND: [TestSuiteImageScalarWhereInput!]
   OR: [TestSuiteImageScalarWhereInput!]
   NOT: [TestSuiteImageScalarWhereInput!]
@@ -822,38 +853,23 @@ input TestSuiteImageSubscriptionWhereInput {
   AND: [TestSuiteImageSubscriptionWhereInput!]
 }
 
-input TestSuiteImageUpdateDataInput {
-  taskId: Int
-  testSuite: TestSuiteUpdateOneRequiredWithoutTasksInput
-  image: String
-}
-
 input TestSuiteImageUpdateInput {
   taskId: Int
-  testSuite: TestSuiteUpdateOneRequiredWithoutTasksInput
+  testSuite: TestSuiteUpdateOneRequiredWithoutImagesInput
   image: String
+  type: ImageType
 }
 
 input TestSuiteImageUpdateManyDataInput {
   taskId: Int
   image: String
-}
-
-input TestSuiteImageUpdateManyInput {
-  create: [TestSuiteImageCreateInput!]
-  update: [TestSuiteImageUpdateWithWhereUniqueNestedInput!]
-  upsert: [TestSuiteImageUpsertWithWhereUniqueNestedInput!]
-  delete: [TestSuiteImageWhereUniqueInput!]
-  connect: [TestSuiteImageWhereUniqueInput!]
-  set: [TestSuiteImageWhereUniqueInput!]
-  disconnect: [TestSuiteImageWhereUniqueInput!]
-  deleteMany: [TestSuiteImageScalarWhereInput!]
-  updateMany: [TestSuiteImageUpdateManyWithWhereNestedInput!]
+  type: ImageType
 }
 
 input TestSuiteImageUpdateManyMutationInput {
   taskId: Int
   image: String
+  type: ImageType
 }
 
 input TestSuiteImageUpdateManyWithoutTestSuiteInput {
@@ -876,22 +892,12 @@ input TestSuiteImageUpdateManyWithWhereNestedInput {
 input TestSuiteImageUpdateWithoutTestSuiteDataInput {
   taskId: Int
   image: String
-}
-
-input TestSuiteImageUpdateWithWhereUniqueNestedInput {
-  where: TestSuiteImageWhereUniqueInput!
-  data: TestSuiteImageUpdateDataInput!
+  type: ImageType
 }
 
 input TestSuiteImageUpdateWithWhereUniqueWithoutTestSuiteInput {
   where: TestSuiteImageWhereUniqueInput!
   data: TestSuiteImageUpdateWithoutTestSuiteDataInput!
-}
-
-input TestSuiteImageUpsertWithWhereUniqueNestedInput {
-  where: TestSuiteImageWhereUniqueInput!
-  update: TestSuiteImageUpdateDataInput!
-  create: TestSuiteImageCreateInput!
 }
 
 input TestSuiteImageUpsertWithWhereUniqueWithoutTestSuiteInput {
@@ -938,6 +944,10 @@ input TestSuiteImageWhereInput {
   image_not_starts_with: String
   image_ends_with: String
   image_not_ends_with: String
+  type: ImageType
+  type_not: ImageType
+  type_in: [ImageType!]
+  type_not_in: [ImageType!]
   AND: [TestSuiteImageWhereInput!]
 }
 
@@ -990,8 +1000,7 @@ input TestSuiteUpdateInput {
   session: String
   training: String
   answers: AnswerUpdateManyInput
-  tasks: TestSuiteImageUpdateManyWithoutTestSuiteInput
-  explanations: TestSuiteImageUpdateManyInput
+  images: TestSuiteImageUpdateManyWithoutTestSuiteInput
   path: String
 }
 
@@ -1002,27 +1011,26 @@ input TestSuiteUpdateManyMutationInput {
   path: String
 }
 
-input TestSuiteUpdateOneRequiredWithoutTasksInput {
-  create: TestSuiteCreateWithoutTasksInput
-  update: TestSuiteUpdateWithoutTasksDataInput
-  upsert: TestSuiteUpsertWithoutTasksInput
+input TestSuiteUpdateOneRequiredWithoutImagesInput {
+  create: TestSuiteCreateWithoutImagesInput
+  update: TestSuiteUpdateWithoutImagesDataInput
+  upsert: TestSuiteUpsertWithoutImagesInput
   connect: TestSuiteWhereUniqueInput
 }
 
-input TestSuiteUpdateWithoutTasksDataInput {
+input TestSuiteUpdateWithoutImagesDataInput {
   subject: SubjectUpdateOneRequiredInput
   subSubject: SubjectUpdateOneInput
   theme: String
   session: String
   training: String
   answers: AnswerUpdateManyInput
-  explanations: TestSuiteImageUpdateManyInput
   path: String
 }
 
-input TestSuiteUpsertWithoutTasksInput {
-  update: TestSuiteUpdateWithoutTasksDataInput!
-  create: TestSuiteCreateWithoutTasksInput!
+input TestSuiteUpsertWithoutImagesInput {
+  update: TestSuiteUpdateWithoutImagesDataInput!
+  create: TestSuiteCreateWithoutImagesInput!
 }
 
 input TestSuiteWhereInput {
@@ -1087,8 +1095,7 @@ input TestSuiteWhereInput {
   answers_some: AnswerWhereInput
   answers_every: AnswerRestrictedWhereInput
   answers_none: AnswerRestrictedWhereInput
-  tasks_some: TestSuiteImageWhereInput
-  explanations_some: TestSuiteImageWhereInput
+  images_some: TestSuiteImageWhereInput
   path: String
   path_not: String
   path_in: [String!]
@@ -1331,6 +1338,9 @@ type User {
   id: ID!
   email: String!
   password: String!
+  name: String
+  lastName: String
+  emailConfirmed: Boolean
   role: Role!
   refreshTokens(where: TokenWhereInput, orderBy: TokenOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Token!]
 }
@@ -1345,6 +1355,9 @@ input UserCreateInput {
   id: ID
   email: String!
   password: String!
+  name: String
+  lastName: String
+  emailConfirmed: Boolean
   role: Role!
   refreshTokens: TokenCreateManyWithoutUserInput
 }
@@ -1358,6 +1371,9 @@ input UserCreateWithoutRefreshTokensInput {
   id: ID
   email: String!
   password: String!
+  name: String
+  lastName: String
+  emailConfirmed: Boolean
   role: Role!
 }
 
@@ -1373,6 +1389,12 @@ enum UserOrderByInput {
   email_DESC
   password_ASC
   password_DESC
+  name_ASC
+  name_DESC
+  lastName_ASC
+  lastName_DESC
+  emailConfirmed_ASC
+  emailConfirmed_DESC
   role_ASC
   role_DESC
 }
@@ -1381,6 +1403,9 @@ type UserPreviousValues {
   id: ID!
   email: String!
   password: String!
+  name: String
+  lastName: String
+  emailConfirmed: Boolean
   role: Role!
 }
 
@@ -1403,6 +1428,9 @@ input UserSubscriptionWhereInput {
 input UserUpdateInput {
   email: String
   password: String
+  name: String
+  lastName: String
+  emailConfirmed: Boolean
   role: Role
   refreshTokens: TokenUpdateManyWithoutUserInput
 }
@@ -1410,6 +1438,9 @@ input UserUpdateInput {
 input UserUpdateManyMutationInput {
   email: String
   password: String
+  name: String
+  lastName: String
+  emailConfirmed: Boolean
   role: Role
 }
 
@@ -1423,6 +1454,9 @@ input UserUpdateOneRequiredWithoutRefreshTokensInput {
 input UserUpdateWithoutRefreshTokensDataInput {
   email: String
   password: String
+  name: String
+  lastName: String
+  emailConfirmed: Boolean
   role: Role
 }
 
@@ -1474,6 +1508,36 @@ input UserWhereInput {
   password_not_starts_with: String
   password_ends_with: String
   password_not_ends_with: String
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  lastName: String
+  lastName_not: String
+  lastName_in: [String!]
+  lastName_not_in: [String!]
+  lastName_lt: String
+  lastName_lte: String
+  lastName_gt: String
+  lastName_gte: String
+  lastName_contains: String
+  lastName_not_contains: String
+  lastName_starts_with: String
+  lastName_not_starts_with: String
+  lastName_ends_with: String
+  lastName_not_ends_with: String
+  emailConfirmed: Boolean
+  emailConfirmed_not: Boolean
   role: Role
   role_not: Role
   role_in: [Role!]

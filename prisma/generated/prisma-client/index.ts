@@ -318,11 +318,15 @@ export type SubjectOrderByInput =
   | "isSubSubject_ASC"
   | "isSubSubject_DESC"
   | "image_ASC"
-  | "image_DESC";
+  | "image_DESC"
+  | "icon_ASC"
+  | "icon_DESC";
 
 export type SubjectConfigOrderByInput = "id_ASC" | "id_DESC";
 
 export type AnswerType = "SINGLE" | "RELATIONS" | "TEXT";
+
+export type ImageType = "TASK" | "EXPLANATION";
 
 export type TestSuiteImageOrderByInput =
   | "id_ASC"
@@ -330,7 +334,9 @@ export type TestSuiteImageOrderByInput =
   | "taskId_ASC"
   | "taskId_DESC"
   | "image_ASC"
-  | "image_DESC";
+  | "image_DESC"
+  | "type_ASC"
+  | "type_DESC";
 
 export type TestSuiteOrderByInput =
   | "id_ASC"
@@ -361,6 +367,12 @@ export type UserOrderByInput =
   | "email_DESC"
   | "password_ASC"
   | "password_DESC"
+  | "name_ASC"
+  | "name_DESC"
+  | "lastName_ASC"
+  | "lastName_DESC"
+  | "emailConfirmed_ASC"
+  | "emailConfirmed_DESC"
   | "role_ASC"
   | "role_DESC";
 
@@ -417,6 +429,20 @@ export interface SubjectWhereInput {
   image_not_starts_with?: Maybe<String>;
   image_ends_with?: Maybe<String>;
   image_not_ends_with?: Maybe<String>;
+  icon?: Maybe<String>;
+  icon_not?: Maybe<String>;
+  icon_in?: Maybe<String[] | String>;
+  icon_not_in?: Maybe<String[] | String>;
+  icon_lt?: Maybe<String>;
+  icon_lte?: Maybe<String>;
+  icon_gt?: Maybe<String>;
+  icon_gte?: Maybe<String>;
+  icon_contains?: Maybe<String>;
+  icon_not_contains?: Maybe<String>;
+  icon_starts_with?: Maybe<String>;
+  icon_not_starts_with?: Maybe<String>;
+  icon_ends_with?: Maybe<String>;
+  icon_not_ends_with?: Maybe<String>;
   config?: Maybe<SubjectConfigWhereInput>;
   AND?: Maybe<SubjectWhereInput[] | SubjectWhereInput>;
 }
@@ -505,6 +531,10 @@ export interface TestSuiteImageWhereInput {
   image_not_starts_with?: Maybe<String>;
   image_ends_with?: Maybe<String>;
   image_not_ends_with?: Maybe<String>;
+  type?: Maybe<ImageType>;
+  type_not?: Maybe<ImageType>;
+  type_in?: Maybe<ImageType[] | ImageType>;
+  type_not_in?: Maybe<ImageType[] | ImageType>;
   AND?: Maybe<TestSuiteImageWhereInput[] | TestSuiteImageWhereInput>;
 }
 
@@ -570,8 +600,7 @@ export interface TestSuiteWhereInput {
   answers_some?: Maybe<AnswerWhereInput>;
   answers_every?: Maybe<AnswerRestrictedWhereInput>;
   answers_none?: Maybe<AnswerRestrictedWhereInput>;
-  tasks_some?: Maybe<TestSuiteImageWhereInput>;
-  explanations_some?: Maybe<TestSuiteImageWhereInput>;
+  images_some?: Maybe<TestSuiteImageWhereInput>;
   path?: Maybe<String>;
   path_not?: Maybe<String>;
   path_in?: Maybe<String[] | String>;
@@ -722,6 +751,36 @@ export interface UserWhereInput {
   password_not_starts_with?: Maybe<String>;
   password_ends_with?: Maybe<String>;
   password_not_ends_with?: Maybe<String>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  lastName?: Maybe<String>;
+  lastName_not?: Maybe<String>;
+  lastName_in?: Maybe<String[] | String>;
+  lastName_not_in?: Maybe<String[] | String>;
+  lastName_lt?: Maybe<String>;
+  lastName_lte?: Maybe<String>;
+  lastName_gt?: Maybe<String>;
+  lastName_gte?: Maybe<String>;
+  lastName_contains?: Maybe<String>;
+  lastName_not_contains?: Maybe<String>;
+  lastName_starts_with?: Maybe<String>;
+  lastName_not_starts_with?: Maybe<String>;
+  lastName_ends_with?: Maybe<String>;
+  lastName_not_ends_with?: Maybe<String>;
+  emailConfirmed?: Maybe<Boolean>;
+  emailConfirmed_not?: Maybe<Boolean>;
   role?: Maybe<Role>;
   role_not?: Maybe<Role>;
   role_in?: Maybe<Role[] | Role>;
@@ -741,6 +800,7 @@ export interface SubjectCreateInput {
   isSubSubject?: Maybe<Boolean>;
   parent?: Maybe<SubjectCreateOneInput>;
   image?: Maybe<String>;
+  icon?: Maybe<String>;
   config?: Maybe<SubjectConfigCreateOneWithoutSubjectInput>;
 }
 
@@ -800,6 +860,7 @@ export interface SubjectUpdateInput {
   isSubSubject?: Maybe<Boolean>;
   parent?: Maybe<SubjectUpdateOneInput>;
   image?: Maybe<String>;
+  icon?: Maybe<String>;
   config?: Maybe<SubjectConfigUpdateOneWithoutSubjectInput>;
 }
 
@@ -817,6 +878,7 @@ export interface SubjectUpdateDataInput {
   isSubSubject?: Maybe<Boolean>;
   parent?: Maybe<SubjectUpdateOneInput>;
   image?: Maybe<String>;
+  icon?: Maybe<String>;
   config?: Maybe<SubjectConfigUpdateOneWithoutSubjectInput>;
 }
 
@@ -907,6 +969,7 @@ export interface SubjectUpdateManyMutationInput {
   name?: Maybe<String>;
   isSubSubject?: Maybe<Boolean>;
   image?: Maybe<String>;
+  icon?: Maybe<String>;
 }
 
 export interface SubjectConfigCreateInput {
@@ -928,6 +991,7 @@ export interface SubjectCreateWithoutConfigInput {
   isSubSubject?: Maybe<Boolean>;
   parent?: Maybe<SubjectCreateOneInput>;
   image?: Maybe<String>;
+  icon?: Maybe<String>;
 }
 
 export interface SubjectConfigUpdateInput {
@@ -949,6 +1013,7 @@ export interface SubjectUpdateWithoutConfigDataInput {
   isSubSubject?: Maybe<Boolean>;
   parent?: Maybe<SubjectUpdateOneInput>;
   image?: Maybe<String>;
+  icon?: Maybe<String>;
 }
 
 export interface SubjectUpsertWithoutConfigInput {
@@ -968,8 +1033,7 @@ export interface TestSuiteCreateInput {
   session?: Maybe<String>;
   training?: Maybe<String>;
   answers?: Maybe<AnswerCreateManyInput>;
-  tasks?: Maybe<TestSuiteImageCreateManyWithoutTestSuiteInput>;
-  explanations?: Maybe<TestSuiteImageCreateManyInput>;
+  images?: Maybe<TestSuiteImageCreateManyWithoutTestSuiteInput>;
   path: String;
 }
 
@@ -1001,37 +1065,7 @@ export interface TestSuiteImageCreateWithoutTestSuiteInput {
   id?: Maybe<ID_Input>;
   taskId: Int;
   image: String;
-}
-
-export interface TestSuiteImageCreateManyInput {
-  create?: Maybe<TestSuiteImageCreateInput[] | TestSuiteImageCreateInput>;
-  connect?: Maybe<
-    TestSuiteImageWhereUniqueInput[] | TestSuiteImageWhereUniqueInput
-  >;
-}
-
-export interface TestSuiteImageCreateInput {
-  id?: Maybe<ID_Input>;
-  taskId: Int;
-  testSuite: TestSuiteCreateOneWithoutTasksInput;
-  image: String;
-}
-
-export interface TestSuiteCreateOneWithoutTasksInput {
-  create?: Maybe<TestSuiteCreateWithoutTasksInput>;
-  connect?: Maybe<TestSuiteWhereUniqueInput>;
-}
-
-export interface TestSuiteCreateWithoutTasksInput {
-  id?: Maybe<ID_Input>;
-  subject: SubjectCreateOneInput;
-  subSubject?: Maybe<SubjectCreateOneInput>;
-  theme?: Maybe<String>;
-  session?: Maybe<String>;
-  training?: Maybe<String>;
-  answers?: Maybe<AnswerCreateManyInput>;
-  explanations?: Maybe<TestSuiteImageCreateManyInput>;
-  path: String;
+  type: ImageType;
 }
 
 export interface TestSuiteUpdateInput {
@@ -1041,8 +1075,7 @@ export interface TestSuiteUpdateInput {
   session?: Maybe<String>;
   training?: Maybe<String>;
   answers?: Maybe<AnswerUpdateManyInput>;
-  tasks?: Maybe<TestSuiteImageUpdateManyWithoutTestSuiteInput>;
-  explanations?: Maybe<TestSuiteImageUpdateManyInput>;
+  images?: Maybe<TestSuiteImageUpdateManyWithoutTestSuiteInput>;
   path?: Maybe<String>;
 }
 
@@ -1137,6 +1170,7 @@ export interface TestSuiteImageUpdateWithWhereUniqueWithoutTestSuiteInput {
 export interface TestSuiteImageUpdateWithoutTestSuiteDataInput {
   taskId?: Maybe<Int>;
   image?: Maybe<String>;
+  type?: Maybe<ImageType>;
 }
 
 export interface TestSuiteImageUpsertWithWhereUniqueWithoutTestSuiteInput {
@@ -1182,6 +1216,10 @@ export interface TestSuiteImageScalarWhereInput {
   image_not_starts_with?: Maybe<String>;
   image_ends_with?: Maybe<String>;
   image_not_ends_with?: Maybe<String>;
+  type?: Maybe<ImageType>;
+  type_not?: Maybe<ImageType>;
+  type_in?: Maybe<ImageType[] | ImageType>;
+  type_not_in?: Maybe<ImageType[] | ImageType>;
   AND?: Maybe<
     TestSuiteImageScalarWhereInput[] | TestSuiteImageScalarWhereInput
   >;
@@ -1199,77 +1237,7 @@ export interface TestSuiteImageUpdateManyWithWhereNestedInput {
 export interface TestSuiteImageUpdateManyDataInput {
   taskId?: Maybe<Int>;
   image?: Maybe<String>;
-}
-
-export interface TestSuiteImageUpdateManyInput {
-  create?: Maybe<TestSuiteImageCreateInput[] | TestSuiteImageCreateInput>;
-  update?: Maybe<
-    | TestSuiteImageUpdateWithWhereUniqueNestedInput[]
-    | TestSuiteImageUpdateWithWhereUniqueNestedInput
-  >;
-  upsert?: Maybe<
-    | TestSuiteImageUpsertWithWhereUniqueNestedInput[]
-    | TestSuiteImageUpsertWithWhereUniqueNestedInput
-  >;
-  delete?: Maybe<
-    TestSuiteImageWhereUniqueInput[] | TestSuiteImageWhereUniqueInput
-  >;
-  connect?: Maybe<
-    TestSuiteImageWhereUniqueInput[] | TestSuiteImageWhereUniqueInput
-  >;
-  set?: Maybe<
-    TestSuiteImageWhereUniqueInput[] | TestSuiteImageWhereUniqueInput
-  >;
-  disconnect?: Maybe<
-    TestSuiteImageWhereUniqueInput[] | TestSuiteImageWhereUniqueInput
-  >;
-  deleteMany?: Maybe<
-    TestSuiteImageScalarWhereInput[] | TestSuiteImageScalarWhereInput
-  >;
-  updateMany?: Maybe<
-    | TestSuiteImageUpdateManyWithWhereNestedInput[]
-    | TestSuiteImageUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface TestSuiteImageUpdateWithWhereUniqueNestedInput {
-  where: TestSuiteImageWhereUniqueInput;
-  data: TestSuiteImageUpdateDataInput;
-}
-
-export interface TestSuiteImageUpdateDataInput {
-  taskId?: Maybe<Int>;
-  testSuite?: Maybe<TestSuiteUpdateOneRequiredWithoutTasksInput>;
-  image?: Maybe<String>;
-}
-
-export interface TestSuiteUpdateOneRequiredWithoutTasksInput {
-  create?: Maybe<TestSuiteCreateWithoutTasksInput>;
-  update?: Maybe<TestSuiteUpdateWithoutTasksDataInput>;
-  upsert?: Maybe<TestSuiteUpsertWithoutTasksInput>;
-  connect?: Maybe<TestSuiteWhereUniqueInput>;
-}
-
-export interface TestSuiteUpdateWithoutTasksDataInput {
-  subject?: Maybe<SubjectUpdateOneRequiredInput>;
-  subSubject?: Maybe<SubjectUpdateOneInput>;
-  theme?: Maybe<String>;
-  session?: Maybe<String>;
-  training?: Maybe<String>;
-  answers?: Maybe<AnswerUpdateManyInput>;
-  explanations?: Maybe<TestSuiteImageUpdateManyInput>;
-  path?: Maybe<String>;
-}
-
-export interface TestSuiteUpsertWithoutTasksInput {
-  update: TestSuiteUpdateWithoutTasksDataInput;
-  create: TestSuiteCreateWithoutTasksInput;
-}
-
-export interface TestSuiteImageUpsertWithWhereUniqueNestedInput {
-  where: TestSuiteImageWhereUniqueInput;
-  update: TestSuiteImageUpdateDataInput;
-  create: TestSuiteImageCreateInput;
+  type?: Maybe<ImageType>;
 }
 
 export interface TestSuiteUpdateManyMutationInput {
@@ -1279,15 +1247,63 @@ export interface TestSuiteUpdateManyMutationInput {
   path?: Maybe<String>;
 }
 
+export interface TestSuiteImageCreateInput {
+  id?: Maybe<ID_Input>;
+  taskId: Int;
+  testSuite: TestSuiteCreateOneWithoutImagesInput;
+  image: String;
+  type: ImageType;
+}
+
+export interface TestSuiteCreateOneWithoutImagesInput {
+  create?: Maybe<TestSuiteCreateWithoutImagesInput>;
+  connect?: Maybe<TestSuiteWhereUniqueInput>;
+}
+
+export interface TestSuiteCreateWithoutImagesInput {
+  id?: Maybe<ID_Input>;
+  subject: SubjectCreateOneInput;
+  subSubject?: Maybe<SubjectCreateOneInput>;
+  theme?: Maybe<String>;
+  session?: Maybe<String>;
+  training?: Maybe<String>;
+  answers?: Maybe<AnswerCreateManyInput>;
+  path: String;
+}
+
 export interface TestSuiteImageUpdateInput {
   taskId?: Maybe<Int>;
-  testSuite?: Maybe<TestSuiteUpdateOneRequiredWithoutTasksInput>;
+  testSuite?: Maybe<TestSuiteUpdateOneRequiredWithoutImagesInput>;
   image?: Maybe<String>;
+  type?: Maybe<ImageType>;
+}
+
+export interface TestSuiteUpdateOneRequiredWithoutImagesInput {
+  create?: Maybe<TestSuiteCreateWithoutImagesInput>;
+  update?: Maybe<TestSuiteUpdateWithoutImagesDataInput>;
+  upsert?: Maybe<TestSuiteUpsertWithoutImagesInput>;
+  connect?: Maybe<TestSuiteWhereUniqueInput>;
+}
+
+export interface TestSuiteUpdateWithoutImagesDataInput {
+  subject?: Maybe<SubjectUpdateOneRequiredInput>;
+  subSubject?: Maybe<SubjectUpdateOneInput>;
+  theme?: Maybe<String>;
+  session?: Maybe<String>;
+  training?: Maybe<String>;
+  answers?: Maybe<AnswerUpdateManyInput>;
+  path?: Maybe<String>;
+}
+
+export interface TestSuiteUpsertWithoutImagesInput {
+  update: TestSuiteUpdateWithoutImagesDataInput;
+  create: TestSuiteCreateWithoutImagesInput;
 }
 
 export interface TestSuiteImageUpdateManyMutationInput {
   taskId?: Maybe<Int>;
   image?: Maybe<String>;
+  type?: Maybe<ImageType>;
 }
 
 export interface TokenCreateInput {
@@ -1306,6 +1322,9 @@ export interface UserCreateWithoutRefreshTokensInput {
   id?: Maybe<ID_Input>;
   email: String;
   password: String;
+  name?: Maybe<String>;
+  lastName?: Maybe<String>;
+  emailConfirmed?: Maybe<Boolean>;
   role: Role;
 }
 
@@ -1325,6 +1344,9 @@ export interface UserUpdateOneRequiredWithoutRefreshTokensInput {
 export interface UserUpdateWithoutRefreshTokensDataInput {
   email?: Maybe<String>;
   password?: Maybe<String>;
+  name?: Maybe<String>;
+  lastName?: Maybe<String>;
+  emailConfirmed?: Maybe<Boolean>;
   role?: Maybe<Role>;
 }
 
@@ -1342,6 +1364,9 @@ export interface UserCreateInput {
   id?: Maybe<ID_Input>;
   email: String;
   password: String;
+  name?: Maybe<String>;
+  lastName?: Maybe<String>;
+  emailConfirmed?: Maybe<Boolean>;
   role: Role;
   refreshTokens?: Maybe<TokenCreateManyWithoutUserInput>;
 }
@@ -1360,6 +1385,9 @@ export interface TokenCreateWithoutUserInput {
 export interface UserUpdateInput {
   email?: Maybe<String>;
   password?: Maybe<String>;
+  name?: Maybe<String>;
+  lastName?: Maybe<String>;
+  emailConfirmed?: Maybe<Boolean>;
   role?: Maybe<Role>;
   refreshTokens?: Maybe<TokenUpdateManyWithoutUserInput>;
 }
@@ -1461,6 +1489,9 @@ export interface TokenUpdateManyDataInput {
 export interface UserUpdateManyMutationInput {
   email?: Maybe<String>;
   password?: Maybe<String>;
+  name?: Maybe<String>;
+  lastName?: Maybe<String>;
+  emailConfirmed?: Maybe<Boolean>;
   role?: Maybe<Role>;
 }
 
@@ -1534,6 +1565,7 @@ export interface Subject {
   name: String;
   isSubSubject: Boolean;
   image?: String;
+  icon?: String;
 }
 
 export interface SubjectPromise extends Promise<Subject>, Fragmentable {
@@ -1542,6 +1574,7 @@ export interface SubjectPromise extends Promise<Subject>, Fragmentable {
   isSubSubject: () => Promise<Boolean>;
   parent: <T = SubjectPromise>() => T;
   image: () => Promise<String>;
+  icon: () => Promise<String>;
   config: <T = SubjectConfigPromise>() => T;
 }
 
@@ -1553,6 +1586,7 @@ export interface SubjectSubscription
   isSubSubject: () => Promise<AsyncIterator<Boolean>>;
   parent: <T = SubjectSubscription>() => T;
   image: () => Promise<AsyncIterator<String>>;
+  icon: () => Promise<AsyncIterator<String>>;
   config: <T = SubjectConfigSubscription>() => T;
 }
 
@@ -1564,6 +1598,7 @@ export interface SubjectNullablePromise
   isSubSubject: () => Promise<Boolean>;
   parent: <T = SubjectPromise>() => T;
   image: () => Promise<String>;
+  icon: () => Promise<String>;
   config: <T = SubjectConfigPromise>() => T;
 }
 
@@ -1801,16 +1836,7 @@ export interface TestSuitePromise extends Promise<TestSuite>, Fragmentable {
   session: () => Promise<String>;
   training: () => Promise<String>;
   answers: <T = FragmentableArray<Answer>>() => T;
-  tasks: <T = FragmentableArray<TestSuiteImage>>(args?: {
-    where?: TestSuiteImageWhereInput;
-    orderBy?: TestSuiteImageOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  explanations: <T = FragmentableArray<TestSuiteImage>>(args?: {
+  images: <T = FragmentableArray<TestSuiteImage>>(args?: {
     where?: TestSuiteImageWhereInput;
     orderBy?: TestSuiteImageOrderByInput;
     skip?: Int;
@@ -1832,18 +1858,7 @@ export interface TestSuiteSubscription
   session: () => Promise<AsyncIterator<String>>;
   training: () => Promise<AsyncIterator<String>>;
   answers: <T = Promise<AsyncIterator<AnswerSubscription>>>() => T;
-  tasks: <T = Promise<AsyncIterator<TestSuiteImageSubscription>>>(args?: {
-    where?: TestSuiteImageWhereInput;
-    orderBy?: TestSuiteImageOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  explanations: <
-    T = Promise<AsyncIterator<TestSuiteImageSubscription>>
-  >(args?: {
+  images: <T = Promise<AsyncIterator<TestSuiteImageSubscription>>>(args?: {
     where?: TestSuiteImageWhereInput;
     orderBy?: TestSuiteImageOrderByInput;
     skip?: Int;
@@ -1865,16 +1880,7 @@ export interface TestSuiteNullablePromise
   session: () => Promise<String>;
   training: () => Promise<String>;
   answers: <T = FragmentableArray<Answer>>() => T;
-  tasks: <T = FragmentableArray<TestSuiteImage>>(args?: {
-    where?: TestSuiteImageWhereInput;
-    orderBy?: TestSuiteImageOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  explanations: <T = FragmentableArray<TestSuiteImage>>(args?: {
+  images: <T = FragmentableArray<TestSuiteImage>>(args?: {
     where?: TestSuiteImageWhereInput;
     orderBy?: TestSuiteImageOrderByInput;
     skip?: Int;
@@ -1918,6 +1924,7 @@ export interface TestSuiteImage {
   id: ID_Output;
   taskId: Int;
   image: String;
+  type: ImageType;
 }
 
 export interface TestSuiteImagePromise
@@ -1927,6 +1934,7 @@ export interface TestSuiteImagePromise
   taskId: () => Promise<Int>;
   testSuite: <T = TestSuitePromise>() => T;
   image: () => Promise<String>;
+  type: () => Promise<ImageType>;
 }
 
 export interface TestSuiteImageSubscription
@@ -1936,6 +1944,7 @@ export interface TestSuiteImageSubscription
   taskId: () => Promise<AsyncIterator<Int>>;
   testSuite: <T = TestSuiteSubscription>() => T;
   image: () => Promise<AsyncIterator<String>>;
+  type: () => Promise<AsyncIterator<ImageType>>;
 }
 
 export interface TestSuiteImageNullablePromise
@@ -1945,6 +1954,7 @@ export interface TestSuiteImageNullablePromise
   taskId: () => Promise<Int>;
   testSuite: <T = TestSuitePromise>() => T;
   image: () => Promise<String>;
+  type: () => Promise<ImageType>;
 }
 
 export interface TestSuiteConnection {
@@ -2094,6 +2104,9 @@ export interface User {
   id: ID_Output;
   email: String;
   password: String;
+  name?: String;
+  lastName?: String;
+  emailConfirmed?: Boolean;
   role: Role;
 }
 
@@ -2101,6 +2114,9 @@ export interface UserPromise extends Promise<User>, Fragmentable {
   id: () => Promise<ID_Output>;
   email: () => Promise<String>;
   password: () => Promise<String>;
+  name: () => Promise<String>;
+  lastName: () => Promise<String>;
+  emailConfirmed: () => Promise<Boolean>;
   role: () => Promise<Role>;
   refreshTokens: <T = FragmentableArray<Token>>(args?: {
     where?: TokenWhereInput;
@@ -2119,6 +2135,9 @@ export interface UserSubscription
   id: () => Promise<AsyncIterator<ID_Output>>;
   email: () => Promise<AsyncIterator<String>>;
   password: () => Promise<AsyncIterator<String>>;
+  name: () => Promise<AsyncIterator<String>>;
+  lastName: () => Promise<AsyncIterator<String>>;
+  emailConfirmed: () => Promise<AsyncIterator<Boolean>>;
   role: () => Promise<AsyncIterator<Role>>;
   refreshTokens: <T = Promise<AsyncIterator<TokenSubscription>>>(args?: {
     where?: TokenWhereInput;
@@ -2137,6 +2156,9 @@ export interface UserNullablePromise
   id: () => Promise<ID_Output>;
   email: () => Promise<String>;
   password: () => Promise<String>;
+  name: () => Promise<String>;
+  lastName: () => Promise<String>;
+  emailConfirmed: () => Promise<Boolean>;
   role: () => Promise<Role>;
   refreshTokens: <T = FragmentableArray<Token>>(args?: {
     where?: TokenWhereInput;
@@ -2303,6 +2325,7 @@ export interface SubjectPreviousValues {
   name: String;
   isSubSubject: Boolean;
   image?: String;
+  icon?: String;
 }
 
 export interface SubjectPreviousValuesPromise
@@ -2312,6 +2335,7 @@ export interface SubjectPreviousValuesPromise
   name: () => Promise<String>;
   isSubSubject: () => Promise<Boolean>;
   image: () => Promise<String>;
+  icon: () => Promise<String>;
 }
 
 export interface SubjectPreviousValuesSubscription
@@ -2321,6 +2345,7 @@ export interface SubjectPreviousValuesSubscription
   name: () => Promise<AsyncIterator<String>>;
   isSubSubject: () => Promise<AsyncIterator<Boolean>>;
   image: () => Promise<AsyncIterator<String>>;
+  icon: () => Promise<AsyncIterator<String>>;
 }
 
 export interface SubjectConfigSubscriptionPayload {
@@ -2449,6 +2474,7 @@ export interface TestSuiteImagePreviousValues {
   id: ID_Output;
   taskId: Int;
   image: String;
+  type: ImageType;
 }
 
 export interface TestSuiteImagePreviousValuesPromise
@@ -2457,6 +2483,7 @@ export interface TestSuiteImagePreviousValuesPromise
   id: () => Promise<ID_Output>;
   taskId: () => Promise<Int>;
   image: () => Promise<String>;
+  type: () => Promise<ImageType>;
 }
 
 export interface TestSuiteImagePreviousValuesSubscription
@@ -2465,6 +2492,7 @@ export interface TestSuiteImagePreviousValuesSubscription
   id: () => Promise<AsyncIterator<ID_Output>>;
   taskId: () => Promise<AsyncIterator<Int>>;
   image: () => Promise<AsyncIterator<String>>;
+  type: () => Promise<AsyncIterator<ImageType>>;
 }
 
 export interface TokenSubscriptionPayload {
@@ -2543,6 +2571,9 @@ export interface UserPreviousValues {
   id: ID_Output;
   email: String;
   password: String;
+  name?: String;
+  lastName?: String;
+  emailConfirmed?: Boolean;
   role: Role;
 }
 
@@ -2552,6 +2583,9 @@ export interface UserPreviousValuesPromise
   id: () => Promise<ID_Output>;
   email: () => Promise<String>;
   password: () => Promise<String>;
+  name: () => Promise<String>;
+  lastName: () => Promise<String>;
+  emailConfirmed: () => Promise<Boolean>;
   role: () => Promise<Role>;
 }
 
@@ -2561,6 +2595,9 @@ export interface UserPreviousValuesSubscription
   id: () => Promise<AsyncIterator<ID_Output>>;
   email: () => Promise<AsyncIterator<String>>;
   password: () => Promise<AsyncIterator<String>>;
+  name: () => Promise<AsyncIterator<String>>;
+  lastName: () => Promise<AsyncIterator<String>>;
+  emailConfirmed: () => Promise<AsyncIterator<Boolean>>;
   role: () => Promise<AsyncIterator<Role>>;
 }
 
@@ -2622,6 +2659,10 @@ export const models: Model[] = [
   },
   {
     name: "TestSuite",
+    embedded: false
+  },
+  {
+    name: "ImageType",
     embedded: false
   },
   {

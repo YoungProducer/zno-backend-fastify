@@ -68,8 +68,10 @@ const subjectsHandler = async (
     req: FastifyRequest<IncomingMessage>,
     reply: FastifyReply<ServerResponse>,
 ) => {
+    const subSubjects: string = req.query.subSubjects;
+
     try {
-        const subjects = await fastify.subjectService.subjects();
+        const subjects = await fastify.subjectService.subjects(Boolean(subSubjects) && subSubjects === 'true');
 
         return subjects;
     } catch (err) {

@@ -6,7 +6,7 @@
  */
 
 /** Application's imports */
-import { AnswerType } from "../../prisma/generated/prisma-client";
+import { AnswerType, ImageType } from "../../prisma/generated/prisma-client";
 
 export type TImageType = 'task' | 'explanation';
 
@@ -16,8 +16,8 @@ export interface IAnswer {
 }
 
 export interface ICreateTestSuiteHandlerCredentials {
-    subjectId: string;
-    subSubjectId?: string;
+    subjectName: string;
+    subSubjectName?: string;
     /**
      * If this test suite related to exams sessions this field should have name of session.
      */
@@ -33,7 +33,8 @@ export interface ICreateTestSuiteHandlerCredentials {
     /**
      * Array of answers.
      */
-    answers: IAnswer[];
+    // answers: IAnswer[];
+    answers: string;
     /**
      * Array of images.
      */
@@ -41,8 +42,8 @@ export interface ICreateTestSuiteHandlerCredentials {
 }
 
 export interface ICreateTestSuiteCredentials {
-    subjectId: string;
-    subSubjectId?: string;
+    subjectName: string;
+    subSubjectName?: string;
     /**
      * If this test suite related to exams sessions this field should have name of session.
      */
@@ -59,6 +60,7 @@ export interface ICreateTestSuiteCredentials {
      * Array of answers.
      */
     answers: IAnswer[];
+    // answers: string;
     /**
      * Array of tasks images.
      * Optional property.
@@ -96,7 +98,7 @@ export interface IUploadImagesHandlerCredentials {
     /**
      * Type of image: task or explanation.
      */
-    type: TImageType;
+    type: ImageType;
     /**
      * Array of images
      */
@@ -115,7 +117,7 @@ export interface IUploadImagesCredentials {
     /**
      * Type of image: task or explanation.
      */
-    type: TImageType;
+    type: ImageType;
 }
 
 export interface IGetTestSuiteImagesCredentials {
@@ -127,5 +129,5 @@ export interface IGetTestSuiteImagesCredentials {
      * Image type,
      * allows to select images for tasks or explanations.
      */
-    type: TImageType;
+    type: ImageType;
 }
