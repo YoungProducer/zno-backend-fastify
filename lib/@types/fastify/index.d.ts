@@ -7,7 +7,6 @@
 
 
 /** External imports */
-import fastify from 'fastify';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 
 /** Application's imports */
@@ -35,6 +34,8 @@ interface Config {
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
   CLIENT_ENDPOINT?: string;
+  CLIENT_MOBILE_ENDPOINT?: string;
+  ADMIN_ENDPOINT?: string;
 }
 
 declare module 'fastify' {

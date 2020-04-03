@@ -57,7 +57,9 @@ const schema = {
         JWT_REFRESH_COOKIES_MAX_AGE: { type: 'string' },
         JWT_SESSION_EXPIRES_IN: { type: 'string' },
         S3_BUCKET: { type: 'string' },
-        CLIENT_ENDPOINT: { type: 'string' },
+        CLIENT_ENDPOINT: { type: 'string', default: 'http://localhost:8080' },
+        CLIENT_MOBILE_ENDPOINT: { type: 'string', default: 'http://localhost:8081' },
+        ADMIN_ENDPOINT: { type: 'string', default: 'http://localhost:8082' },
         AWS_ACCESS_KEY_ID: { type: 'string' },
         AWS_SECRET_ACCESS_KEY: { type: 'string' },
     },
@@ -172,18 +174,16 @@ const instance = fastify();
 
 const mode = process.env.NODE_ENV || 'production';
 
-const clientPath = mode === 'development'
-    ? '../../client/public'
-    : '../../../client/build';
+const clientEnpoint = process.env.CLIENT_ENDPOINT || 'http://localhost:8080';
+const clientMobileEndpoint = process.env.CLIENT_MOBILE_ENDPOINT || 'http://localhost:8081';
+const adminEndpoint = process.env.ADMIN_ENDPOINT || 'http://localhost:8082';
 
 instance
     .register(fastifyCors, {
         origin: [
-            'http://localhost:3000',
-            'http://localhost:8080',
-            'http://localhost:8081',
-            'https://zno-client.herokuapp.com',
-            'http://192.168.104:8081',
+            clientEnpoint,
+            clientMobileEndpoint,
+            adminEndpoint,
         ],
         credentials: true,
     })
