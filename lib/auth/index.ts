@@ -118,9 +118,9 @@ async function signinHandler(
 
         const refreshToken: string = await fastify.refreshService.generateToken(userProfile);
 
-        const clientEndpoint = fastify.config.CLIENT_ENDPOINT
-            ? fastify.config.CLIENT_ENDPOINT
-            : undefined;
+        const clientEndpoint = fastify.config.CLIENT_ENDPOINT;
+
+        const adminEndpoint = fastify.config.ADMIN_ENDPOINT;
 
         if (!user.emailConfirmed) {
             reply.setCookie('emailConfirmed', 'false', {

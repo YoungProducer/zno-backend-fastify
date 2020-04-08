@@ -162,7 +162,7 @@ const errorHandler = async (fastify: FastifyInstance) => {
                 .send({
                     statusCode: error.statusCode,
                     message: error.message,
-                    data: req.body && req.body.error ? req.body.error : undefined,
+                    errors: req.body && req.body.error ? req.body.error : undefined,
                 });
         } else {
             reply.send(error);

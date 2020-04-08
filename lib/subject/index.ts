@@ -10,6 +10,7 @@ import { FastifyReply, FastifyRequest, FastifyInstance } from 'fastify';
 import { ServerResponse, IncomingMessage } from 'http';
 
 /** Application's imports */
+import { create } from './schema';
 
 export = async function (
     fastify: FastifyInstance,
@@ -24,7 +25,7 @@ export = async function (
             return;
         });
 
-        fastify.post('subject', async (
+        fastify.post('subject', { schema: create }, async (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
         ) => await createHandler(fastify, req, reply));
@@ -52,10 +53,10 @@ const createHandler = async (
     reply: FastifyReply<ServerResponse>,
 ) => {
     /** Extract data from request body */
-    const name = req.body.name;
+    const credentials = req.body;
 
     try {
-        const subject = await fastify.subjectService.create(name);
+        const subject = await fastify.subjectService.create(credentials);
 
         return subject;
     } catch (err) {
@@ -68,10 +69,10 @@ const subjectsHandler = async (
     req: FastifyRequest<IncomingMessage>,
     reply: FastifyReply<ServerResponse>,
 ) => {
-    const subSubjects: string = req.query.subSubjects;
+    const subSubject: string = req.query.subSubject;
 
     try {
-        const subjects = await fastify.subjectService.subjects(Boolean(subSubjects) && subSubjects === 'true');
+        const subjects = await fastify.subjectService.subjects(Boolean(subSubject) && subSubject === 'true');
 
         return subjects;
     } catch (err) {

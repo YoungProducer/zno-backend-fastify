@@ -12,7 +12,7 @@ import HttpErros from 'http-errors';
 
 /** Application's imports */
 import { prisma, Subject } from '../../prisma/generated/prisma-client';
-import { ISubjectService } from './types';
+import { ISubjectService, SubjectTypes } from './types';
 
 class SubjectService implements ISubjectService {
     s3!: AWS.S3;
@@ -28,8 +28,8 @@ class SubjectService implements ISubjectService {
         });
     }
 
-    async create(name: string): Promise<Subject> {
-        const subject = await prisma.createSubject({ name });
+    async create(payload: SubjectTypes.CreatePayload): Promise<Subject> {
+        const subject = await prisma.createSubject(payload);
 
         return subject;
     }
@@ -65,13 +65,6 @@ class SubjectService implements ISubjectService {
             },
         }).$fragment(`fragment SelectName on Subject { id name icon }`);
 
-        // const images = await subjects.map(async (subject) => {
-        //     return await this.s3.getSignedUrlPromise('getObject', {
-        //         Bucket: this.instance.config.S3_BUCKET,
-        //         Key: subject.image,
-        //         Expires: 60,
-        //     });
-        // });
         if (!subSubjects) {
             const images = await this.getImages(subjects);
 
