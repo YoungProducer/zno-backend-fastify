@@ -12,6 +12,7 @@ import HttpErrors from 'http-errors';
 /** Application's imports */
 import { AdminAuth } from './types';
 import { prisma } from '../../prisma/generated/prisma-client';
+import { extractHostname } from '../utils/extract-host-name';
 
 class AdminAuthService implements AdminAuth.Service {
     instance!: FastifyInstance;
@@ -22,7 +23,7 @@ class AdminAuthService implements AdminAuth.Service {
     constructor(fastify: FastifyInstance) {
         this.instance = fastify;
 
-        this.adminEndpoint = this.instance.config.ADMIN_ENDPOINT;
+        this.adminEndpoint = extractHostname(this.instance.config.ADMIN_ENDPOINT);
         this.accessTokenCookiesMaxAge = Number(this.instance.config.JWT_ACCESS_COOKIES_MAX_AGE);
         this.refreshTokenCookiesMaxAge = Number(this.instance.config.JWT_REFRESH_COOKIES_MAX_AGE);
     }

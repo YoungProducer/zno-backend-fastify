@@ -12,6 +12,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { prisma, User } from '../../prisma/generated/prisma-client';
 import { ISignUpCredentials, ISignInCredentials, UserProfile } from "../services/types";
 import { errorHandler } from '../services/error-handler';
+import { extractHostname } from '../utils/extract-host-name';
 import { IRefreshReturnData } from "./types";
 import {
     me,
@@ -117,7 +118,7 @@ async function signinHandler(
 
         const refreshToken: string = await fastify.refreshService.generateToken(userProfile);
 
-        const clientEndpoint = fastify.config.CLIENT_ENDPOINT;
+        const clientEndpoint = extractHostname(fastify.config.CLIENT_ENDPOINT);
 
         if (!user.emailConfirmed) {
             reply.setCookie('emailConfirmed', 'false', {
@@ -176,9 +177,7 @@ async function refreshHandler(
     try {
         const { accessToken, refreshToken, userProfile }: IRefreshReturnData = await fastify.authService.refresh(req);
 
-        const clientEndpoint = fastify.config.CLIENT_ENDPOINT
-            ? fastify.config.CLIENT_ENDPOINT
-            : undefined;
+        const clientEndpoint = extractHostname(fastify.config.CLIENT_ENDPOINT);
 
         reply
             .setCookie('accessToken', accessToken, {
@@ -207,9 +206,7 @@ async function logoutHandler(
     try {
         await fastify.authService.logout(req);
 
-        const clientEndpoint = fastify.config.CLIENT_ENDPOINT
-            ? fastify.config.CLIENT_ENDPOINT
-            : undefined;
+        const clientEndpoint = extractHostname(fastify.config.CLIENT_ENDPOINT);
 
         reply
             .clearCookie('accessToken', {

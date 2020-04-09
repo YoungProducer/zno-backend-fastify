@@ -29,6 +29,7 @@ import SubjectService from './subject/service';
 import SubjectConfigService from './subjectConfig/service';
 import TestSuiteService from './testSuite/service';
 import AdminAuthService from './admin-auth/service';
+import { extractHostname } from './utils/extract-host-name';
 
 /** Import env config */
 if (process.env.NODE_ENV !== 'production') require('dotenv').config();
@@ -119,9 +120,7 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                 const newAccessToken = await fastify.accessService.generateToken(_.omit(userProfile, 'hash'));
                 const newRefreshToken = await fastify.refreshService.generateToken(userProfile);
 
-                const clientEndpoint = fastify.config.CLIENT_ENDPOINT
-                    ? fastify.config.CLIENT_ENDPOINT
-                    : undefined;
+                const clientEndpoint = extractHostname(fastify.config.CLIENT_ENDPOINT);
 
                 /** Set profile to req body */
                 req.params.userProfile = _.omit(userProfile, 'hash');
@@ -195,37 +194,6 @@ instance
     .register(fastifyFormBody)
     .register(fastifyCookie)
     .register(require('fastify-file-upload'))
-    .get('/file/*', async (req, reply) => {
-        const fileName: string = req.params['*'];
-
-        console.log(req.params);
-
-        const s3 = new aws.S3({
-            accessKeyId: 'AKIAIGBFC5KT3KI5QLCQ',
-            secretAccessKey: '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',
-            signatureVersion: 'v4',
-            region: 'eu-central-1',
-        });
-
-        const params = {
-            Bucket: 'zno-train',
-            Key: fileName,
-            Expires: 60,
-        };
-
-        try {
-            const data = await s3.getSignedUrlPromise('getObject', params);
-
-            const returnData = {
-                signedRequest: data,
-                url: `https://zno-train.s3.amazonaws.com/${fileName}`,
-            };
-
-            reply.send(returnData);
-        } catch (err) {
-            reply.send(err);
-        }
-    })
     .register(authController, { prefix: 'api/auth/' })
     .register(adminAuthController, { prefix: 'api/auth/admin' })
     .register(subjectController, { prefix: 'api/' })
