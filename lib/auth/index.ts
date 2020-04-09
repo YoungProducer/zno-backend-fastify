@@ -94,10 +94,9 @@ async function signupHandler(
 
         return { ...user };
     } catch (err) {
-        const error = errorHandler(err);
+        const error = errorHandler(err, req);
         /** Set additional data to req body to prevent getting the 500 error */
-        req.body.error = error.data;
-        reply.send(err);
+        reply.send(error);
     }
 }
 
@@ -119,8 +118,6 @@ async function signinHandler(
         const refreshToken: string = await fastify.refreshService.generateToken(userProfile);
 
         const clientEndpoint = fastify.config.CLIENT_ENDPOINT;
-
-        const adminEndpoint = fastify.config.ADMIN_ENDPOINT;
 
         if (!user.emailConfirmed) {
             reply.setCookie('emailConfirmed', 'false', {
@@ -152,10 +149,8 @@ async function signinHandler(
             })
             .send(user);
     } catch (err) {
-        const error = errorHandler(err);
-        /** Set additional data to req body to prevent getting the 500 error */
-        req.body.error = error.data;
-        reply.send(err);
+        const error = errorHandler(err, req);
+        reply.send(error);
     }
 }
 
@@ -168,8 +163,8 @@ async function meHandler(
 
         return { ...user };
     } catch (err) {
-        const error = errorHandler(err);
-        reply.send({ ...error });
+        const error = errorHandler(err, req);
+        reply.send(error);
     }
 }
 

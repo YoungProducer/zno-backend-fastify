@@ -2,14 +2,12 @@
 import 'reflect-metadata';
 
 /** External imports */
-import path from 'path';
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, SchemaCompiler } from 'fastify';
 import fp from 'fastify-plugin';
 import fastifyFormBody from 'fastify-formbody';
 import fastifyCors from 'fastify-cors';
 import jwt from 'fastify-jwt';
 import fastifyCookie from 'fastify-cookie';
-import fastifyStatic from 'fastify-static';
 import { IncomingMessage, ServerResponse } from 'http';
 import _ from 'lodash';
 import aws from 'aws-sdk';
@@ -21,16 +19,16 @@ import AccessService from './services/access-service';
 import RefreshService from './services/refresh-service';
 import UserService from './services/user-service';
 
-import jwtAccess from './plugins/jwtAccess';
-
 import authController from './auth';
 import subjectController from './subject';
 import subjectConfigController from './subjectConfig';
 import testSuiteController from './testSuite';
+import adminAuthController from './admin-auth';
 import AuthService from './auth/service';
 import SubjectService from './subject/service';
 import SubjectConfigService from './subjectConfig/service';
 import TestSuiteService from './testSuite/service';
+import AdminAuthService from './admin-auth/service';
 
 /** Import env config */
 if (process.env.NODE_ENV !== 'production') require('dotenv').config();
@@ -92,6 +90,9 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
 
     const testSuiteService = new TestSuiteService(fastify);
     fastify.decorate('testSuiteService', testSuiteService);
+
+    const adminAuthService = new AdminAuthService(fastify);
+    fastify.decorate('adminAuthService', adminAuthService);
 
     fastify.decorate('authPreHandler', async (
         req: FastifyRequest<IncomingMessage>,
@@ -226,6 +227,7 @@ instance
         }
     })
     .register(authController, { prefix: 'api/auth/' })
+    .register(adminAuthController, { prefix: 'api/auth/admin' })
     .register(subjectController, { prefix: 'api/' })
     .register(subjectConfigController, { prefix: 'api/' })
     .register(testSuiteController, { prefix: 'api/' });

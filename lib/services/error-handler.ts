@@ -5,9 +5,14 @@
  * Custom error handler to handle json stringified errors.
  */
 
-import _ from 'lodash';
+/** External imports */
+import { FastifyRequest } from 'fastify';
+import { IncomingMessage } from 'http';
 
-export const errorHandler = (error: any) => {
+export const errorHandler = (
+    error: any,
+    req: FastifyRequest<IncomingMessage>,
+) => {
     try {
         let parsedMessage;
         if (error.message) {
@@ -17,10 +22,9 @@ export const errorHandler = (error: any) => {
             error.message = parsedMessage.message;
         }
 
-        return {
-            error,
-            data: parsedMessage.errorData || undefined,
-        };
+        req.body.error = parsedMessage.errorData;
+
+        return error;
     } catch (e) {
         return error;
     }

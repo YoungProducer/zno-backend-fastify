@@ -22,6 +22,7 @@ import { TJwtAccess } from '../../plugins/jwtAccess';
 import SubjectService from '../../subject/service';
 import SubjectConfigService from '../../subjectConfig/service';
 import TestSuiteService from '../../testSuite/service';
+import { AdminAuth } from '../../admin-auth/types';
 
 interface Config {
   JWT_SECRET: string;
@@ -50,6 +51,7 @@ declare module 'fastify' {
     refreshService: RefreshService;
     userService: UserService;
     authService: AuthService;
+    adminAuthService: AdminAuth.Service;
     subjectService: SubjectService;
     subjectConfigService: SubjectConfigService;
     testSuiteService: TestSuiteService;

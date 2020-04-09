@@ -60,6 +60,16 @@ class UserService {
         return foundUser;
     }
 
+    async isAdmin(email: string): Promise<boolean> {
+        const user = await prisma.user({ email });
+
+        if (!user) {
+            throw new HttpErrors.BadRequest('Користувача з таким емейлом не існує.');
+        }
+
+        return user.role === 'ADMIN';
+    }
+
     convertToUserProfile(user: Omit<User, 'password'>) {
         return {
             id: user.id,
