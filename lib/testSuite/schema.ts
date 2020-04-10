@@ -26,11 +26,7 @@ export const createTestSuite = {
                 type: 'string',
             },
             answers: {
-                type: 'array',
-                item: {
-                    type: 'array',
-                    item: { type: 'string' },
-                },
+                type: 'string',
             },
         },
     },

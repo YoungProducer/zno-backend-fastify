@@ -9,9 +9,11 @@
 import { FastifyInstance } from 'fastify';
 import aws from 'aws-sdk';
 import HttpErrors from 'http-errors';
+import pick from 'lodash/pick';
+import omit from 'lodash/omit';
 
 /** Application's imports */
-import { prisma, TestSuite, TestSuiteCreateInput } from '../../prisma/generated/prisma-client';
+import { prisma, TestSuite, TestSuiteCreateInput, SubjectConfigCreateInput } from '../../prisma/generated/prisma-client';
 import {
     ICreateTestSuiteCredentials,
     IGetTestSuiteCredentials,
@@ -37,6 +39,129 @@ class TestSuiteService {
     async create(credentials: ICreateTestSuiteCredentials): Promise<TestSuite> {
         const { subjectName, subSubjectName, tasksImages, explanationsImages, answers, ...other } = credentials;
 
+        const subjectConfigs = await prisma.subjectConfigs({
+            where: {
+                subject: {
+                    name: subjectName,
+                },
+            },
+        });
+
+        if (subjectConfigs.length === 0) {
+            // Todo: Create new subject config here.
+            await prisma.createSubjectConfig(
+                Object
+                    .entries(pick(credentials, [
+                        'subjectName',
+                        // 'subSubjectName',
+                        'theme',
+                        'training',
+                        'session',
+                    ]))
+                    .reduce((acc, curr) => {
+                        if (curr[0] === 'subjectName') {
+                            return {
+                                ...acc,
+                                subject: {
+                                    connect: {
+                                        name: curr[1],
+                                    },
+                                },
+                            };
+                        }
+
+                        if (curr[0] === 'theme') {
+                            return {
+                                ...acc,
+                                themes: {
+                                    set: curr[1],
+                                },
+                            };
+                        }
+
+                        if (curr[0] === 'training') {
+                            return {
+                                ...acc,
+                                exams: {
+                                    create: {
+                                        trainings: {
+                                            set: curr[1],
+                                        },
+                                    },
+                                },
+                            };
+                        }
+
+                        if (curr[0] === 'session') {
+                            return {
+                                ...acc,
+                                exams: {
+                                    create: {
+                                        sessions: {
+                                            set: curr[1],
+                                        },
+                                    },
+                                },
+                            };
+                        }
+
+                        return acc;
+                    }, {}) as SubjectConfigCreateInput,
+            );
+        } else {
+            const subjectConfig = subjectConfigs[0];
+
+            await prisma.updateSubjectConfig({
+                where: {
+                    id: subjectConfig.id,
+                },
+                data: Object
+                    .entries({
+                        theme: credentials.theme,
+                        session: credentials.session,
+                        training: credentials.training,
+                    })
+                    .reduce((acc, curr) => {
+                        if (curr[0] === 'theme' && curr[1]) {
+                            return {
+                                ...acc,
+                                themes: {
+                                    set: subjectConfig.themes.concat(curr[1] as string),
+                                },
+                            };
+                        }
+
+                        if (curr[0] === 'session' && curr[1] && subjectConfig.exams) {
+                            return {
+                                ...acc,
+                                exams: {
+                                    create: {
+                                        sessions: {
+                                            set: subjectConfig.exams.sessions.concat(curr[1]),
+                                        },
+                                    },
+                                },
+                            };
+                        }
+
+                        if (curr[0] === 'training' && curr[1] && subjectConfig.exams) {
+                            return {
+                                ...acc,
+                                exams: {
+                                    create: {
+                                        trainings: {
+                                            set: subjectConfig.exams.trainings.concat(curr[1]),
+                                        },
+                                    },
+                                },
+                            };
+                        }
+
+                        return acc;
+                    }, {}),
+            });
+        }
+
         /** Path where s3 Bucket will storage images related to this test suite */
         let path = `test-suites/${credentials.subjectName}`;
 
@@ -56,7 +181,10 @@ class TestSuiteService {
         const testSuite = await prisma.createTestSuite({
             path,
             ...Object
-                .entries(credentials)
+                .entries(omit(credentials, [
+                    'tasksImages',
+                    'explanationsImages',
+                ]))
                 .reduce((acc, curr) => {
                     if (curr[0] === 'subjectName') {
                         return {
