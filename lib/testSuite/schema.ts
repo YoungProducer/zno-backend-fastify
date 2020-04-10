@@ -7,32 +7,32 @@
 
 export const createTestSuite = {
     body: {
-        // type: 'object',
-        // required: ['subjectName'],
-        // properties: {
-        //     subjectName: {
-        //         type: 'string',
-        //     },
-        //     subSubjectName: {
-        //         type: 'string',
-        //     },
-        //     theme: {
-        //         type: 'string',
-        //     },
-        //     session: {
-        //         type: 'string',
-        //     },
-        //     training: {
-        //         type: 'string',
-        //     },
-            // answers: {
-            //     type: 'array',
-            //     item: {
-            //         type: 'array',
-            //         item: { type: 'string' },
-            //     },
-            // },
-    //     },
+        type: 'object',
+        required: ['subjectName'],
+        properties: {
+            subjectName: {
+                type: 'string',
+            },
+            subSubjectName: {
+                type: 'string',
+            },
+            theme: {
+                type: 'string',
+            },
+            session: {
+                type: 'string',
+            },
+            training: {
+                type: 'string',
+            },
+            answers: {
+                type: 'array',
+                item: {
+                    type: 'array',
+                    item: { type: 'string' },
+                },
+            },
+        },
     },
 };
 

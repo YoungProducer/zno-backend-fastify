@@ -67,8 +67,6 @@ const createTestSuiteHandler = async (
 ) => {
     const credentials: ICreateTestSuiteHandlerCredentials = req.body;
 
-    console.log({ raw: req.raw.rawTrailers });
-
     /** Exclude images from credentials */
     const clearCredentials = _.pick(credentials, ['subjectName', 'subSubjectName', 'session', 'training', 'theme', 'answers']);
 
@@ -77,8 +75,6 @@ const createTestSuiteHandler = async (
 
     /** Get clearImages entries */
     const clearImagesEntries = Object.entries(clearImages);
-
-    console.log(clearImages);
 
     /** Divide tasks and explanations images */
     const tasksImages = clearImagesEntries.reduce((acc: any[], curr: [string, any]) => {
@@ -94,8 +90,6 @@ const createTestSuiteHandler = async (
         }
         return acc;
     }, []);
-
-    console.log(tasksImages, explanationsImages);
 
     try {
         const testSuite = await fastify.testSuiteService.create({
