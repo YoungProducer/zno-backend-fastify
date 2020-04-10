@@ -11,7 +11,7 @@ import aws from 'aws-sdk';
 import HttpErrors from 'http-errors';
 
 /** Application's imports */
-import { prisma, TestSuite } from '../../prisma/generated/prisma-client';
+import { prisma, TestSuite, TestSuiteCreateInput } from '../../prisma/generated/prisma-client';
 import {
     ICreateTestSuiteCredentials,
     IGetTestSuiteCredentials,
@@ -37,20 +37,11 @@ class TestSuiteService {
     async create(credentials: ICreateTestSuiteCredentials): Promise<TestSuite> {
         const { subjectName, subSubjectName, tasksImages, explanationsImages, answers, ...other } = credentials;
 
-        // /** Get subject and sub-subject objects */
-        // const subject = await prisma.subject({ name: subjectName });
-        // const subSubject = await prisma.subject({ name: subSubjectName });
-
-        // /** Check is subject with this id exist */
-        // if (subject === null) {
-        //     throw new HttpErrors[404](`Предмета з таким id: ${subjectId} не існує.`);
-        // }
-
         /** Path where s3 Bucket will storage images related to this test suite */
-        let path = `test-suites/${subjectName}`;
+        let path = `test-suites/${credentials.subjectName}`;
 
         if (subSubjectName) {
-            path = path.concat(`/${subSubjectName}`);
+            path = path.concat(`/${credentials.subSubjectName}`);
         }
 
         if (credentials.theme) {
@@ -61,35 +52,61 @@ class TestSuiteService {
             path = path.concat(`/exams/sessions/${credentials.session}`);
         }
 
-        answers.map(answer => console.log(answer));
-        console.log(typeof answers, answers);
-
         /** Create test suite */
         const testSuite = await prisma.createTestSuite({
             path,
-            subject: {
-                connect: {
-                    name: subjectName,
-                },
-            },
-            // subSubject: {
-            //     connect: {
-            //         name: subSubjectName,
-            //     },
-            // },
-            answers: {
-                create: answers
-                    ? answers.map((answer, index) => ({
-                        answer: {
-                            set: answer.answer,
-                        },
-                        type: answer.type,
-                        taskId: index,
-                    }))
-                    : [],
-            },
-            ...other,
-        });
+            ...Object
+                .entries(credentials)
+                .reduce((acc, curr) => {
+                    if (curr[0] === 'subjectName') {
+                        return {
+                            ...acc,
+                            subject: {
+                                connect: {
+                                    name: curr[1],
+                                },
+                            },
+                        };
+                    }
+
+                    if (curr[0] === 'subSubjectName') {
+                        return {
+                            ...acc,
+                            subSubject: {
+                                connect: {
+                                    name: curr[1],
+                                },
+                            },
+                        };
+                    }
+
+                    if (curr[0] === 'answers') {
+                        return {
+                            ...acc,
+                            answers: {
+                                create: answers
+                                    ? answers.map((answer, index) => ({
+                                        answer: {
+                                            set: answer.answer,
+                                        },
+                                        type: answer.type,
+                                        taskId: index,
+                                    }))
+                                    : [],
+                            },
+                        };
+                    }
+
+                    if (curr[1] === null) {
+                        return acc;
+                    }
+
+                    return {
+                        ...acc,
+                        [curr[0]]: curr[1],
+                    };
+                }, {}),
+        } as TestSuiteCreateInput);
 
         /** If tasks images exist in credentials upload them to s3 Bucket and create records in database */
         if (tasksImages) {
