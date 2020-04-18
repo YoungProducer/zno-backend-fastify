@@ -120,7 +120,10 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                 const newAccessToken = await fastify.accessService.generateToken(_.omit(userProfile, 'hash'));
                 const newRefreshToken = await fastify.refreshService.generateToken(userProfile);
 
-                const clientEndpoint = extractHostname(fastify.config.CLIENT_ENDPOINT);
+                const endpoint =
+                    userProfile.role === 'ADMIN'
+                        ? extractHostname(fastify.config.ADMIN_ENDPOINT)
+                        : extractHostname(fastify.config.CLIENT_ENDPOINT);
 
                 /** Set profile to req body */
                 req.params.userProfile = _.omit(userProfile, 'hash');
@@ -131,13 +134,13 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                         maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
                         httpOnly: true,
                         path: '/',
-                        domain: clientEndpoint,
+                        domain: endpoint,
                     })
                     .setCookie('refreshToken', newRefreshToken, {
                         maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
                         httpOnly: true,
                         path: '/',
-                        domain: clientEndpoint,
+                        domain: endpoint,
                     });
             } catch (err) {
                 reply.send(err);
