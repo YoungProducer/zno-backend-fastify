@@ -237,22 +237,22 @@ class TestSuiteService {
         } as TestSuiteCreateInput);
 
         /** If tasks images exist in credentials upload them to s3 Bucket and create records in database */
-        if (tasksImages) {
-            await this.uploadImages({
-                id: testSuite.id,
-                images: tasksImages,
-                type: 'TASK',
-            });
-        }
+        // if (tasksImages) {
+        //     await this.uploadImages({
+        //         id: testSuite.id,
+        //         images: tasksImages,
+        //         type: 'TASK',
+        //     });
+        // }
 
         /** If explanations images exist in credentials upload them to s3 Bucket and create records in database */
-        if (explanationsImages) {
-            await this.uploadImages({
-                id: testSuite.id,
-                images: explanationsImages,
-                type: 'EXPLANATION',
-            });
-        }
+        // if (explanationsImages) {
+        //     await this.uploadImages({
+        //         id: testSuite.id,
+        //         images: explanationsImages,
+        //         type: 'EXPLANATION',
+        //     });
+        // }
 
         return testSuite;
     }
@@ -355,21 +355,19 @@ class TestSuiteService {
         return data;
     }
 
-    async getTestSuiteImages({ type, id }: IGetTestSuiteImagesCredentials) {
+    async getTestSuiteImages({ type, id }: IGetTestSuiteImagesCredentials): Promise<string[]> {
         /** Select test suite images by type from database */
         const images = await prisma.testSuite({ id }).images({ where: { type }, orderBy: 'taskId_ASC' });
 
-        const data = images.map(async (image) => {
-            const getParams = {
-                Bucket: this.instance.config.S3_BUCKET,
-                Key: image.image,
-                Expires: 11000,
-            };
+        const port = this.instance.config.PORT;
+        const host = this.instance.config.HOST;
+        const protocol = this.instance.config.PROTOCOL;
 
-            return await this.s3.getSignedUrlPromise('getObject', getParams);
-        });
+        const url = `${protocol}://${host}:${port}/uploads`;
 
-        return Promise.all(data);
+        const data = images.map(image => `${url}/${image.image}`);
+
+        return data;
     }
 }
 

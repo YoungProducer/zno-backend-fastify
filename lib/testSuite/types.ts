@@ -38,7 +38,7 @@ export interface ICreateTestSuiteHandlerCredentials {
     /**
      * Array of images.
      */
-    [attr: string]: string;
+    [attr: string]: any;
 }
 
 export interface ICreateTestSuiteCredentials {

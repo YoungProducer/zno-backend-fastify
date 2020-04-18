@@ -2,12 +2,14 @@
 import 'reflect-metadata';
 
 /** External imports */
+import path from 'path';
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, SchemaCompiler } from 'fastify';
 import fp from 'fastify-plugin';
 import fastifyFormBody from 'fastify-formbody';
 import fastifyCors from 'fastify-cors';
 import jwt from 'fastify-jwt';
 import fastifyCookie from 'fastify-cookie';
+import fastifyStatic from 'fastify-static';
 import { IncomingMessage, ServerResponse } from 'http';
 import _ from 'lodash';
 import aws from 'aws-sdk';
@@ -61,6 +63,9 @@ const schema = {
         ADMIN_ENDPOINT: { type: 'string', default: 'http://localhost:8082' },
         AWS_ACCESS_KEY_ID: { type: 'string' },
         AWS_SECRET_ACCESS_KEY: { type: 'string' },
+        PORT: { type: 'string', default: '4000' },
+        HOST: { type: 'string', default: 'localhost' },
+        PROTOCOL: { type: 'string', default: 'http' },
     },
 };
 
@@ -175,11 +180,16 @@ const errorHandler = async (fastify: FastifyInstance) => {
 
 const instance = fastify();
 
-const mode = process.env.NODE_ENV || 'production';
+const production = process.env.NODE_ENV === 'production';
+const development = process.env.NODE_ENV === 'development';
 
 const clientEnpoint = process.env.CLIENT_ENDPOINT || 'http://localhost:8080';
 const clientMobileEndpoint = process.env.CLIENT_MOBILE_ENDPOINT || 'http://localhost:8081';
 const adminEndpoint = process.env.ADMIN_ENDPOINT || 'http://localhost:8082';
+
+const uploadsPath = !development
+    ? '../../uploads'
+    : '../uploads';
 
 instance
     .register(fastifyCors, {
@@ -189,6 +199,10 @@ instance
             adminEndpoint,
         ],
         credentials: true,
+    })
+    .register(fastifyStatic, {
+        root: path.join(__dirname, uploadsPath),
+        prefix: '/uploads/',
     })
     .register(require('fastify-env'), { schema })
     .register(fp(errorHandler))

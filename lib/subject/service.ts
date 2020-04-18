@@ -68,9 +68,15 @@ class SubjectService implements ISubjectService {
         if (!subSubjects) {
             const images = await this.getImages(subjects);
 
+            const port = this.instance.config.PORT;
+            const host = this.instance.config.HOST;
+            const protocol = this.instance.config.PROTOCOL;
+
+            const url = `${protocol}://${host}:${port}/uploads`;
+
             const mappedSubjects = subjects.map((subject, index) => ({
                 ...subject,
-                image: images[index],
+                image: `${url}/${subject.icon}`,
             }));
 
             return mappedSubjects;

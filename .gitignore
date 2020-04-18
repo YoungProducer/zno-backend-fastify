@@ -1,6 +1,7 @@
 # Build folder and files #
 ##########################
 dist/
+uploads/
 
 # Development folders and files #
 #################################

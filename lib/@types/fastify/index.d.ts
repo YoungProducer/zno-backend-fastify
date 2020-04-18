@@ -37,6 +37,9 @@ interface Config {
   CLIENT_ENDPOINT?: string;
   CLIENT_MOBILE_ENDPOINT?: string;
   ADMIN_ENDPOINT?: string;
+  PORT?: string;
+  HOST?: string;
+  PROTOCOL?: string;
 }
 
 declare module 'fastify' {
