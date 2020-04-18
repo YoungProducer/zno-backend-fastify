@@ -21,6 +21,7 @@ import {
     IGetTestSuiteImagesCredentials,
 } from './types';
 import { makeId } from '../utils/makeId';
+import { uploadFile } from '../utils/uploadFile';
 
 class TestSuiteService {
     s3!: AWS.S3;
@@ -237,22 +238,22 @@ class TestSuiteService {
         } as TestSuiteCreateInput);
 
         /** If tasks images exist in credentials upload them to s3 Bucket and create records in database */
-        // if (tasksImages) {
-        //     await this.uploadImages({
-        //         id: testSuite.id,
-        //         images: tasksImages,
-        //         type: 'TASK',
-        //     });
-        // }
+        if (tasksImages) {
+            await this.uploadImages({
+                id: testSuite.id,
+                images: tasksImages,
+                type: 'TASK',
+            });
+        }
 
         /** If explanations images exist in credentials upload them to s3 Bucket and create records in database */
-        // if (explanationsImages) {
-        //     await this.uploadImages({
-        //         id: testSuite.id,
-        //         images: explanationsImages,
-        //         type: 'EXPLANATION',
-        //     });
-        // }
+        if (explanationsImages) {
+            await this.uploadImages({
+                id: testSuite.id,
+                images: explanationsImages,
+                type: 'EXPLANATION',
+            });
+        }
 
         return testSuite;
     }
@@ -293,7 +294,7 @@ class TestSuiteService {
         return testSuites[0];
     }
 
-    async uploadImages(credentials: IUploadImagesCredentials): Promise<aws.S3.ManagedUpload.SendData[]> {
+    async uploadImages(credentials: IUploadImagesCredentials): Promise<any> {
         /** Get last image of current test suite */
         const lastImage = await prisma.testSuiteImages({
             where: {
@@ -324,16 +325,9 @@ class TestSuiteService {
 
         /** Upload images and get result of uploaded images */
         const data = await Promise.all(credentials.images.map(async (image, index) => {
-            /** Create upload params */
-            const uploadParams = {
-                Bucket: this.instance.config.S3_BUCKET,
-                Key: `${path}/${credentials.type}/${index}_${makeId(16)}.svg`,
-                Body: image.data,
-                ContentType: image.mimetype,
-            };
+            const fileName = `${path}/${credentials.type}/${index}_${makeId(16)}.svg`;
 
-            /** Upload image to s3 Bucket */
-            const object = await this.s3.upload(uploadParams).promise();
+            await uploadFile(image);
 
             /** Create new test suite image instance to database */
             await prisma.createTestSuiteImage({
@@ -342,14 +336,12 @@ class TestSuiteService {
                         id: testSuite.id,
                     },
                 },
-                image: uploadParams.Key,
+                image: fileName,
                 taskId: latsTaskIndex + index,
                 type: credentials.type,
             });
 
-            return object;
-
-            // return await this.s3.upload(uploadParams).promise();
+            return fileName;
         }));
 
         return data;
