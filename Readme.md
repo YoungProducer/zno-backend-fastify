@@ -1,7 +1,7 @@
 # Zno server
 
 ### Description
-This repository containts backend part of application which allows stutends to prepare to exams or train on different subjects, such as Math, etc. This app use jwt authorization. Also backend store images for test suites in 'uploads' folder, this folder is in .gitignore.
+This repository containts backend part of application which allows stutends to prepare to exams or train on different subjects, such as Math, etc. This app use jwt authorization. Also backend stores images for test suites in 'uploads' folder, this folder is in .gitignore.
 
 ### Technologies
 This app based on node.js with REST API.
@@ -43,4 +43,4 @@ List of required variables:
 ### Launch
 First of all you must install packages via ```yarn``` or ```npm i ```(```npm ci```).
 Then you can run in dev mode via ```yarn dev``` or ```npm run dev```
-or you can build and start server via ```yarn build``` or ```npm run build`` end then ```yarn start``` or ```npm start```.
+or you can build and start server via ```yarn build``` or ```npm run build``` end then ```yarn start``` or ```npm start```.
