@@ -1,15 +1,14 @@
 {
   "name": "zno-back-fastify",
   "version": "1.0.0",
-  "main": "bin/app.ts",
+  "main": "bin/app.js",
   "author": "Bezrukov Oleksandr",
   "license": "MIT",
   "scripts": {
     "start": "node bin/app.js",
-    "dev": "ts-node --files ./bin/app.js",
+    "dev": "ts-node-dev --no-notify --respawn --transpileOnly ./bin/app.js",
     "build": "rm -rf ./dist && tsc",
-    "test": "jest --runInBand --detectOpenHandles --watchAll",
-    "test-dev": "ts-node-dev --no-notify --respawn --transpileOnly ./bin/app.js"
+    "test": "jest --runInBand --detectOpenHandles --watchAll"
   },
   "engines": {
     "yarn": "1.21.1",
