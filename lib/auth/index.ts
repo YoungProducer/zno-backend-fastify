@@ -95,6 +95,21 @@ async function signupHandler(
 
         return { ...user };
     } catch (err) {
+        if (err.result) {
+            if (err.result.errors[0].code === 3010) {
+                reply.status(400).send({
+                    message: 'Користувач з таким емейлом уже зареєстрований!',
+                    errors: {
+                        errorFields: ['email'],
+                        errorMessages: {
+                            email: 'Користувач з таким емейлом уже зареєстрований!',
+                        },
+                    },
+                });
+
+                return;
+            }
+        }
         const error = errorHandler(err, req);
         /** Set additional data to req body to prevent getting the 500 error */
         reply.send(error);
