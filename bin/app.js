@@ -11,10 +11,11 @@ const instancePath = mode === 'development'
 const app = require(instancePath).instance
 
 // Start listening on 3000 port
+console.log(process.env);
 app.listen(process.env.PORT || 4000, '0.0.0.0', (err) => {
     if (err) throw err;
 
-    console.log(`Application is ready and listening on http://localhost:${process.env.PORT}`);
+    console.log(`Application is ready and listening on ${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 4000}`);
     console.log(`Available routes:`);
     console.log(app.printRoutes());
 });
