@@ -131,14 +131,14 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                     .setCookie('accessToken', newAccessToken, {
                         maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
                         httpOnly: true,
-                        path: url?.pathname,
-                        domain: url?.hostname,
+                        path: url ? url.pathname : undefined,
+                        domain: url ? url.hostname : undefined,
                     })
                     .setCookie('refreshToken', newRefreshToken, {
                         maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
                         httpOnly: true,
-                        path: url?.pathname,
-                        domain: url?.hostname,
+                        path: url ? url.pathname : undefined,
+                        domain: url ? url.hostname : undefined,
                     });
             } catch (err) {
                 reply.send(err);
