@@ -12,7 +12,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { prisma, User } from '../../prisma/generated/prisma-client';
 import { ISignUpCredentials, ISignInCredentials, UserProfile } from "../services/types";
 import { errorHandler } from '../services/error-handler';
-import { extractHostname } from '../utils/extract-host-name';
+import { separateURL } from '../utils/separateURL';
 import { IRefreshReturnData } from "./types";
 import {
     me,
@@ -133,7 +133,7 @@ async function signinHandler(
 
         const refreshToken: string = await fastify.refreshService.generateToken(userProfile);
 
-        const clientEndpoint = extractHostname(fastify.config.CLIENT_ENDPOINT);
+        const clientEndpoint = separateURL(fastify.config.CLIENT_ENDPOINT);
 
         if (!user.emailConfirmed) {
             reply.setCookie('emailConfirmed', 'false', {
@@ -141,8 +141,8 @@ async function signinHandler(
                     ? Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE)
                     : undefined,
                 httpOnly: false,
-                path: '/',
-                domain: clientEndpoint,
+                path: clientEndpoint?.pathname,
+                domain: clientEndpoint?.hostname,
             });
         }
 
@@ -152,16 +152,16 @@ async function signinHandler(
                     ? Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE)
                     : undefined,
                 httpOnly: true,
-                path: '/',
-                domain: clientEndpoint,
+                path: clientEndpoint?.pathname,
+                domain: clientEndpoint?.hostname,
             })
             .setCookie('refreshToken', refreshToken, {
                 maxAge: credentials.remember
                     ? Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE)
                     : undefined,
                 httpOnly: true,
-                path: '/',
-                domain: clientEndpoint,
+                path: clientEndpoint?.pathname,
+                domain: clientEndpoint?.hostname,
             })
             .send(user);
     } catch (err) {
@@ -192,20 +192,20 @@ async function refreshHandler(
     try {
         const { accessToken, refreshToken, userProfile }: IRefreshReturnData = await fastify.authService.refresh(req);
 
-        const clientEndpoint = extractHostname(fastify.config.CLIENT_ENDPOINT);
+        const clientEndpoint = separateURL(fastify.config.CLIENT_ENDPOINT);
 
         reply
             .setCookie('accessToken', accessToken, {
                 maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
                 httpOnly: true,
-                path: '/',
-                domain: clientEndpoint,
+                path: clientEndpoint?.pathname,
+                domain: clientEndpoint?.hostname,
             })
             .setCookie('refreshToken', refreshToken, {
                 maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
                 httpOnly: true,
-                path: '/',
-                domain: clientEndpoint,
+                path: clientEndpoint?.pathname,
+                domain: clientEndpoint?.hostname,
             })
             .send(userProfile);
     } catch (err) {
@@ -221,18 +221,18 @@ async function logoutHandler(
     try {
         await fastify.authService.logout(req);
 
-        const clientEndpoint = extractHostname(fastify.config.CLIENT_ENDPOINT);
+        const clientEndpoint = separateURL(fastify.config.CLIENT_ENDPOINT);
 
         reply
             .clearCookie('accessToken', {
                 httpOnly: true,
-                path: '/',
-                domain: clientEndpoint,
+                path: clientEndpoint?.pathname,
+                domain: clientEndpoint?.hostname,
             })
             .clearCookie('refreshToken', {
                 httpOnly: true,
-                path: '/',
-                domain: clientEndpoint,
+                path: clientEndpoint?.pathname,
+                domain: clientEndpoint?.hostname,
             })
             .code(200)
             .send('Success');

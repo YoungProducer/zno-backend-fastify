@@ -12,7 +12,6 @@ import fastifyCookie from 'fastify-cookie';
 import fastifyStatic from 'fastify-static';
 import { IncomingMessage, ServerResponse } from 'http';
 import _ from 'lodash';
-import aws from 'aws-sdk';
 
 /** Application's imports */
 import BcryptHasher from './services/bcrypt-hasher';
@@ -31,7 +30,7 @@ import SubjectService from './subject/service';
 import SubjectConfigService from './subjectConfig/service';
 import TestSuiteService from './testSuite/service';
 import AdminAuthService from './admin-auth/service';
-import { extractHostname } from './utils/extract-host-name';
+import { separateURL } from './utils/separateURL';
 
 /** Import env config */
 if (process.env.NODE_ENV !== 'production') require('dotenv').config();
@@ -119,10 +118,10 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                 const newAccessToken = await fastify.accessService.generateToken(_.omit(userProfile, 'hash'));
                 const newRefreshToken = await fastify.refreshService.generateToken(userProfile);
 
-                const endpoint =
+                const url =
                     userProfile.role === 'ADMIN'
-                        ? extractHostname(fastify.config.ADMIN_ENDPOINT)
-                        : extractHostname(fastify.config.CLIENT_ENDPOINT);
+                        ? separateURL(fastify.config.ADMIN_ENDPOINT)
+                        : separateURL(fastify.config.CLIENT_ENDPOINT);
 
                 /** Set profile to req body */
                 req.params.userProfile = _.omit(userProfile, 'hash');
@@ -132,14 +131,14 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                     .setCookie('accessToken', newAccessToken, {
                         maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
                         httpOnly: true,
-                        path: '/',
-                        domain: endpoint,
+                        path: url?.pathname,
+                        domain: url?.hostname,
                     })
                     .setCookie('refreshToken', newRefreshToken, {
                         maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
                         httpOnly: true,
-                        path: '/',
-                        domain: endpoint,
+                        path: url?.pathname,
+                        domain: url?.hostname,
                     });
             } catch (err) {
                 reply.send(err);

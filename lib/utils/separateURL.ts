@@ -24,3 +24,8 @@ export const extractHostname = (url: string | undefined) => {
 
     return hostname;
 };
+
+export const separateURL = (url: string | undefined) => {
+    if (!url) return undefined;
+    return new URL(url);
+};

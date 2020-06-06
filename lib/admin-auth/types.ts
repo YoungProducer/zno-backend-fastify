@@ -60,7 +60,7 @@ export namespace AdminAuth {
     export interface Service {
         instance: FastifyInstance;
 
-        adminEndpoint: string | undefined;
+        adminEndpoint: URL | undefined;
         accessTokenCookiesMaxAge: number;
         refreshTokenCookiesMaxAge: number;
 

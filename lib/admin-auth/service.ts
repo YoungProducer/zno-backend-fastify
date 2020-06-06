@@ -12,18 +12,18 @@ import HttpErrors from 'http-errors';
 /** Application's imports */
 import { AdminAuth } from './types';
 import { prisma } from '../../prisma/generated/prisma-client';
-import { extractHostname } from '../utils/extract-host-name';
+import { separateURL } from '../utils/separateURL';
 
 class AdminAuthService implements AdminAuth.Service {
     instance!: FastifyInstance;
-    adminEndpoint: string | undefined;
+    adminEndpoint: URL | undefined;
     accessTokenCookiesMaxAge: number;
     refreshTokenCookiesMaxAge: number;
 
     constructor(fastify: FastifyInstance) {
         this.instance = fastify;
 
-        this.adminEndpoint = extractHostname(this.instance.config.ADMIN_ENDPOINT);
+        this.adminEndpoint = separateURL(this.instance.config.ADMIN_ENDPOINT);
         this.accessTokenCookiesMaxAge = Number(this.instance.config.JWT_ACCESS_COOKIES_MAX_AGE);
         this.refreshTokenCookiesMaxAge = Number(this.instance.config.JWT_REFRESH_COOKIES_MAX_AGE);
     }
@@ -46,14 +46,14 @@ class AdminAuthService implements AdminAuth.Service {
             .setCookie('accessToken', accessToken, {
                 httpOnly: true,
                 maxAge: this.accessTokenCookiesMaxAge,
-                path: '/',
-                domain: this.adminEndpoint,
+                path: this.adminEndpoint?.pathname,
+                domain: this.adminEndpoint?.hostname,
             })
             .setCookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 maxAge: this.refreshTokenCookiesMaxAge,
-                path: '/',
-                domain: this.adminEndpoint,
+                path: this.adminEndpoint?.pathname,
+                domain: this.adminEndpoint?.hostname,
             });
 
         return user;
@@ -79,13 +79,13 @@ class AdminAuthService implements AdminAuth.Service {
         reply
             .clearCookie('accessToken', {
                 httpOnly: true,
-                path: '/',
-                domain: this.adminEndpoint,
+                path: this.adminEndpoint?.pathname,
+                domain: this.adminEndpoint?.hostname,
             })
             .clearCookie('refreshToken', {
                 httpOnly: true,
-                path: '/',
-                domain: this.adminEndpoint,
+                path: this.adminEndpoint?.pathname,
+                domain: this.adminEndpoint?.hostname,
             });
     }
 }
