@@ -10,9 +10,9 @@ export interface UserSchema {
     email: string;
     password: string;
     name?: string;
-    lastName: string;
-    emailConfirmed: boolean;
-    role: UserRole;
+    lastName?: string;
+    emailConfirmed?: boolean;
+    role?: UserRole;
     refreshTokens: string[];
 }
 
@@ -48,6 +48,7 @@ const userSchema = new Schema<UserSchema>({
 }, {
     autoIndex: true,
     timestamps: true,
+    collection: 'User',
 });
 
 export const userModel: Model<Document & UserSchema> =

@@ -32,6 +32,7 @@ const subjectSchema = new Schema<SubjectSchema>({
 }, {
     autoIndex: true,
     timestamps: true,
+    collection: 'Subject',
 });
 
 export const subjectModel: Model<SubjectSchema & Document> =

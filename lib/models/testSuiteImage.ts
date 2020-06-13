@@ -35,6 +35,7 @@ const testSuiteImageSchema = new Schema<TestSuiteImageSchema>({
 }, {
     autoIndex: true,
     timestamps: true,
+    collection: 'TestSuiteImage',
 });
 
 export const testSuiteImageModel: Model<TestSuiteImageSchema & Document> =

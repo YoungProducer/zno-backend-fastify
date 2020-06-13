@@ -32,7 +32,6 @@ import SubjectConfigService from './subjectConfig/service';
 import TestSuiteService from './testSuite/service';
 import AdminAuthService from './admin-auth/service';
 import { separateURL } from './utils/separateURL';
-import { testSuiteModel } from './models/testSuite';
 
 /** Import env config */
 if (process.env.NODE_ENV !== 'production') require('dotenv').config();

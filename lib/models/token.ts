@@ -24,6 +24,7 @@ const tokenSchema = new Schema<TokenSchema>({
 }, {
     autoIndex: true,
     timestamps: true,
+    collection: 'Token',
 });
 
 export const tokenModel: Model<Document & TokenSchema> =

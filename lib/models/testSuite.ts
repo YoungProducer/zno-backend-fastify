@@ -60,6 +60,7 @@ const testSuiteSchema = new Schema<TestSuiteSchema>({
 }, {
     autoIndex: true,
     timestamps: true,
+    collection: 'TestSuite',
 });
 
 export const testSuiteModel: Model<TestSuiteSchema & Document> =

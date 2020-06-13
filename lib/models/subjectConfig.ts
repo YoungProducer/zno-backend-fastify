@@ -47,6 +47,7 @@ const subjectConfigSchema = new Schema<SubjectConfigSchema>({
 }, {
     autoIndex: true,
     timestamps: true,
+    collection: 'SubjectConfig',
 });
 
 export const subjectConfigModel: Model<SubjectConfigSchema & Document> =
