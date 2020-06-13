@@ -1,12 +1,13 @@
 /** External imports */
 import { Schema, Model, Document, model } from 'mongoose';
-import omit from 'lodash/omit';
+
+import { WithTimeStamps } from '.';
 
 export type UserRole =
     | 'ADMIN'
     | 'DEFAULT_USER';
 
-export interface UserSchema {
+export interface UserSchema extends WithTimeStamps {
     _id: string;
     email: string;
     password: string;

@@ -1,11 +1,13 @@
 /** External imports */
 import { Schema, Model, Document, model } from 'mongoose';
 
+import { WithTimeStamps } from '.';
+
 export type ImageType =
     | 'TASK'
     | 'EXPLANATION';
 
-export interface TestSuiteImageSchema {
+export interface TestSuiteImageSchema extends WithTimeStamps {
     _id: string;
     taskId: number;
     testSuite: string;

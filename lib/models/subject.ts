@@ -1,7 +1,9 @@
 /** External imports */
 import { Schema, Model, Document, model } from 'mongoose';
 
-export interface SubjectSchema {
+import { WithTimeStamps } from '.';
+
+export interface SubjectSchema extends WithTimeStamps {
     _id: string;
     name: string;
     isSubSubject: boolean;

@@ -1,6 +1,8 @@
 /** External imports */
 import { Schema, Model, Document, model } from 'mongoose';
 
+import { WithTimeStamps } from '.';
+
 export interface SubSubject {
     subject: string;
     themes: string[];
@@ -11,7 +13,7 @@ export interface Exams {
     sessions: string[];
 }
 
-export interface SubjectConfigSchema {
+export interface SubjectConfigSchema extends WithTimeStamps {
     _id: string;
     subject: string;
     themes: string[];

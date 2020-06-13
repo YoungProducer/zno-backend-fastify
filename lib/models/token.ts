@@ -1,7 +1,9 @@
 /** External imports */
 import { Schema, Model, Document, model } from 'mongoose';
 
-export interface TokenSchema {
+import { WithTimeStamps } from '.';
+
+export interface TokenSchema extends WithTimeStamps {
     _id: string;
     token: string;
     loginId?: string;

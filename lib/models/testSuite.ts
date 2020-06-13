@@ -1,6 +1,8 @@
 /** External imports */
 import { Schema, Model, Document, model } from 'mongoose';
 
+import { WithTimeStamps } from '.';
+
 export type AnswerType =
     | 'SINGLE'
     | 'RELATIONS'
@@ -12,7 +14,7 @@ export interface Answer {
     type: AnswerType;
 }
 
-export interface TestSuiteSchema {
+export interface TestSuiteSchema extends WithTimeStamps {
     _id: string;
     subject: string;
     subSubject: string;
