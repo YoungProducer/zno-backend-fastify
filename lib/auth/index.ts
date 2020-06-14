@@ -152,7 +152,7 @@ async function signinHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: '/',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                domain: 'pp-books.com.ua',
             })
             .setCookie('refreshToken', refreshToken, {
                 maxAge: credentials.remember
@@ -161,7 +161,7 @@ async function signinHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: '/',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                domain: 'pp-books.com.ua',
             })
             .send(user);
     } catch (err) {
