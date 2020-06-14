@@ -47,13 +47,13 @@ class AdminAuthService implements AdminAuth.Service {
             .setCookie('accessToken', accessToken, {
                 httpOnly: true,
                 maxAge: this.accessTokenCookiesMaxAge,
-                path: this.adminEndpoint ? this.adminEndpoint.pathname : undefined,
+                path: this.adminEndpoint ? this.adminEndpoint.pathname : '/',
                 domain: this.adminEndpoint ? this.adminEndpoint.hostname : undefined,
             })
             .setCookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 maxAge: this.refreshTokenCookiesMaxAge,
-                path: this.adminEndpoint ? this.adminEndpoint.pathname : undefined,
+                path: this.adminEndpoint ? this.adminEndpoint.pathname : '/',
                 domain: this.adminEndpoint ? this.adminEndpoint.hostname : undefined,
             });
 
@@ -80,12 +80,12 @@ class AdminAuthService implements AdminAuth.Service {
         reply
             .clearCookie('accessToken', {
                 httpOnly: true,
-                path: this.adminEndpoint ? this.adminEndpoint.pathname : undefined,
+                path: this.adminEndpoint ? this.adminEndpoint.pathname : '/',
                 domain: this.adminEndpoint ? this.adminEndpoint.hostname : undefined,
             })
             .clearCookie('refreshToken', {
                 httpOnly: true,
-                path: this.adminEndpoint ? this.adminEndpoint.pathname : undefined,
+                path: this.adminEndpoint ? this.adminEndpoint.pathname : '/',
                 domain: this.adminEndpoint ? this.adminEndpoint.hostname : undefined,
             });
     }
