@@ -11,7 +11,7 @@ import { IncomingMessage, ServerResponse } from "http";
 
 /** Application's imports */
 import { Role } from "../../prisma/generated/prisma-client";
-import { UserProfile } from "aws-sdk/clients/opsworks";
+import { UserProfile } from "../services/types";
 
 export interface User {
     email: string;
@@ -26,7 +26,7 @@ export namespace AdminAuth {
             email: string;
             password: string;
         };
-        export type SignInReturn = User;
+        export type SignInReturn = UserProfile;
         export type SignIn = (payload: SignInPayload, reply: FastifyReply<ServerResponse>) => Promise<SignInReturn>;
 
         /** ================================== */
