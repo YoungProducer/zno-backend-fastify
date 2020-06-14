@@ -7,10 +7,10 @@ export interface SubjectSchema extends WithTimeStamps {
     _id: string;
     name: string;
     isSubSubject: boolean;
-    parent: string;
-    image: string;
-    icon: string;
-    config: string;
+    parent?: string;
+    image?: string;
+    icon?: string;
+    config?: string;
 }
 
 const subjectSchema = new Schema<SubjectSchema>({
@@ -35,6 +35,10 @@ const subjectSchema = new Schema<SubjectSchema>({
     autoIndex: true,
     timestamps: true,
     collection: 'Subject',
+});
+
+subjectSchema.set('toJSON', {
+    virtuals: true,
 });
 
 export const subjectModel: Model<SubjectSchema & Document> =

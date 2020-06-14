@@ -13,6 +13,8 @@ import HttpErros from 'http-errors';
 /** Application's imports */
 import { prisma, Subject } from '../../prisma/generated/prisma-client';
 import { ISubjectService, SubjectTypes } from './types';
+import { subjectModel, SubjectSchema } from '../models/subject';
+import '../models/subjectConfig';
 
 class SubjectService implements ISubjectService {
     s3!: AWS.S3;
@@ -28,8 +30,8 @@ class SubjectService implements ISubjectService {
         });
     }
 
-    async create(payload: SubjectTypes.CreatePayload): Promise<Subject> {
-        const subject = await prisma.createSubject(payload);
+    async create(payload: SubjectTypes.CreatePayload): Promise<SubjectSchema> {
+        const subject = await subjectModel.create(payload);
 
         return subject;
     }
@@ -52,34 +54,32 @@ class SubjectService implements ISubjectService {
         });
     }
 
-    async subjects(subSubjects: boolean): Promise<{
-        id: string;
-        name: string;
-    }[]> {
-        const mode = process.env.NODE_ENV || 'production';
-        const currentUrl = process.env.API_ENDPOINT;
+    async subjects(subSubjects: boolean): Promise<SubjectSchema[]> {
+        const subjects = await subjectModel.find({});
 
-        const subjects: any[] = await prisma.subjects({
-            where: {
-                isSubSubject: subSubjects,
-            },
-        }).$fragment(`fragment SelectName on Subject { id name icon }`);
+        if (subjects) {
+            if (!subSubjects) {
+                const port = this.instance.config.PORT;
+                const host = this.instance.config.HOST;
+                const protocol = this.instance.config.PROTOCOL;
 
-        if (!subSubjects) {
-            const images = await this.getImages(subjects);
+                const url = `${protocol}://${host}:${port}/uploads`;
 
-            const port = this.instance.config.PORT;
-            const host = this.instance.config.HOST;
-            const protocol = this.instance.config.PROTOCOL;
+                const subjectsWithValidImages = subjects.map(subject => {
+                    const json: SubjectSchema = subject.toJSON();
 
-            const url = `${protocol}://${host}:${port}/uploads`;
+                    if (json.icon) {
+                        return {
+                            ...json,
+                            image: `${url}/${json.icon}`,
+                        };
+                    }
 
-            const mappedSubjects = subjects.map((subject, index) => ({
-                ...subject,
-                image: `${url}/${subject.icon}`,
-            }));
+                    return json;
+                });
 
-            return mappedSubjects;
+                return subjectsWithValidImages;
+            }
         }
 
         return subjects;
@@ -148,22 +148,6 @@ class SubjectService implements ISubjectService {
             where: { id },
             data: { image: data.Key },
         });
-
-        // this.s3.upload(uploadParams, async (err: any, data: any) => {
-        //     if (err) {
-        //         console.log("Error", err);
-        //     } if (data) {
-        //         console.log("Upload Success", data.Location);
-        //         await prisma.updateSubject({
-        //             where: {
-        //                 id,
-        //             },
-        //             data: {
-        //                 image: data.Key,
-        //             },
-        //         });
-        //     }
-        // });
     }
 }
 
