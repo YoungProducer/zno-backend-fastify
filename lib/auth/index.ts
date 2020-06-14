@@ -150,7 +150,7 @@ async function signinHandler(
                     ? Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE)
                     : undefined,
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
+                secure: process.env.NODE_ENV !== 'development',
                 path: '/',
                 domain: clientEndpoint ? clientEndpoint.hostname : undefined,
             })
@@ -159,7 +159,7 @@ async function signinHandler(
                     ? Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE)
                     : undefined,
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
+                secure: process.env.NODE_ENV !== 'development',
                 path: '/',
                 domain: clientEndpoint ? clientEndpoint.hostname : undefined,
             })
