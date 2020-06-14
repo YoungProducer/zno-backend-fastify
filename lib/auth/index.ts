@@ -138,6 +138,7 @@ async function signinHandler(
                     : undefined,
                 httpOnly: false,
                 path: clientEndpoint ? clientEndpoint.pathname : '/',
+                sameSite: 'lax',
                 // domain: clientEndpoint ? clientEndpoint.hostname : undefined,
             });
         }
