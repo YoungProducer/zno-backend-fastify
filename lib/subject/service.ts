@@ -55,7 +55,9 @@ class SubjectService implements ISubjectService {
     }
 
     async subjects(subSubjects: boolean): Promise<SubjectSchema[]> {
-        const subjects = await subjectModel.find({});
+        const subjects = await subjectModel.find({
+            isSubSubject: subSubjects,
+        });
 
         if (subjects) {
             if (!subSubjects) {
