@@ -2,6 +2,8 @@
 import { Schema, Model, Document, model } from 'mongoose';
 
 import { WithTimeStamps } from '.';
+import { Subject } from './subject';
+import { TestSuiteImage } from './testSuiteImage';
 
 export type AnswerType =
     | 'SINGLE'
@@ -26,6 +28,17 @@ export interface TestSuiteSchema extends WithTimeStamps {
     path: string;
 }
 
+export type TestSuite =
+    & TestSuiteSchema
+    & Document;
+
+export type TestSuitePopulated =
+    & Omit<TestSuite, 'images' | 'subject' | 'subSubject'>
+    & {
+        images: TestSuiteImage;
+        subject: Subject;
+    };
+
 const testSuiteSchema = new Schema<TestSuiteSchema>({
     subject: {
         type: Schema.Types.ObjectId,
@@ -45,6 +58,10 @@ const testSuiteSchema = new Schema<TestSuiteSchema>({
     training: {
         type: String,
     },
+    images: [{
+        type: Schema.Types.ObjectId,
+        ref: 'TestSuiteImage',
+    }],
     answers: [{
         taskId: {
             type: Number,
@@ -63,6 +80,10 @@ const testSuiteSchema = new Schema<TestSuiteSchema>({
     autoIndex: true,
     timestamps: true,
     collection: 'TestSuite',
+});
+
+testSuiteSchema.set('toJSON', {
+    virtuals: true,
 });
 
 export const testSuiteModel: Model<TestSuiteSchema & Document> =

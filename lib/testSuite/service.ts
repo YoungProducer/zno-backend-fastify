@@ -13,7 +13,7 @@ import pick from 'lodash/pick';
 import omit from 'lodash/omit';
 
 /** Application's imports */
-import { prisma, TestSuite, TestSuiteCreateInput, SubjectConfigCreateInput } from '../../prisma/generated/prisma-client';
+import { prisma, TestSuiteCreateInput, SubjectConfigCreateInput } from '../../prisma/generated/prisma-client';
 import {
     ICreateTestSuiteCredentials,
     IGetTestSuiteCredentials,
@@ -22,6 +22,9 @@ import {
 } from './types';
 import { makeId } from '../utils/makeId';
 import { uploadFile } from '../utils/uploadFile';
+import { testSuiteModel, TestSuite } from '../models/testSuite';
+import { TestSuiteImage } from '../models/testSuiteImage';
+import '../models/testSuiteImage';
 
 class TestSuiteService {
     s3!: AWS.S3;
@@ -255,43 +258,24 @@ class TestSuiteService {
             });
         }
 
-        return testSuite;
+        return testSuite as any;
     }
 
     async testSuite(credentials: IGetTestSuiteCredentials): Promise<TestSuite> {
         /** Destruct credentials object */
         const { subjectId, subSubjectId, ...other } = credentials;
 
-        let testSuites;
+        const testSuite = await testSuiteModel.findOne({
+            subject: subjectId,
+            subSubject: subSubjectId,
+            ...other,
+        });
 
-        if (!subSubjectId) {
-            testSuites = await prisma.testSuites({
-                where: {
-                    subject: {
-                        id: subjectId,
-                    },
-                    ...other,
-                },
-            });
-        } else {
-            testSuites = await prisma.testSuites({
-                where: {
-                    subject: {
-                        id: subjectId,
-                    },
-                    subSubject: {
-                        id: subSubjectId,
-                    },
-                    ...other,
-                },
-            });
-        }
-
-        if (!testSuites || testSuites.length < 1) {
+        if (!testSuite) {
             throw new HttpErrors.NotFound('Тесту з таким параметрами не знайдено.');
         }
 
-        return testSuites[0];
+        return testSuite;
     }
 
     async uploadImages(credentials: IUploadImagesCredentials): Promise<any> {
@@ -349,7 +333,20 @@ class TestSuiteService {
 
     async getTestSuiteImages({ type, id }: IGetTestSuiteImagesCredentials): Promise<string[]> {
         /** Select test suite images by type from database */
-        const images = await prisma.testSuite({ id }).images({ where: { type }, orderBy: 'taskId_ASC' });
+        const testSuite = await testSuiteModel
+            .findById(id)
+            .populate({
+                path: 'images',
+            })
+            .select('images');
+
+        if (!testSuite) {
+            throw new HttpErrors.NotFound('Картинок для тесту з таким id не знайдено!');
+        }
+
+        const images: TestSuiteImage[] = testSuite.toJSON().images;
+
+        // const images = await prisma.testSuite({ id }).images({ where: { type }, orderBy: 'taskId_ASC' });
 
         const port = this.instance.config.PORT;
         const host = this.instance.config.HOST;
@@ -357,7 +354,10 @@ class TestSuiteService {
 
         const url = `${protocol}://${host}:${port}/uploads`;
 
-        const data = images.map(image => `${url}/${image.image}`);
+        const data = images
+            .sort((a, b) => a.taskId - b.taskId)
+            .filter(image => image.type === type)
+            .map(image => `${url}/${image.image}`);
 
         return data;
     }

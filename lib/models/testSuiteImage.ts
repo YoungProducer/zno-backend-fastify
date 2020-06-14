@@ -15,6 +15,10 @@ export interface TestSuiteImageSchema extends WithTimeStamps {
     type: ImageType;
 }
 
+export type TestSuiteImage =
+    & TestSuiteImageSchema
+    & Document;
+
 const testSuiteImageSchema = new Schema<TestSuiteImageSchema>({
     taskId: {
         type: Number,
