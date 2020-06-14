@@ -18,10 +18,12 @@ const tokenSchema = new Schema<TokenSchema>({
     loginId: {
         type: String,
         required: false,
+        unique: true,
     },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
+        required: true,
     },
 }, {
     autoIndex: true,
