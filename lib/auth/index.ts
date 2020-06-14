@@ -138,11 +138,9 @@ async function signinHandler(
                     : undefined,
                 httpOnly: false,
                 path: clientEndpoint ? clientEndpoint.pathname : '/',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                // domain: clientEndpoint ? clientEndpoint.hostname : undefined,
             });
         }
-
-        console.log(clientEndpoint);
 
         reply
             .setCookie('accessToken', accessToken, {
