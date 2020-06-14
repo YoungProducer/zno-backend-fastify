@@ -19,6 +19,7 @@ import {
     signin,
     signup,
 } from './schema';
+import { userModel, UserSchema } from "../models/user";
 
 export = async function (
     fastify: FastifyInstance,
@@ -85,16 +86,11 @@ async function signupHandler(
         credentials.password = await fastify.bcryptHasher.hashPassword(credentials.password);
 
         /** Get created user */
-        const user = await prisma.createUser({
-            ...credentials,
-            role: 'DEFAULT_USER',
-        });
+        const user = await userModel.create(credentials);
 
-        /** Delete password */
-        delete user.password;
-
-        return { ...user };
+        return { ...user.toClient() };
     } catch (err) {
+        console.log(err);
         if (err.result) {
             if (err.result.errors[0].code === 3010) {
                 reply.status(400).send({
@@ -125,7 +121,7 @@ async function signinHandler(
     const credentials: ISignInCredentials = req.body;
 
     try {
-        const user: Omit<User, 'password'> = await fastify.userService.verifyCredentials(credentials);
+        const user = await fastify.userService.verifyCredentials(credentials);
 
         const userProfile: UserProfile = fastify.userService.convertToUserProfile(user);
 

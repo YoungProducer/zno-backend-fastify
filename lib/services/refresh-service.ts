@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 /** Application's imports */
 import { UserProfile } from "./types";
 import { prisma } from '../../prisma/generated/prisma-client';
+import { tokenModel } from '../models/token';
 
 class RefreshService {
     instance!: FastifyInstance;
@@ -64,13 +65,10 @@ class RefreshService {
                  * its mean that user already logged in
                  * and in this case just need to update token in db.
                  */
-                await prisma.updateToken({
-                    data: {
-                        token,
-                    },
-                    where: {
-                        loginId: userProfile.hash,
-                    },
+                await tokenModel.updateOne({
+                    loginId: userProfile.hash,
+                }, {
+                    token,
                 });
 
                 this.instance.log.debug('updateToken');
@@ -80,12 +78,10 @@ class RefreshService {
                  * its mean that user isn't logged in
                  * in this case need to create new record in db.
                  */
-                await prisma.createToken({
+                await tokenModel.create({
                     token,
                     loginId: tokenData.hash,
-                    user: {
-                        connect: { id: userProfile.id },
-                    },
+                    user: userProfile.id,
                 });
 
                 this.instance.log.debug('createToken');

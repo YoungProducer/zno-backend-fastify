@@ -12,6 +12,7 @@ import fastifyCookie from 'fastify-cookie';
 import fastifyStatic from 'fastify-static';
 import { IncomingMessage, ServerResponse } from 'http';
 import _ from 'lodash';
+import mongoose from 'mongoose';
 
 /** Application's imports */
 import BcryptHasher from './services/bcrypt-hasher';
@@ -44,6 +45,9 @@ const schema = {
         'JWT_REFRESH_EXPIRES_IN',
         'JWT_REFRESH_COOKIES_MAX_AGE',
         'JWT_SESSION_EXPIRES_IN',
+        'MONGO_USERNAME',
+        'MONGO_PASSWORD',
+        'MONGO_DB_NAME',
         // 'CLIENT_ENDPOINT',
     ],
     properties: {
@@ -59,10 +63,37 @@ const schema = {
         PORT: { type: 'string', default: '4000' },
         HOST: { type: 'string', default: 'localhost' },
         PROTOCOL: { type: 'string', default: 'http' },
+        MONGO_USERNAME: { type: 'string' },
+        MONGO_PASSWORD: { type: 'string' },
+        MONGO_DB_NAME: { type: 'string' },
     },
 };
 
+const connectToDatabase = async (fastify: FastifyInstance) => {
+    const {
+        MONGO_USERNAME,
+        MONGO_PASSWORD,
+        MONGO_DB_NAME,
+    } = fastify.config;
+    const mongouri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@mycluster-qntjt.azure.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`
+
+    await mongoose.connect(mongouri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+};
+
+const disconnectFromDatabase = async () => {
+    await mongoose.disconnect();
+};
+
 const decorateFastifyInstance = async (fastify: FastifyInstance) => {
+    fastify.addHook('onClose', async (instance: FastifyInstance, done: () => void) => {
+        await disconnectFromDatabase();
+
+        done();
+    });
+
     const bcryptHasher = new BcryptHasher();
     fastify.decorate('bcryptHasher', bcryptHasher);
 
@@ -198,6 +229,7 @@ instance
         prefix: '/uploads/',
     })
     .register(require('fastify-env'), { schema })
+    .register(fp(connectToDatabase))
     .register(fp(errorHandler))
     .register(fp(authenticator))
     .register(fp(decorateFastifyInstance))

@@ -13,6 +13,7 @@ import HttpErrors from 'http-errors';
 import { AdminAuth } from './types';
 import { prisma } from '../../prisma/generated/prisma-client';
 import { separateURL } from '../utils/separateURL';
+import { userModel } from '../models/user';
 
 class AdminAuthService implements AdminAuth.Service {
     instance!: FastifyInstance;
@@ -56,7 +57,7 @@ class AdminAuthService implements AdminAuth.Service {
                 domain: this.adminEndpoint ? this.adminEndpoint.hostname : undefined,
             });
 
-        return user;
+        return userProfile;
     }
 
     me: AdminAuth.Service.Me = async (req) => {
@@ -72,7 +73,7 @@ class AdminAuthService implements AdminAuth.Service {
         /** Verify token */
         const userProfile = await this.instance.refreshService.verifyToken(refreshToken);
 
-        await prisma.deleteToken({
+        await userModel.deleteOne({
             loginId: userProfile.hash,
         });
 

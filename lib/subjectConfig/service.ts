@@ -10,6 +10,9 @@ import aws from 'aws-sdk';
 /** Application's imports */
 import { prisma, SubSubjectCreateInput, SubjectConfigCreateInput } from '../../prisma/generated/prisma-client';
 import { TSubjectConfig } from './types';
+import { subjectConfigModel, SubjectConfig, SubjectConfigPopulated } from '../models/subjectConfig';
+import HttpErrors from 'http-errors';
+import { subjectModel, SubjectPopulated } from '../models/subject';
 
 class SubjectConfigService {
     async create(config: TSubjectConfig) {
@@ -71,34 +74,37 @@ class SubjectConfigService {
     }
 
     async config(id: string): Promise<TSubjectConfig> {
-        const config = await prisma
-            .subject({ id })
-            .config()
-            .$fragment(`
-                fragment PostWithAuthorsAndComments on Post {
-                    subject { id name }
-                    subSubjects {
-                        subject { id name }
-                        themes
-                    }
-                    themes
-                    exams {
-                        trainings
-                        sessions
-                    }
-                }`) as any;
+        const subject = await subjectModel
+            .findOne({
+                _id: id,
+            })
+            .populate({
+                path: 'config',
+                populate: {
+                    path: 'subject subSubject',
+                },
+            });
 
-        return {
-            name: config.subject.name,
-            id: config.subject.id,
-            subSubjects: config.subSubjects.map((subject: any) => ({
-                id: subject.subject.id,
-                name: subject.subject.name,
-                themes: subject.themes,
-            })),
-            themes: config.themes,
-            exams: config.exams,
-        };
+        if (subject) {
+            const jsonSubject: SubjectPopulated = subject.toJSON();
+            const config = jsonSubject.config;
+
+            if (config) {
+                return {
+                    name: config.subject.name,
+                    id: config.subject.id,
+                    subSubjects: config.subSubjects.map((subject: any) => ({
+                        id: subject.subject.id,
+                        name: subject.subject.name,
+                        themes: subject.themes,
+                    })),
+                    themes: config.themes,
+                    exams: config.exams,
+                };
+            }
+        }
+
+        throw new HttpErrors.NotFound('Конфігу з таким id предмету не знайдено!');
     }
 }
 

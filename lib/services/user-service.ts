@@ -6,12 +6,12 @@
  */
 
 /** External imports */
-import fastify, { FastifyInstance } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import HttpErrors from 'http-errors';
 
 /** Application's imports */
 import { ISignInCredentials, TValidationError } from '../services/types';
-import { User, prisma } from '../../prisma/generated/prisma-client';
+import { userModel, User } from '../models/user';
 
 class UserService {
     instance!: FastifyInstance;
@@ -20,14 +20,16 @@ class UserService {
         this.instance = fastify;
     }
 
-    async verifyCredentials(credentials: Pick<ISignInCredentials, 'password' | 'email'>): Promise<Omit<User, 'password'>> {
+    async verifyCredentials(
+        credentials: Pick<ISignInCredentials, 'password' | 'email'>,
+    ): Promise<Omit<User, 'password'>> {
         const errorData: TValidationError = {
             errorFields: [],
             errorMessages: {},
         };
 
         /** Find user in data base by email */
-        const foundUser = await prisma.user({
+        const foundUser = await userModel.findOne({
             email: credentials.email,
         });
 
@@ -61,7 +63,7 @@ class UserService {
     }
 
     async isAdmin(email: string): Promise<boolean> {
-        const user = await prisma.user({ email });
+        const user = await userModel.findOne({ email });
 
         if (!user) {
             throw new HttpErrors.BadRequest('Користувача з таким емейлом не існує.');
@@ -72,7 +74,7 @@ class UserService {
 
     convertToUserProfile(user: Omit<User, 'password'>) {
         return {
-            id: user.id,
+            id: user._id,
             email: user.email,
             role: user.role,
         };

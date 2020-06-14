@@ -5,23 +5,17 @@
  * Declare main types and interfaces related to subject controller and service.
  */
 
-/** External imports */
-import { FastifyInstance } from 'fastify';
-
 /** Application's imports */
-import { Subject } from '../../prisma/generated/prisma-client';
+import { SubjectSchema } from '../models/subject';
 
 export namespace SubjectTypes {
     export interface CreatePayload {
         name: string;
-        subSubject: boolean;
+        isSubSubject: boolean;
     }
 }
 
 export interface ISubjectService {
-    create: (payload: SubjectTypes.CreatePayload) => Promise<Subject>;
-    subjects: (subSubject: boolean) => Promise<{
-        id: string;
-        name: string;
-    }[]>;
+    create: (payload: SubjectTypes.CreatePayload) => Promise<SubjectSchema>;
+    subjects: (subSubject: boolean) => Promise<SubjectSchema[]>;
 }
