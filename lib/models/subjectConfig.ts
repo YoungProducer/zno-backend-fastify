@@ -2,11 +2,18 @@
 import { Schema, Model, Document, model } from 'mongoose';
 
 import { WithTimeStamps } from '.';
+import { SubjectVirtual } from './subject';
 
 export interface SubSubject {
     subject: string;
     themes: string[];
 }
+
+export type SubSubjectPopulated =
+    & Pick<SubSubject, 'themes'>
+    & {
+        subject: SubjectVirtual;
+    };
 
 export interface Exams {
     trainings: string[];
@@ -20,6 +27,20 @@ export interface SubjectConfigSchema extends WithTimeStamps {
     subSubjects: SubSubject[];
     exams: Exams;
 }
+
+export type SubjectConfig =
+    & SubjectConfigSchema
+    & Document;
+
+export type SubjectConfigPopulated =
+    & Omit<SubjectConfig, 'subSubjects' | 'subject'>
+    & {
+        subject: {
+            id: string;
+            name: string;
+        };
+        subSubjects: SubSubjectPopulated[]
+    };
 
 const subjectConfigSchema = new Schema<SubjectConfigSchema>({
     subject: {
@@ -52,5 +73,9 @@ const subjectConfigSchema = new Schema<SubjectConfigSchema>({
     collection: 'SubjectConfig',
 });
 
-export const subjectConfigModel: Model<SubjectConfigSchema & Document> =
+subjectConfigSchema.set('toJSON', {
+    virtuals: true,
+});
+
+export const subjectConfigModel: Model<SubjectConfig> =
     model('SubjectConfig', subjectConfigSchema);

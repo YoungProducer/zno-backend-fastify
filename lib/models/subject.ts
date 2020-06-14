@@ -2,6 +2,7 @@
 import { Schema, Model, Document, model } from 'mongoose';
 
 import { WithTimeStamps } from '.';
+import { SubjectConfigPopulated } from './subjectConfig';
 
 export interface SubjectSchema extends WithTimeStamps {
     _id: string;
@@ -12,6 +13,20 @@ export interface SubjectSchema extends WithTimeStamps {
     icon?: string;
     config?: string;
 }
+
+export type Subject =
+    & SubjectSchema
+    & Document;
+
+export type SubjectVirtual =
+    & Omit<Subject, 'config'>
+    & { id: string };
+
+export type SubjectPopulated =
+    & SubjectVirtual
+    & {
+        config: SubjectConfigPopulated;
+    };
 
 const subjectSchema = new Schema<SubjectSchema>({
     name: {
