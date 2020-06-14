@@ -14,14 +14,16 @@ export interface UserSchema extends WithTimeStamps {
     name?: string;
     lastName?: string;
     emailConfirmed?: boolean;
-    role?: UserRole;
+    role: UserRole;
     refreshTokens?: string[];
-    toClient: () => User;
+    toClient: () => ClientUser;
 }
 
-export type User =
+export type ClientUser =
     & Omit<UserSchema, '_id' | 'password'>
     & { id: string };
+
+export type User = UserSchema & Document;
 
 const userSchema = new Schema<UserSchema>({
     email: {
@@ -59,6 +61,10 @@ const userSchema = new Schema<UserSchema>({
     collection: 'User',
 });
 
+userSchema.set('toJSON', {
+    virtuals: true,
+});
+
 userSchema.methods.toClient = function () {
     const user: UserSchema = (this as any).toObject();
 
@@ -70,5 +76,5 @@ userSchema.methods.toClient = function () {
     return { ...user, id };
 };
 
-export const userModel: Model<Document & UserSchema> =
+export const userModel: Model<User> =
     model('User', userSchema);

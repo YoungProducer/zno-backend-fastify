@@ -19,7 +19,7 @@ import {
     signin,
     signup,
 } from './schema';
-import { userModel } from "../models/user";
+import { userModel, UserSchema } from "../models/user";
 
 export = async function (
     fastify: FastifyInstance,
@@ -121,7 +121,7 @@ async function signinHandler(
     const credentials: ISignInCredentials = req.body;
 
     try {
-        const user: Omit<User, 'password'> = await fastify.userService.verifyCredentials(credentials);
+        const user = await fastify.userService.verifyCredentials(credentials);
 
         const userProfile: UserProfile = fastify.userService.convertToUserProfile(user);
 

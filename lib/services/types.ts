@@ -6,6 +6,7 @@
  */
 
 import { Role } from "../../prisma/generated/prisma-client";
+import { UserRole } from "../models/user";
 
 export interface PasswordHasher<T = string> {
     hashPassword(password: T): Promise<string>;
@@ -44,7 +45,7 @@ export type TValidationError = {
 export interface UserProfile {
     id: string;
     email: string;
-    role: Role;
+    role: UserRole;
     /**
      * This field exists only in refresh tokens.
      * It's 'loginId' of each user
