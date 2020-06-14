@@ -151,7 +151,7 @@ async function signinHandler(
                     : undefined,
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                path: clientEndpoint ? clientEndpoint.pathname : '/',
+                path: '/',
                 domain: clientEndpoint ? clientEndpoint.hostname : undefined,
             })
             .setCookie('refreshToken', refreshToken, {
@@ -160,7 +160,7 @@ async function signinHandler(
                     : undefined,
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                path: clientEndpoint ? clientEndpoint.pathname : '/',
+                path: '/',
                 domain: clientEndpoint ? clientEndpoint.hostname : undefined,
             })
             .send(user);
