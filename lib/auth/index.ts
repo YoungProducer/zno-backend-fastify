@@ -152,6 +152,7 @@ async function signinHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: '/',
+                sameSite: 'none',
                 // domain: 'pp-books.com.ua',
             })
             .setCookie('refreshToken', refreshToken, {
@@ -161,6 +162,7 @@ async function signinHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: '/',
+                sameSite: 'none',
                 // domain: 'pp-books.com.ua',
             })
             .send(user);
