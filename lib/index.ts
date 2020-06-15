@@ -164,12 +164,14 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                         httpOnly: true,
                         secure: process.env.NODE_ENV !== 'development',
                         path: url ? url.pathname : '/',
+                        sameSite: 'none',
                     })
                     .setCookie('refreshToken', newRefreshToken, {
                         maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
                         httpOnly: true,
                         secure: process.env.NODE_ENV !== 'development',
                         path: url ? url.pathname : '/',
+                        sameSite: 'none',
                     });
             } catch (err) {
                 reply.send(err);
