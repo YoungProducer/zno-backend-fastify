@@ -150,7 +150,7 @@ async function signinHandler(
                     : undefined,
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
-                path: '/',
+                path: clientEndpoint ? clientEndpoint.pathname : '/',
                 sameSite: 'none',
                 // domain: 'pp-books.com.ua',
             })
@@ -160,7 +160,7 @@ async function signinHandler(
                     : undefined,
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
-                path: '/',
+                path: clientEndpoint ? clientEndpoint.pathname : '/',
                 sameSite: 'none',
                 // domain: 'pp-books.com.ua',
             })
@@ -227,13 +227,15 @@ async function logoutHandler(
         reply
             .clearCookie('accessToken', {
                 httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint ? clientEndpoint.pathname : '/',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                sameSite: 'none',
             })
             .clearCookie('refreshToken', {
                 httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint ? clientEndpoint.pathname : '/',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                sameSite: 'none',
             })
             .code(200)
             .send('Success');
