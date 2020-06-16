@@ -138,7 +138,6 @@ async function signinHandler(
                     : undefined,
                 httpOnly: false,
                 path: clientEndpoint.pathname,
-                sameSite: 'lax',
                 domain: clientEndpoint.hostname,
             });
         }
@@ -151,7 +150,6 @@ async function signinHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint.pathname,
-                sameSite: 'lax',
                 domain: clientEndpoint.hostname,
             })
             .setCookie('refreshToken', refreshToken, {
@@ -161,7 +159,6 @@ async function signinHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint.pathname,
-                sameSite: 'lax',
                 domain: clientEndpoint.hostname,
             })
             .send(user);
@@ -233,14 +230,12 @@ async function logoutHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint.pathname,
-                sameSite: 'lax',
                 domain: clientEndpoint.hostname,
             })
             .clearCookie('refreshToken', {
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint.pathname,
-                sameSite: 'lax',
                 domain: clientEndpoint.hostname,
             })
             .code(200)

@@ -133,6 +133,8 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
             /** Extract access token from cookies */
             const accessToken = req.cookies['accessToken'];
 
+            console.log(req.cookies);
+
             /** Verify token */
             const userProfile = await fastify.accessService.verifyToken(accessToken);
 
@@ -166,7 +168,6 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                         secure: process.env.NODE_ENV !== 'development',
                         path: url ? url.pathname : '/',
                         domain: url ? url.hostname : undefined,
-                        sameSite: 'none',
                     })
                     .setCookie('refreshToken', newRefreshToken, {
                         maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
@@ -174,7 +175,6 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                         secure: process.env.NODE_ENV !== 'development',
                         path: url ? url.pathname : '/',
                         domain: url ? url.hostname : undefined,
-                        sameSite: 'none',
                     });
             } catch (err) {
                 reply.send(err);
