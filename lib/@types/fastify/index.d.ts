@@ -34,9 +34,10 @@ interface Config {
   S3_BUCKET: string;
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
-  CLIENT_ENDPOINT?: string;
-  CLIENT_MOBILE_ENDPOINT?: string;
-  ADMIN_ENDPOINT?: string;
+  CLIENT_ENDPOINT: string;
+  CLIENT_MOBILE_ENDPOINT: string;
+  ADMIN_ENDPOINT: string;
+  CURRENT_ENDPOINT?: string;
   PORT?: string;
   HOST?: string;
   PROTOCOL?: string;

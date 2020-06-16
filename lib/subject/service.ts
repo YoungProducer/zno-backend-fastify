@@ -61,11 +61,15 @@ class SubjectService implements ISubjectService {
 
         if (subjects) {
             if (!subSubjects) {
+                const currentEndpoint = this.instance.config.CURRENT_ENDPOINT;
+
                 const port = this.instance.config.PORT;
                 const host = this.instance.config.HOST;
                 const protocol = this.instance.config.PROTOCOL;
 
-                const url = `${protocol}://${host}:${port}/uploads`;
+                const url = currentEndpoint
+                    ? `${currentEndpoint}/uploads`
+                    : `${protocol}://${host}:${port}/uploads`;
 
                 const subjectsWithValidImages = subjects.map(subject => {
                     const json: SubjectSchema = subject.toJSON();

@@ -348,11 +348,15 @@ class TestSuiteService {
 
         // const images = await prisma.testSuite({ id }).images({ where: { type }, orderBy: 'taskId_ASC' });
 
+        const currentEndpoint = this.instance.config.CURRENT_ENDPOINT;
+
         const port = this.instance.config.PORT;
         const host = this.instance.config.HOST;
         const protocol = this.instance.config.PROTOCOL;
 
-        const url = `${protocol}://${host}:${port}/uploads`;
+        const url = currentEndpoint
+            ? `${currentEndpoint}/uploads`
+            : `${protocol}://${host}:${port}/uploads`;
 
         const data = images
             .sort((a, b) => a.taskId - b.taskId)

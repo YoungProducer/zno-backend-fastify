@@ -60,6 +60,7 @@ const schema = {
         CLIENT_ENDPOINT: { type: 'string', default: 'http://localhost:8080' },
         CLIENT_MOBILE_ENDPOINT: { type: 'string', default: 'http://localhost:8081' },
         ADMIN_ENDPOINT: { type: 'string', default: 'http://localhost:8082' },
+        CURRENT_ENDPOINT: { type: 'string' },
         PORT: { type: 'string', default: '4000' },
         HOST: { type: 'string', default: 'localhost' },
         PROTOCOL: { type: 'string', default: 'http' },
@@ -75,7 +76,7 @@ const connectToDatabase = async (fastify: FastifyInstance) => {
         MONGO_PASSWORD,
         MONGO_DB_NAME,
     } = fastify.config;
-    const mongouri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@mycluster-qntjt.azure.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`
+    const mongouri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@mycluster-qntjt.azure.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
 
     await mongoose.connect(mongouri, {
         useNewUrlParser: true,
@@ -164,7 +165,7 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                         httpOnly: true,
                         secure: process.env.NODE_ENV !== 'development',
                         path: url ? url.pathname : '/',
-                        domain: url ? url.host : undefined,
+                        domain: url ? url.hostname : undefined,
                         sameSite: 'none',
                     })
                     .setCookie('refreshToken', newRefreshToken, {
@@ -172,7 +173,7 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                         httpOnly: true,
                         secure: process.env.NODE_ENV !== 'development',
                         path: url ? url.pathname : '/',
-                        domain: url ? url.host : undefined,
+                        domain: url ? url.hostname : undefined,
                         sameSite: 'none',
                     });
             } catch (err) {
@@ -211,20 +212,25 @@ const instance = fastify();
 const production = process.env.NODE_ENV === 'production';
 const development = process.env.NODE_ENV === 'development';
 
-const clientEnpoint = process.env.CLIENT_ENDPOINT || 'http://localhost:8080';
-const clientMobileEndpoint = process.env.CLIENT_MOBILE_ENDPOINT || 'http://localhost:8081';
-const adminEndpoint = process.env.ADMIN_ENDPOINT || 'http://localhost:8082';
+const clientEnpoint =
+    separateURL(process.env.CLIENT_ENDPOINT || 'http://localhost:8080');
+const clientMobileEndpoint =
+    separateURL(process.env.CLIENT_MOBILE_ENDPOINT || 'http://localhost:8081');
+const adminEndpoint =
+    separateURL(process.env.ADMIN_ENDPOINT || 'http://localhost:8082');
 
 const uploadsPath = !development
     ? '../../uploads'
     : '../uploads';
 
+console.log(clientEnpoint);
+
 instance
     .register(fastifyCors, {
         origin: [
-            clientEnpoint,
-            clientMobileEndpoint,
-            adminEndpoint,
+            clientEnpoint.origin,
+            clientMobileEndpoint.origin,
+            adminEndpoint.origin,
         ],
         credentials: true,
     })

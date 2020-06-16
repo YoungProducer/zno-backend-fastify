@@ -137,9 +137,9 @@ async function signinHandler(
                     ? Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE)
                     : undefined,
                 httpOnly: false,
-                path: clientEndpoint ? clientEndpoint.pathname : '/',
+                path: clientEndpoint.pathname,
                 sameSite: 'lax',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                domain: clientEndpoint.hostname,
             });
         }
 
@@ -150,9 +150,9 @@ async function signinHandler(
                     : undefined,
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
-                path: clientEndpoint ? clientEndpoint.pathname : '/',
+                path: clientEndpoint.pathname,
                 sameSite: 'lax',
-                domain: clientEndpoint ? clientEndpoint.host : undefined,
+                domain: clientEndpoint.hostname,
             })
             .setCookie('refreshToken', refreshToken, {
                 maxAge: credentials.remember
@@ -160,9 +160,9 @@ async function signinHandler(
                     : undefined,
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
-                path: clientEndpoint ? clientEndpoint.pathname : '/',
+                path: clientEndpoint.pathname,
                 sameSite: 'lax',
-                domain: clientEndpoint ? clientEndpoint.host : undefined,
+                domain: clientEndpoint.hostname,
             })
             .send(user);
     } catch (err) {
@@ -191,7 +191,11 @@ async function refreshHandler(
     reply: FastifyReply<ServerResponse>,
 ) {
     try {
-        const { accessToken, refreshToken, userProfile }: IRefreshReturnData = await fastify.authService.refresh(req);
+        const {
+            accessToken,
+            refreshToken,
+            userProfile,
+        }: IRefreshReturnData = await fastify.authService.refresh(req);
 
         const clientEndpoint = separateURL(fastify.config.CLIENT_ENDPOINT);
 
@@ -199,14 +203,14 @@ async function refreshHandler(
             .setCookie('accessToken', accessToken, {
                 maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
                 httpOnly: true,
-                path: clientEndpoint ? clientEndpoint.pathname : '/',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                path: clientEndpoint.pathname,
+                domain: clientEndpoint.hostname,
             })
             .setCookie('refreshToken', refreshToken, {
                 maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
                 httpOnly: true,
-                path: clientEndpoint ? clientEndpoint.pathname : '/',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                path: clientEndpoint.pathname,
+                domain: clientEndpoint.hostname,
             })
             .send(userProfile);
     } catch (err) {
@@ -228,16 +232,16 @@ async function logoutHandler(
             .clearCookie('accessToken', {
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
-                path: clientEndpoint ? clientEndpoint.pathname : '/',
+                path: clientEndpoint.pathname,
                 sameSite: 'lax',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                domain: clientEndpoint.hostname,
             })
             .clearCookie('refreshToken', {
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
-                path: clientEndpoint ? clientEndpoint.pathname : '/',
+                path: clientEndpoint.pathname,
                 sameSite: 'lax',
-                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                domain: clientEndpoint.hostname,
             })
             .code(200)
             .send('Success');
