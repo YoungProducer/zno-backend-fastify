@@ -139,7 +139,7 @@ async function signinHandler(
                 httpOnly: false,
                 path: clientEndpoint ? clientEndpoint.pathname : '/',
                 sameSite: 'lax',
-                // domain: clientEndpoint ? clientEndpoint.hostname : undefined,
+                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
             });
         }
 
@@ -151,8 +151,8 @@ async function signinHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint ? clientEndpoint.pathname : '/',
-                sameSite: 'none',
-                // domain: 'pp-books.com.ua',
+                sameSite: 'lax',
+                domain: clientEndpoint ? clientEndpoint.host : undefined,
             })
             .setCookie('refreshToken', refreshToken, {
                 maxAge: credentials.remember
@@ -161,8 +161,8 @@ async function signinHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint ? clientEndpoint.pathname : '/',
-                sameSite: 'none',
-                // domain: 'pp-books.com.ua',
+                sameSite: 'lax',
+                domain: clientEndpoint ? clientEndpoint.host : undefined,
             })
             .send(user);
     } catch (err) {
@@ -229,13 +229,15 @@ async function logoutHandler(
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint ? clientEndpoint.pathname : '/',
-                sameSite: 'none',
+                sameSite: 'lax',
+                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
             })
             .clearCookie('refreshToken', {
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 path: clientEndpoint ? clientEndpoint.pathname : '/',
-                sameSite: 'none',
+                sameSite: 'lax',
+                domain: clientEndpoint ? clientEndpoint.hostname : undefined,
             })
             .code(200)
             .send('Success');

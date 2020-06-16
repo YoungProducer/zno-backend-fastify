@@ -164,6 +164,7 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                         httpOnly: true,
                         secure: process.env.NODE_ENV !== 'development',
                         path: url ? url.pathname : '/',
+                        domain: url ? url.host : undefined,
                         sameSite: 'none',
                     })
                     .setCookie('refreshToken', newRefreshToken, {
@@ -171,6 +172,7 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
                         httpOnly: true,
                         secure: process.env.NODE_ENV !== 'development',
                         path: url ? url.pathname : '/',
+                        domain: url ? url.host : undefined,
                         sameSite: 'none',
                     });
             } catch (err) {
