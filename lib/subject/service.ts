@@ -63,6 +63,8 @@ class SubjectService implements ISubjectService {
             if (!subSubjects) {
                 const currentEndpoint = this.instance.config.CURRENT_ENDPOINT;
 
+                console.log(currentEndpoint);
+
                 const port = this.instance.config.PORT;
                 const host = this.instance.config.HOST;
                 const protocol = this.instance.config.PROTOCOL;
