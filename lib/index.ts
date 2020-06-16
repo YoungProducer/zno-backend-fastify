@@ -133,8 +133,6 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
             /** Extract access token from cookies */
             const accessToken = req.cookies['accessToken'];
 
-            console.log(req.cookies);
-
             /** Verify token */
             const userProfile = await fastify.accessService.verifyToken(accessToken);
 
