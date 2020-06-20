@@ -11,11 +11,19 @@ import fs from 'fs';
 /** Application's imports */
 import { relativePath } from './paths';
 
-export const uploadFile = (file: any) =>
-    new Promise((resolve, reject) => {
-        const writePath = relativePath(`uploads/${file.name}`);
+interface UploadFilePaylod {
+    file: any;
+    path: string;
+    createDirectory?: boolean;
+}
+type UploadFile = (payload: UploadFilePaylod) => Promise<Error | string>;
 
-        const ws = fs.createWriteStream(writePath);
+export const uploadFile: UploadFile = (payload) =>
+    new Promise((resolve, reject) => {
+        const { path, file } = payload;
+        const writePath = relativePath(`uploads/${path}`);
+
+        const ws = fs.createWriteStream(writePath, { flags: 'w' });
 
         ws.write(file.data, (err) => { if (err) reject(err); });
         ws.end();

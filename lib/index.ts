@@ -2,6 +2,7 @@
 import 'reflect-metadata';
 
 /** External imports */
+import fs from 'fs';
 import path from 'path';
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, SchemaCompiler } from 'fastify';
 import fp from 'fastify-plugin';
@@ -32,6 +33,9 @@ import SubjectConfigService from './subjectConfig/service';
 import TestSuiteService from './testSuite/service';
 import AdminAuthService from './admin-auth/service';
 import { separateURL } from './utils/separateURL';
+import { subjectModel } from './models/subject';
+import { subjectConfigModel, SubjectConfigPopulated } from './models/subjectConfig';
+import { testSuiteModel } from './models/testSuite';
 
 /** Import env config */
 if (process.env.NODE_ENV !== 'production') require('dotenv').config();
@@ -94,6 +98,23 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
 
         done();
     });
+
+    fs.access(
+        '/home/withouthands/gitrepos/zno-back-fastify/uploads/test-suites/Математика/themes/крута/TASK/',
+        fs.constants.R_OK,
+        (err) => {
+            if (err) console.log(err);
+            else console.log('readable');
+        },
+    );
+
+    fs.mkdir(
+        '/home/withouthands/gitrepos/zno-back-fastify/uploads/test-suites/Математика/themes/крута/TASK/',
+        { recursive: true },
+        (err) => {
+            if (err) console.log(err);
+        },
+    );
 
     const bcryptHasher = new BcryptHasher();
     fastify.decorate('bcryptHasher', bcryptHasher);

@@ -35,7 +35,7 @@ export type TestSuite =
 export type TestSuitePopulated =
     & Omit<TestSuite, 'images' | 'subject' | 'subSubject'>
     & {
-        images: TestSuiteImage;
+        images: TestSuiteImage[];
         subject: Subject;
     };
 
@@ -76,6 +76,10 @@ const testSuiteSchema = new Schema<TestSuiteSchema>({
             required: true,
         },
     }],
+    path: {
+        type: String,
+        required: true,
+    },
 }, {
     autoIndex: true,
     timestamps: true,

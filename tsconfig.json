@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     /* Basic Options */
-    "target": "esnext",
+    "target": "ES2017",
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./",
+    "lib": ["esnext", "DOM"],
+    "types": ["node"],
 
     /* Strict Type-Checking Options */
     "strict": true,
@@ -19,7 +21,7 @@
 
     /* Experimental Options */
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
   },
   "exclude": [
     "test",
