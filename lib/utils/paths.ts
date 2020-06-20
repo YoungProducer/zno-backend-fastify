@@ -8,10 +8,10 @@
 /** External imports */
 import path from 'path';
 
-const production = process.env.NODE_ENV || 'production';
+const mode = process.env.NODE_ENV || 'production';
 
 export const relativePath = (filePath: string) => {
-    const normalizedFilePath = production
+    const normalizedFilePath = mode === 'production'
         ? `../../../${filePath}`
         : `../../${filePath}`;
 

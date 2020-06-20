@@ -167,8 +167,6 @@ class TestSuiteService {
             throw new HttpErrors[400](`Тесту з таким id: ${credentials.id} не знайдено.`);
         }
 
-        console.log(testSuite);
-
         /** Make test suite snapshot */
         const lastImage = testSuite.images[testSuite.images.length - 1];
 
@@ -177,19 +175,21 @@ class TestSuiteService {
 
         /** Get path of this test suite */
         const path = testSuite.path;
-        console.log({ path });
 
         /** Upload images and get result of uploaded images */
         const data = await Promise.all(credentials.images.map(async (image, index) => {
-            const fileName = `${path}/${credentials.type}/${index}_${makeId(16)}.svg`;
-            console.log({ fileName });
+            const filePath = `${path}/${credentials.type}`;
+            const fileName = `${index}_${makeId(16)}.svg`;
+
             await uploadFile({
+                fileName,
+                path: filePath,
                 file: image,
-                path: fileName,
+                createDirIfNX: true,
             });
 
             const createdImage = await testSuiteImageModel.create({
-                image: fileName,
+                image: `${filePath}/${fileName}`,
                 taskId: lastTaskIndex + index,
                 type: credentials.type,
             });

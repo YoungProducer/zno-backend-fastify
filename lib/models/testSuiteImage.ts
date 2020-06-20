@@ -10,7 +10,6 @@ export type ImageType =
 export interface TestSuiteImageSchema extends WithTimeStamps {
     _id: string;
     taskId: number;
-    testSuite: string;
     image: string;
     type: ImageType;
 }
@@ -22,11 +21,6 @@ export type TestSuiteImage =
 const testSuiteImageSchema = new Schema<TestSuiteImageSchema>({
     taskId: {
         type: Number,
-        required: true,
-    },
-    testSuite: {
-        type: Schema.Types.ObjectId,
-        ref: 'TestSuite',
         required: true,
     },
     image: {
