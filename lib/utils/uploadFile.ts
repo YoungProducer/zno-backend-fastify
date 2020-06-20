@@ -67,8 +67,6 @@ export const uploadFile: UploadFile = (payload) =>
 
         const writePath = relativePath(`uploads/${filePath}`);
 
-        console.log(writePath);
-
         const ws = fs.createWriteStream(writePath, { flags: 'w' });
 
         ws.write(file.data, (err) => { if (err) reject(err); });
