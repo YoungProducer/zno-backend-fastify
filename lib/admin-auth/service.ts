@@ -13,6 +13,7 @@ import HttpErrors from 'http-errors';
 import { AdminAuth } from './types';
 import { separateURL } from '../utils/separateURL';
 import { userModel } from '../models/user';
+import { tokenModel } from '../models/token';
 
 class AdminAuthService implements AdminAuth.Service {
     instance!: FastifyInstance;
@@ -79,7 +80,7 @@ class AdminAuthService implements AdminAuth.Service {
         /** Verify token */
         const userProfile = await this.instance.refreshService.verifyToken(refreshToken);
 
-        await userModel.deleteOne({
+        await tokenModel.deleteOne({
             loginId: userProfile.hash,
         });
 
