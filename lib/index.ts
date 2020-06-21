@@ -99,14 +99,6 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
         done();
     });
 
-    // await subjectConfigModel.updateOne({
-    //     _id: '5e90870b6f33900007d8a4c3',
-    // }, {
-    //     $set: {
-    //         themes: ['new theme'],
-    //     },
-    // });
-
     const bcryptHasher = new BcryptHasher();
     fastify.decorate('bcryptHasher', bcryptHasher);
 

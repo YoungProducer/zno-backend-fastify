@@ -16,9 +16,10 @@ import { userModel } from '../models/user';
 
 class AdminAuthService implements AdminAuth.Service {
     instance!: FastifyInstance;
-    adminEndpoint: URL | undefined;
+    adminEndpoint: URL;
     accessTokenCookiesMaxAge: number;
     refreshTokenCookiesMaxAge: number;
+    secureCookie: boolean;
 
     constructor(fastify: FastifyInstance) {
         this.instance = fastify;
@@ -26,6 +27,8 @@ class AdminAuthService implements AdminAuth.Service {
         this.adminEndpoint = separateURL(this.instance.config.ADMIN_ENDPOINT);
         this.accessTokenCookiesMaxAge = Number(this.instance.config.JWT_ACCESS_COOKIES_MAX_AGE);
         this.refreshTokenCookiesMaxAge = Number(this.instance.config.JWT_REFRESH_COOKIES_MAX_AGE);
+
+        this.secureCookie = process.env.NODE_ENV !== 'development';
     }
 
     signin: AdminAuth.Service.SignIn = async (payload, reply) => {
@@ -43,17 +46,21 @@ class AdminAuthService implements AdminAuth.Service {
         const refreshToken = await this.instance.refreshService.generateToken(userProfile);
 
         reply
-            .setCookie('accessToken', accessToken, {
+            .setCookie('a_accessToken', accessToken, {
                 httpOnly: true,
+                secure: this.secureCookie,
                 maxAge: this.accessTokenCookiesMaxAge,
-                path: this.adminEndpoint ? this.adminEndpoint.pathname : '/',
-                domain: this.adminEndpoint ? this.adminEndpoint.hostname : undefined,
+                path: this.adminEndpoint.pathname,
+                domain: this.adminEndpoint.hostname,
+                sameSite: 'lax',
             })
-            .setCookie('refreshToken', refreshToken, {
+            .setCookie('a_refreshToken', refreshToken, {
                 httpOnly: true,
+                secure: this.secureCookie,
                 maxAge: this.refreshTokenCookiesMaxAge,
-                path: this.adminEndpoint ? this.adminEndpoint.pathname : '/',
-                domain: this.adminEndpoint ? this.adminEndpoint.hostname : undefined,
+                path: this.adminEndpoint.pathname,
+                domain: this.adminEndpoint.hostname,
+                sameSite: 'lax',
             });
 
         return userProfile;
@@ -67,7 +74,7 @@ class AdminAuthService implements AdminAuth.Service {
 
     logout: AdminAuth.Service.Logout = async (req, reply) => {
         /** Extract refresh token from cookies */
-        const refreshToken = req.cookies['refreshToken'];
+        const refreshToken = req.cookies['a_refreshToken'];
 
         /** Verify token */
         const userProfile = await this.instance.refreshService.verifyToken(refreshToken);
@@ -77,15 +84,19 @@ class AdminAuthService implements AdminAuth.Service {
         });
 
         reply
-            .clearCookie('accessToken', {
+            .clearCookie('a_accessToken', {
                 httpOnly: true,
-                path: this.adminEndpoint ? this.adminEndpoint.pathname : '/',
-                domain: this.adminEndpoint ? this.adminEndpoint.hostname : undefined,
+                secure: this.secureCookie,
+                path: this.adminEndpoint.pathname,
+                domain: this.adminEndpoint.hostname,
+                sameSite: 'lax',
             })
-            .clearCookie('refreshToken', {
+            .clearCookie('a_refreshToken', {
                 httpOnly: true,
-                path: this.adminEndpoint ? this.adminEndpoint.pathname : '/',
-                domain: this.adminEndpoint ? this.adminEndpoint.hostname : undefined,
+                secure: this.secureCookie,
+                path: this.adminEndpoint.pathname,
+                domain: this.adminEndpoint.hostname,
+                sameSite: 'lax',
             });
     }
 }
