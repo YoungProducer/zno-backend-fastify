@@ -11,7 +11,6 @@ import HttpErrors from 'http-errors';
 
 /** Application's imports */
 import { AdminAuth } from './types';
-import { prisma } from '../../prisma/generated/prisma-client';
 import { separateURL } from '../utils/separateURL';
 import { userModel } from '../models/user';
 
