@@ -50,22 +50,24 @@ export const uploadFile: UploadFile = (payload) =>
             fileName,
         } = payload;
 
+        const filePath = fileName
+            ? `${path}/${fileName}`
+            : `${path}/${file.name}`;
+
+        const relativeFilePath = relativePath(`uploads/${path}`);
+        const writePath = relativePath(`uploads/${filePath}`);
+
         if (createDirIfNX) {
-            const alreadyExists = await isDirectoryExist(path);
+            const alreadyExists = await isDirectoryExist(relativeFilePath);
 
             if (!alreadyExists) {
-                const res = await createDirectory(path);
+                const res = await createDirectory(relativeFilePath);
+
                 if (res !== 'success') {
                     reject(res);
                 }
             }
         }
-
-        const filePath = fileName
-            ? `${path}/${fileName}`
-            : `${path}/${file.name}`;
-
-        const writePath = relativePath(`uploads/${filePath}`);
 
         const ws = fs.createWriteStream(writePath, { flags: 'w' });
 

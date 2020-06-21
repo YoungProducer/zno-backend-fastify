@@ -7,13 +7,11 @@
 
 /** External imports */
 import { FastifyInstance } from 'fastify';
-import aws from 'aws-sdk';
+import mongoose from 'mongoose';
 import HttpErrors from 'http-errors';
 import pick from 'lodash/pick';
-import omit from 'lodash/omit';
 
 /** Application's imports */
-import { prisma, TestSuiteCreateInput, SubjectConfigCreateInput } from '../../prisma/generated/prisma-client';
 import {
     ICreateTestSuiteCredentials,
     IGetTestSuiteCredentials,
@@ -25,27 +23,18 @@ import { uploadFile } from '../utils/uploadFile';
 import { testSuiteModel, TestSuite, TestSuitePopulated } from '../models/testSuite';
 import { TestSuiteImage, testSuiteImageModel } from '../models/testSuiteImage';
 import '../models/testSuiteImage';
-import { subjectConfigModel, SubjectConfigPopulated } from '../models/subjectConfig';
+import { subjectConfigModel, SubjectConfigPopulated, SubSubject } from '../models/subjectConfig';
 import { subjectModel } from '../models/subject';
 
 class TestSuiteService {
-    s3!: AWS.S3;
     instance!: FastifyInstance;
 
     constructor(fastify: FastifyInstance) {
         this.instance = fastify;
-        this.s3 = new aws.S3({
-            accessKeyId: fastify.config.AWS_ACCESS_KEY_ID,
-            secretAccessKey: fastify.config.AWS_SECRET_ACCESS_KEY,
-            signatureVersion: 'v4',
-            region: 'eu-central-1',
-        });
     }
 
     async create(credentials: ICreateTestSuiteCredentials): Promise<TestSuite> {
         const { subjectName, subSubjectName, tasksImages, explanationsImages, answers, ...other } = credentials;
-
-        console.log(credentials);
 
         const subject = await subjectModel
             .findOne({
@@ -58,23 +47,70 @@ class TestSuiteService {
         });
 
         const config = subject?.toJSON().config as SubjectConfigPopulated;
-        const { exams } = config;
+        const { exams, themes, subSubjects } = config;
+
+        const nonPopulatedSubjects: SubSubject[] = subSubjects
+            ? subSubjects.map(sub => ({
+                subject: sub.subject._id,
+                themes: sub.themes,
+            }))
+            : [];
+
+        let newSubSubjects = nonPopulatedSubjects;
+
+        if (credentials.theme && subSubjectName) {
+            const id = mongoose.Types.ObjectId(subSubject?.id);
+
+            const isSubSubjectAlreayExist =
+                nonPopulatedSubjects.findIndex(sub => {
+                    const currentId = mongoose.Types.ObjectId(sub.subject);
+                    console.log(currentId.equals(id));
+                    return currentId.equals(id);
+                }) !== -1;
+
+            if (isSubSubjectAlreayExist) {
+                newSubSubjects = nonPopulatedSubjects.map(sub => {
+                    const currentId = mongoose.Types.ObjectId(sub.subject);
+
+                    if (currentId.equals(id)) {
+                        return {
+                            subject: sub.subject,
+                            themes: sub.themes.concat(credentials.theme as string),
+                        };
+                    }
+
+                    return {
+                        subject: sub.subject,
+                        themes: sub.themes,
+                    };
+                });
+            } else {
+                newSubSubjects = nonPopulatedSubjects.concat({
+                    subject: subSubject?._id,
+                    themes: [credentials.theme],
+                });
+            }
+        }
+
+        const newThemes = credentials.theme && !subSubjectName
+            ? themes.concat(credentials.theme)
+            : themes;
 
         if (config) {
             await subjectConfigModel.updateOne({
-                id: config._id,
+                _id: config._id,
             }, {
-                $push: {
-                    subSubjects: subSubject?.id,
-                    themes: credentials.theme,
-                },
-                exams: {
-                    trainings: credentials.training
-                        ? exams.trainings.concat(credentials.training)
-                        : exams.trainings,
-                    sessions: credentials.session
-                        ? exams.sessions.concat(credentials.session)
-                        : exams.sessions,
+                $set: {
+                    subSubjects: newSubSubjects,
+                    themes: newThemes,
+                    exams: {
+                        trainings: credentials.training
+                            ? exams.trainings.concat(credentials.training)
+                            : exams.trainings,
+                        sessions: credentials.session
+                            ? exams.sessions.concat(credentials.session)
+                            : exams.sessions,
+                    },
                 },
             });
         } else {
@@ -88,7 +124,7 @@ class TestSuiteService {
             });
         }
 
-        /** Path where s3 Bucket will storage images related to this test suite */
+        /** Path where server will store images related to this test suite */
         let path = `test-suites/${credentials.subjectName}`;
 
         if (subSubjectName) {
@@ -105,6 +141,7 @@ class TestSuiteService {
 
         const testSuite = await testSuiteModel.create({
             path,
+            ...pick(credentials, 'theme', 'training', 'session'),
             subject: subject?._id,
             subSubject: subSubject?._id,
             answers: answers.map((answer, index) => ({
@@ -114,7 +151,7 @@ class TestSuiteService {
             })),
         });
 
-        /** If tasks images exist in credentials upload them to s3 Bucket and create records in database */
+        /** If tasks images exist in credentials upload them to server and create records in database */
         if (tasksImages) {
             await this.uploadImages({
                 id: testSuite._id,
@@ -123,7 +160,7 @@ class TestSuiteService {
             });
         }
 
-        /** If explanations images exist in credentials upload them to s3 Bucket and create records in database */
+        /** If explanations images exist in credentials upload them to server and create records in database */
         if (explanationsImages) {
             await this.uploadImages({
                 id: testSuite._id,
@@ -153,6 +190,8 @@ class TestSuiteService {
     }
 
     async uploadImages(credentials: IUploadImagesCredentials): Promise<any> {
+        if (!credentials.images || credentials.images.length < 1) return;
+
         const testSuite = await testSuiteModel
             .findById(credentials.id)
             .populate('images')
@@ -176,36 +215,39 @@ class TestSuiteService {
         /** Get path of this test suite */
         const path = testSuite.path;
 
-        /** Upload images and get result of uploaded images */
-        const data = await Promise.all(credentials.images.map(async (image, index) => {
+        const createData = await Promise.all(credentials.images.map(async (image, index) => {
             const filePath = `${path}/${credentials.type}`;
             const fileName = `${index}_${makeId(16)}.svg`;
 
-            await uploadFile({
-                fileName,
-                path: filePath,
-                file: image,
-                createDirIfNX: true,
-            });
+            try {
+                await uploadFile({
+                    fileName,
+                    path: filePath,
+                    file: image,
+                    createDirIfNX: true,
+                });
 
-            const createdImage = await testSuiteImageModel.create({
-                image: `${filePath}/${fileName}`,
-                taskId: lastTaskIndex + index,
-                type: credentials.type,
-            });
-
-            await testSuiteModel.updateOne({
-                _id: testSuite._id,
-            }, {
-                $push: {
-                    images: createdImage._id,
-                },
-            });
-
-            return fileName;
+                return {
+                    image: `${filePath}/${fileName}`,
+                    taskId: lastTaskIndex + index,
+                    type: credentials.type,
+                };
+            } catch (err) {
+                throw Error(err);
+            }
         }));
 
-        return data;
+        const createdImages = await testSuiteImageModel.create(createData);
+
+        const createdImagesIds: string[] = createdImages.map(image => image._id);
+
+        await testSuiteModel.updateOne({
+            _id: testSuite._id,
+        }, {
+            $push: {
+                images: { $each: createdImagesIds },
+            },
+        });
     }
 
     async getTestSuiteImages({ type, id }: IGetTestSuiteImagesCredentials): Promise<string[]> {
@@ -222,8 +264,6 @@ class TestSuiteService {
         }
 
         const images: TestSuiteImage[] = testSuite.toJSON().images;
-
-        // const images = await prisma.testSuite({ id }).images({ where: { type }, orderBy: 'taskId_ASC' });
 
         const currentEndpoint = this.instance.config.CURRENT_ENDPOINT;
 

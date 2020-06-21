@@ -99,22 +99,13 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
         done();
     });
 
-    fs.access(
-        '/home/withouthands/gitrepos/zno-back-fastify/uploads/test-suites/Математика/themes/крута/TASK/',
-        fs.constants.R_OK,
-        (err) => {
-            if (err) console.log(err);
-            else console.log('readable');
-        },
-    );
-
-    fs.mkdir(
-        '/home/withouthands/gitrepos/zno-back-fastify/uploads/test-suites/Математика/themes/крута/TASK/',
-        { recursive: true },
-        (err) => {
-            if (err) console.log(err);
-        },
-    );
+    // await subjectConfigModel.updateOne({
+    //     _id: '5e90870b6f33900007d8a4c3',
+    // }, {
+    //     $set: {
+    //         themes: ['new theme'],
+    //     },
+    // });
 
     const bcryptHasher = new BcryptHasher();
     fastify.decorate('bcryptHasher', bcryptHasher);
