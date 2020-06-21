@@ -5,12 +5,10 @@
  * Declare main types and interfaces for test suite service and controller.
  */
 
-/** Application's imports */
-import { AnswerType, ImageType } from "../../prisma/generated/prisma-client";
+export type ImageType = 'TASK' | 'EXPLANATION';
+export type AnswerType = 'SINGLE' | 'RELATIONS' | 'TEXT';
 
-export type TImageType = 'task' | 'explanation';
-
-export interface IAnswer {
+export interface Answer {
     answer: string[];
     type: AnswerType;
 }
@@ -33,7 +31,7 @@ export interface ICreateTestSuiteHandlerCredentials {
     /**
      * Array of answers.
      */
-    // answers: IAnswer[];
+    // answers: Answer[];
     answers: string;
     /**
      * Array of images.
@@ -59,7 +57,7 @@ export interface ICreateTestSuiteCredentials {
     /**
      * Array of answers.
      */
-    answers: IAnswer[];
+    answers: Answer[];
     // answers: string;
     /**
      * Array of tasks images.

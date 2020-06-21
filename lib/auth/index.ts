@@ -9,7 +9,6 @@ import { FastifyRequest, FastifyReply, FastifyInstance } from "fastify";
 import { IncomingMessage, ServerResponse } from "http";
 
 /** Application's imports */
-import { prisma, User } from '../../prisma/generated/prisma-client';
 import { ISignUpCredentials, ISignInCredentials, UserProfile } from "../services/types";
 import { errorHandler } from '../services/error-handler';
 import { separateURL } from '../utils/separateURL';
@@ -19,7 +18,7 @@ import {
     signin,
     signup,
 } from './schema';
-import { userModel, UserSchema } from "../models/user";
+import { userModel } from "../models/user";
 
 export = async function (
     fastify: FastifyInstance,
