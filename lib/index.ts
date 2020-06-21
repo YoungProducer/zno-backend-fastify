@@ -33,9 +33,8 @@ import SubjectConfigService from './subjectConfig/service';
 import TestSuiteService from './testSuite/service';
 import AdminAuthService from './admin-auth/service';
 import { separateURL } from './utils/separateURL';
-import { subjectModel } from './models/subject';
-import { subjectConfigModel, SubjectConfigPopulated } from './models/subjectConfig';
-import { testSuiteModel } from './models/testSuite';
+import { authPreHandler } from './plugins/auth-pre-handler';
+import { adminAuthPreHandler } from './plugins/admin-auth-pre-handler';
 
 /** Import env config */
 if (process.env.NODE_ENV !== 'production') require('dotenv').config();
@@ -132,57 +131,12 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
     fastify.decorate('authPreHandler', async (
         req: FastifyRequest<IncomingMessage>,
         reply: FastifyReply<ServerResponse>,
-    ) => {
-        try {
-            /** Extract access token from cookies */
-            const accessToken = req.cookies['accessToken'];
+    ) => await authPreHandler(fastify, req, reply));
 
-            /** Verify token */
-            const userProfile = await fastify.accessService.verifyToken(accessToken);
-
-            /** Set user data to req body */
-            req.params.userProfile = userProfile;
-        } catch (err) {
-            try {
-                /** Extract refresh token from cookies */
-                const refreshToken = req.cookies['refreshToken'];
-
-                /** Verify token */
-                const userProfile = await fastify.refreshService.verifyToken(refreshToken);
-
-                /** Generate new tokens */
-                const newAccessToken = await fastify.accessService.generateToken(_.omit(userProfile, 'hash'));
-                const newRefreshToken = await fastify.refreshService.generateToken(userProfile);
-
-                const url =
-                    userProfile.role === 'ADMIN'
-                        ? separateURL(fastify.config.ADMIN_ENDPOINT)
-                        : separateURL(fastify.config.CLIENT_ENDPOINT);
-
-                /** Set profile to req body */
-                req.params.userProfile = _.omit(userProfile, 'hash');
-
-                /** Set new tokens pair to cookies */
-                reply
-                    .setCookie('accessToken', newAccessToken, {
-                        maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV !== 'development',
-                        path: url ? url.pathname : '/',
-                        domain: url ? url.hostname : undefined,
-                    })
-                    .setCookie('refreshToken', newRefreshToken, {
-                        maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV !== 'development',
-                        path: url ? url.pathname : '/',
-                        domain: url ? url.hostname : undefined,
-                    });
-            } catch (err) {
-                reply.send(err);
-            }
-        }
-    });
+    fastify.decorate('adminAuthPreHandler', async (
+        req: FastifyRequest<IncomingMessage>,
+        reply: FastifyReply<ServerResponse>,
+    ) => await adminAuthPreHandler(fastify, req, reply));
 };
 
 const authenticator = async (fastify: FastifyInstance) => {

@@ -7,6 +7,7 @@
 
 
 /** External imports */
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 
 /** Application's imports */
@@ -23,6 +24,11 @@ import SubjectService from '../../subject/service';
 import SubjectConfigService from '../../subjectConfig/service';
 import TestSuiteService from '../../testSuite/service';
 import { AdminAuth } from '../../admin-auth/types';
+
+export type AuthPreHandler = (
+  req: FastifyRequest<IncomingMessage>,
+  reply: FastifyReply<ServerResponse>,
+) => Promise<void>;
 
 interface Config {
   JWT_SECRET: string;
@@ -62,7 +68,8 @@ declare module 'fastify' {
     subjectService: SubjectService;
     subjectConfigService: SubjectConfigService;
     testSuiteService: TestSuiteService;
-    authPreHandler: TJwtAccess;
+    authPreHandler: AuthPreHandler;
+    adminAuthPreHandler: AuthPreHandler;
     config: Config;
   }
 }
