@@ -13,7 +13,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 /** Application's imports */
 import { UserProfile } from "./types";
-import { prisma } from '../../prisma/generated/prisma-client';
 import { tokenModel } from '../models/token';
 
 class RefreshService {

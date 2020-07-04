@@ -2,6 +2,7 @@
 import 'reflect-metadata';
 
 /** External imports */
+import fs from 'fs';
 import path from 'path';
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, SchemaCompiler } from 'fastify';
 import fp from 'fastify-plugin';
@@ -32,6 +33,9 @@ import SubjectConfigService from './subjectConfig/service';
 import TestSuiteService from './testSuite/service';
 import AdminAuthService from './admin-auth/service';
 import { separateURL } from './utils/separateURL';
+import { authPreHandler } from './plugins/auth-pre-handler';
+import { adminAuthPreHandler } from './plugins/admin-auth-pre-handler';
+import { userModel } from './models/user';
 
 /** Import env config */
 if (process.env.NODE_ENV !== 'production') require('dotenv').config();
@@ -45,9 +49,7 @@ const schema = {
         'JWT_REFRESH_EXPIRES_IN',
         'JWT_REFRESH_COOKIES_MAX_AGE',
         'JWT_SESSION_EXPIRES_IN',
-        'MONGO_USERNAME',
-        'MONGO_PASSWORD',
-        'MONGO_DB_NAME',
+        'MONGO_URI',
         // 'CLIENT_ENDPOINT',
     ],
     properties: {
@@ -64,21 +66,18 @@ const schema = {
         PORT: { type: 'string', default: '4000' },
         HOST: { type: 'string', default: 'localhost' },
         PROTOCOL: { type: 'string', default: 'http' },
-        MONGO_USERNAME: { type: 'string' },
-        MONGO_PASSWORD: { type: 'string' },
-        MONGO_DB_NAME: { type: 'string' },
+        MONGO_URI: { type: 'string' },
     },
 };
 
 const connectToDatabase = async (fastify: FastifyInstance) => {
     const {
-        MONGO_USERNAME,
-        MONGO_PASSWORD,
-        MONGO_DB_NAME,
+        MONGO_URI,
     } = fastify.config;
-    const mongouri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@mycluster-qntjt.azure.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
+    // const mongouri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@mycluster-qntjt.azure.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
+    const mongouri = MONGO_URI;
 
-    await mongoose.connect(mongouri, {
+    const connection = await mongoose.connect(mongouri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });
@@ -128,57 +127,12 @@ const decorateFastifyInstance = async (fastify: FastifyInstance) => {
     fastify.decorate('authPreHandler', async (
         req: FastifyRequest<IncomingMessage>,
         reply: FastifyReply<ServerResponse>,
-    ) => {
-        try {
-            /** Extract access token from cookies */
-            const accessToken = req.cookies['accessToken'];
+    ) => await authPreHandler(fastify, req, reply));
 
-            /** Verify token */
-            const userProfile = await fastify.accessService.verifyToken(accessToken);
-
-            /** Set user data to req body */
-            req.params.userProfile = userProfile;
-        } catch (err) {
-            try {
-                /** Extract refresh token from cookies */
-                const refreshToken = req.cookies['refreshToken'];
-
-                /** Verify token */
-                const userProfile = await fastify.refreshService.verifyToken(refreshToken);
-
-                /** Generate new tokens */
-                const newAccessToken = await fastify.accessService.generateToken(_.omit(userProfile, 'hash'));
-                const newRefreshToken = await fastify.refreshService.generateToken(userProfile);
-
-                const url =
-                    userProfile.role === 'ADMIN'
-                        ? separateURL(fastify.config.ADMIN_ENDPOINT)
-                        : separateURL(fastify.config.CLIENT_ENDPOINT);
-
-                /** Set profile to req body */
-                req.params.userProfile = _.omit(userProfile, 'hash');
-
-                /** Set new tokens pair to cookies */
-                reply
-                    .setCookie('accessToken', newAccessToken, {
-                        maxAge: Number(fastify.config.JWT_ACCESS_COOKIES_MAX_AGE),
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV !== 'development',
-                        path: url ? url.pathname : '/',
-                        domain: url ? url.hostname : undefined,
-                    })
-                    .setCookie('refreshToken', newRefreshToken, {
-                        maxAge: Number(fastify.config.JWT_REFRESH_COOKIES_MAX_AGE),
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV !== 'development',
-                        path: url ? url.pathname : '/',
-                        domain: url ? url.hostname : undefined,
-                    });
-            } catch (err) {
-                reply.send(err);
-            }
-        }
-    });
+    fastify.decorate('adminAuthPreHandler', async (
+        req: FastifyRequest<IncomingMessage>,
+        reply: FastifyReply<ServerResponse>,
+    ) => await adminAuthPreHandler(fastify, req, reply));
 };
 
 const authenticator = async (fastify: FastifyInstance) => {
@@ -220,8 +174,6 @@ const adminEndpoint =
 const uploadsPath = !development
     ? '../../uploads'
     : '../uploads';
-
-console.log(clientEnpoint);
 
 instance
     .register(fastifyCors, {

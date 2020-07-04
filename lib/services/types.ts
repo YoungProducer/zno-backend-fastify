@@ -5,7 +5,6 @@
  * Define main types and interfaces related to services.
  */
 
-import { Role } from "../../prisma/generated/prisma-client";
 import { UserRole } from "../models/user";
 
 export interface PasswordHasher<T = string> {

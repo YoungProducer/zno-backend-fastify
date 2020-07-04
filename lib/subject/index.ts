@@ -29,16 +29,6 @@ export = async function (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
         ) => await createHandler(fastify, req, reply));
-
-        fastify.patch('subject/image', async (
-            req: FastifyRequest<IncomingMessage>,
-            reply: FastifyReply<ServerResponse>,
-        ) => await updateSubjectImageHandler(fastify, req, reply));
-
-        fastify.delete('subject/image', async (
-            req: FastifyRequest<IncomingMessage>,
-            reply: FastifyReply<ServerResponse>,
-        ) => await deleteSubjectImageHandler(fastify, req, reply));
     });
     fastify.get('subject', async (
         req: FastifyRequest<IncomingMessage>,
@@ -75,46 +65,6 @@ const subjectsHandler = async (
         const subjects = await fastify.subjectService.subjects(Boolean(subSubject) && subSubject === 'true');
 
         return subjects;
-    } catch (err) {
-        reply.send(err);
-    }
-};
-
-const updateSubjectImageHandler = async (
-    fastify: FastifyInstance,
-    req: FastifyRequest<IncomingMessage>,
-    reply: FastifyReply<ServerResponse>,
-) => {
-    /** Extract data from req body */
-    const { id, image } = req.body;
-
-    try {
-        const subject = await fastify.subjectService.uploadImage(id, image);
-
-        return { subject };
-    } catch (err) {
-        reply.send(err);
-    }
-};
-
-const deleteSubjectImageHandler = async (
-    fastify: FastifyInstance,
-    req: FastifyRequest<IncomingMessage>,
-    reply: FastifyReply<ServerResponse>,
-) => {
-    /** Extract data from req body */
-    const { id, image } = req.body;
-
-    try {
-        /** Check is subject have image */
-        const exists = await fastify.subjectService.checkIsSubjectHaveImage(id);
-
-        if (exists) {
-            const subject = await fastify.subjectService.deleteImage(exists, id);
-            return { subject };
-        }
-
-        return `Subject doesn't have an image`;
     } catch (err) {
         reply.send(err);
     }

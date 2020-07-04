@@ -10,13 +10,13 @@ import fastify, { FastifyRequest, FastifyInstance, FastifyReply } from "fastify"
 import { IncomingMessage, ServerResponse } from "http";
 
 /** Application's imports */
-import { Role } from "../../prisma/generated/prisma-client";
 import { UserProfile } from "../services/types";
+import { UserRole } from "../models/user";
 
 export interface User {
     email: string;
     id: string;
-    role: Role;
+    role: UserRole;
 }
 
 export namespace AdminAuth {

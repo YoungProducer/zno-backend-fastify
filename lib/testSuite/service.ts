@@ -7,13 +7,11 @@
 
 /** External imports */
 import { FastifyInstance } from 'fastify';
-import aws from 'aws-sdk';
+import mongoose from 'mongoose';
 import HttpErrors from 'http-errors';
 import pick from 'lodash/pick';
-import omit from 'lodash/omit';
 
 /** Application's imports */
-import { prisma, TestSuiteCreateInput, SubjectConfigCreateInput } from '../../prisma/generated/prisma-client';
 import {
     ICreateTestSuiteCredentials,
     IGetTestSuiteCredentials,
@@ -22,151 +20,111 @@ import {
 } from './types';
 import { makeId } from '../utils/makeId';
 import { uploadFile } from '../utils/uploadFile';
-import { testSuiteModel, TestSuite } from '../models/testSuite';
-import { TestSuiteImage } from '../models/testSuiteImage';
+import { testSuiteModel, TestSuite, TestSuitePopulated } from '../models/testSuite';
+import { TestSuiteImage, testSuiteImageModel } from '../models/testSuiteImage';
 import '../models/testSuiteImage';
+import { subjectConfigModel, SubjectConfigPopulated, SubSubject } from '../models/subjectConfig';
+import { subjectModel } from '../models/subject';
 
 class TestSuiteService {
-    s3!: AWS.S3;
     instance!: FastifyInstance;
 
     constructor(fastify: FastifyInstance) {
         this.instance = fastify;
-        this.s3 = new aws.S3({
-            accessKeyId: fastify.config.AWS_ACCESS_KEY_ID,
-            secretAccessKey: fastify.config.AWS_SECRET_ACCESS_KEY,
-            signatureVersion: 'v4',
-            region: 'eu-central-1',
-        });
     }
 
     async create(credentials: ICreateTestSuiteCredentials): Promise<TestSuite> {
         const { subjectName, subSubjectName, tasksImages, explanationsImages, answers, ...other } = credentials;
 
-        const subjectConfigs = await prisma.subjectConfigs({
-            where: {
-                subject: {
-                    name: subjectName,
-                },
-            },
+        const subject = await subjectModel
+            .findOne({
+                name: subjectName,
+            })
+            .populate('config');
+
+        const subSubject = await subjectModel.findOne({
+            name: subSubjectName,
         });
 
-        if (subjectConfigs.length === 0) {
-            // Todo: Create new subject config here.
-            await prisma.createSubjectConfig(
-                Object
-                    .entries(pick(credentials, [
-                        'subjectName',
-                        // 'subSubjectName',
-                        'theme',
-                        'training',
-                        'session',
-                    ]))
-                    .reduce((acc, curr) => {
-                        if (curr[0] === 'subjectName') {
-                            return {
-                                ...acc,
-                                subject: {
-                                    connect: {
-                                        name: curr[1],
-                                    },
-                                },
-                            };
-                        }
+        const config = subject?.toJSON().config as SubjectConfigPopulated;
+        const { exams, themes, subSubjects } = config;
 
-                        if (curr[0] === 'theme') {
-                            return {
-                                ...acc,
-                                themes: {
-                                    set: curr[1],
-                                },
-                            };
-                        }
+        const nonPopulatedSubjects: SubSubject[] = subSubjects
+            ? subSubjects.map(sub => ({
+                subject: sub.subject._id,
+                themes: sub.themes,
+            }))
+            : [];
 
-                        if (curr[0] === 'training') {
-                            return {
-                                ...acc,
-                                exams: {
-                                    create: {
-                                        trainings: {
-                                            set: curr[1],
-                                        },
-                                    },
-                                },
-                            };
-                        }
+        let newSubSubjects = nonPopulatedSubjects;
 
-                        if (curr[0] === 'session') {
-                            return {
-                                ...acc,
-                                exams: {
-                                    create: {
-                                        sessions: {
-                                            set: curr[1],
-                                        },
-                                    },
-                                },
-                            };
-                        }
+        if (credentials.theme && subSubjectName) {
+            const id = mongoose.Types.ObjectId(subSubject?.id);
 
-                        return acc;
-                    }, {}) as SubjectConfigCreateInput,
-            );
-        } else {
-            const subjectConfig = subjectConfigs[0];
+            const isSubSubjectAlreayExist =
+                nonPopulatedSubjects.findIndex(sub => {
+                    const currentId = mongoose.Types.ObjectId(sub.subject);
+                    console.log(currentId.equals(id));
+                    return currentId.equals(id);
+                }) !== -1;
 
-            await prisma.updateSubjectConfig({
-                where: {
-                    id: subjectConfig.id,
+            if (isSubSubjectAlreayExist) {
+                newSubSubjects = nonPopulatedSubjects.map(sub => {
+                    const currentId = mongoose.Types.ObjectId(sub.subject);
+
+                    if (currentId.equals(id)) {
+                        return {
+                            subject: sub.subject,
+                            themes: sub.themes.concat(credentials.theme as string),
+                        };
+                    }
+
+                    return {
+                        subject: sub.subject,
+                        themes: sub.themes,
+                    };
+                });
+            } else {
+                newSubSubjects = nonPopulatedSubjects.concat({
+                    subject: subSubject?._id,
+                    themes: [credentials.theme],
+                });
+            }
+        }
+
+        const newThemes = credentials.theme && !subSubjectName
+            ? themes.concat(credentials.theme)
+            : themes;
+
+        if (config) {
+            await subjectConfigModel.updateOne({
+                _id: config._id,
+            }, {
+                $set: {
+                    subSubjects: newSubSubjects,
+                    themes: newThemes,
+                    exams: {
+                        trainings: credentials.training
+                            ? exams.trainings.concat(credentials.training)
+                            : exams.trainings,
+                        sessions: credentials.session
+                            ? exams.sessions.concat(credentials.session)
+                            : exams.sessions,
+                    },
                 },
-                data: Object
-                    .entries({
-                        theme: credentials.theme,
-                        session: credentials.session,
-                        training: credentials.training,
-                    })
-                    .reduce((acc, curr) => {
-                        if (curr[0] === 'theme' && curr[1]) {
-                            return {
-                                ...acc,
-                                themes: {
-                                    set: subjectConfig.themes.concat(curr[1] as string),
-                                },
-                            };
-                        }
-
-                        if (curr[0] === 'session' && curr[1] && subjectConfig.exams) {
-                            return {
-                                ...acc,
-                                exams: {
-                                    create: {
-                                        sessions: {
-                                            set: subjectConfig.exams.sessions.concat(curr[1]),
-                                        },
-                                    },
-                                },
-                            };
-                        }
-
-                        if (curr[0] === 'training' && curr[1] && subjectConfig.exams) {
-                            return {
-                                ...acc,
-                                exams: {
-                                    create: {
-                                        trainings: {
-                                            set: subjectConfig.exams.trainings.concat(curr[1]),
-                                        },
-                                    },
-                                },
-                            };
-                        }
-
-                        return acc;
-                    }, {}),
+            });
+        } else {
+            await subjectConfigModel.create({
+                subSubjects: subSubject ? [subSubject.id] : [],
+                themes: credentials.theme,
+                exams: {
+                    trainings: credentials.training,
+                    sessions: credentials.session,
+                },
             });
         }
 
-        /** Path where s3 Bucket will storage images related to this test suite */
+        /** Path where server will store images related to this test suite */
         let path = `test-suites/${credentials.subjectName}`;
 
         if (subSubjectName) {
@@ -181,78 +139,31 @@ class TestSuiteService {
             path = path.concat(`/exams/sessions/${credentials.session}`);
         }
 
-        /** Create test suite */
-        const testSuite = await prisma.createTestSuite({
+        const testSuite = await testSuiteModel.create({
             path,
-            ...Object
-                .entries(omit(credentials, [
-                    'tasksImages',
-                    'explanationsImages',
-                ]))
-                .reduce((acc, curr) => {
-                    if (curr[0] === 'subjectName') {
-                        return {
-                            ...acc,
-                            subject: {
-                                connect: {
-                                    name: curr[1],
-                                },
-                            },
-                        };
-                    }
+            ...pick(credentials, 'theme', 'training', 'session'),
+            subject: subject?._id,
+            subSubject: subSubject?._id,
+            answers: answers.map((answer, index) => ({
+                answer: answer.answer,
+                type: answer.type,
+                taskId: index,
+            })),
+        });
 
-                    if (curr[0] === 'subSubjectName') {
-                        return {
-                            ...acc,
-                            subSubject: {
-                                connect: {
-                                    name: curr[1],
-                                },
-                            },
-                        };
-                    }
-
-                    if (curr[0] === 'answers') {
-                        return {
-                            ...acc,
-                            answers: {
-                                create: answers
-                                    ? answers.map((answer, index) => ({
-                                        answer: {
-                                            set: answer.answer,
-                                        },
-                                        type: answer.type,
-                                        taskId: index,
-                                    }))
-                                    : [],
-                            },
-                        };
-                    }
-
-                    if (curr[1] === null) {
-                        return acc;
-                    }
-
-                    return {
-                        ...acc,
-                        [curr[0]]: curr[1],
-                    };
-                }, {}),
-        } as TestSuiteCreateInput);
-
-        /** If tasks images exist in credentials upload them to s3 Bucket and create records in database */
+        /** If tasks images exist in credentials upload them to server and create records in database */
         if (tasksImages) {
             await this.uploadImages({
-                id: testSuite.id,
+                id: testSuite._id,
                 images: tasksImages,
                 type: 'TASK',
             });
         }
 
-        /** If explanations images exist in credentials upload them to s3 Bucket and create records in database */
+        /** If explanations images exist in credentials upload them to server and create records in database */
         if (explanationsImages) {
             await this.uploadImages({
-                id: testSuite.id,
+                id: testSuite._id,
                 images: explanationsImages,
                 type: 'EXPLANATION',
             });
@@ -279,56 +190,64 @@ class TestSuiteService {
     }
 
     async uploadImages(credentials: IUploadImagesCredentials): Promise<any> {
-        /** Get last image of current test suite */
-        const lastImage = await prisma.testSuiteImages({
-            where: {
-                testSuite: {
-                    id: credentials.id,
-                },
-                type: credentials.type,
-            },
-            orderBy: 'id_ASC',
-            last: 1,
-        });
+        if (!credentials.images || credentials.images.length < 1) return;
 
-        /** Get index of last task */
-        const latsTaskIndex = lastImage.length === 0
-            ? 1
-            : lastImage[0].taskId + 1;
-
-        /** Get test suite by id */
-        const testSuite = await prisma.testSuite({ id: credentials.id });
+        const testSuite = await testSuiteModel
+            .findById(credentials.id)
+            .populate('images')
+            .map((res) => {
+                const json: TestSuitePopulated = res?.toJSON();
+                json.images = json.images.sort((a, b) => a.taskId - b.taskId);
+                return json;
+            });
 
         /** Check is test suite with this id exist */
         if (!testSuite) {
             throw new HttpErrors[400](`Тесту з таким id: ${credentials.id} не знайдено.`);
         }
 
+        /** Make test suite snapshot */
+        const lastImage = testSuite.images[testSuite.images.length - 1];
+
+        /** Get index of last task */
+        const lastTaskIndex = lastImage ? lastImage.taskId + 1 : 1;
+
         /** Get path of this test suite */
         const path = testSuite.path;
 
-        /** Upload images and get result of uploaded images */
-        const data = await Promise.all(credentials.images.map(async (image, index) => {
-            const fileName = `${path}/${credentials.type}/${index}_${makeId(16)}.svg`;
+        const createData = await Promise.all(credentials.images.map(async (image, index) => {
+            const filePath = `${path}/${credentials.type}`;
+            const fileName = `${index}_${makeId(16)}.svg`;
 
-            await uploadFile(image);
+            try {
+                await uploadFile({
+                    fileName,
+                    path: filePath,
+                    file: image,
+                    createDirIfNX: true,
+                });
 
-            /** Create new test suite image instance to database */
-            await prisma.createTestSuiteImage({
-                testSuite: {
-                    connect: {
-                        id: testSuite.id,
-                    },
-                },
-                image: fileName,
-                taskId: latsTaskIndex + index,
-                type: credentials.type,
-            });
-
-            return fileName;
+                return {
+                    image: `${filePath}/${fileName}`,
+                    taskId: lastTaskIndex + index,
+                    type: credentials.type,
+                };
+            } catch (err) {
+                throw Error(err);
+            }
         }));
 
-        return data;
+        const createdImages = await testSuiteImageModel.create(createData);
+
+        const createdImagesIds: string[] = createdImages.map(image => image._id);
+
+        await testSuiteModel.updateOne({
+            _id: testSuite._id,
+        }, {
+            $push: {
+                images: { $each: createdImagesIds },
+            },
+        });
     }
 
     async getTestSuiteImages({ type, id }: IGetTestSuiteImagesCredentials): Promise<string[]> {
@@ -345,8 +264,6 @@ class TestSuiteService {
         }
 
         const images: TestSuiteImage[] = testSuite.toJSON().images;
-
-        // const images = await prisma.testSuite({ id }).images({ where: { type }, orderBy: 'taskId_ASC' });
 
         const currentEndpoint = this.instance.config.CURRENT_ENDPOINT;
 

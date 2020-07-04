@@ -16,6 +16,7 @@ import {
     IGetTestSuiteCredentials,
     IUploadImagesHandlerCredentials,
     IGetTestSuiteImagesCredentials,
+    ImageType,
 } from './types';
 import {
     createTestSuite,
@@ -23,7 +24,6 @@ import {
     uploadImages,
     getTestSuiteImages,
 } from './schema';
-import { ImageType } from '../../prisma/generated/prisma-client';
 
 export = async function (
     fastify: FastifyInstance,

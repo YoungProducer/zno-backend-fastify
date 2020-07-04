@@ -14,7 +14,7 @@ import _ from 'lodash';
 /** Application's imports */
 import { UserProfile } from '../services/types';
 import { IAuthService, IRefreshReturnData } from './types';
-import { prisma } from '../../prisma/generated/prisma-client';
+import { tokenModel } from '../models/token';
 
 class AuthService implements IAuthService {
     instance!: FastifyInstance;
@@ -51,7 +51,7 @@ class AuthService implements IAuthService {
         /** Verify token */
         const userProfile: UserProfile = await this.instance.refreshService.verifyToken(refreshToken);
 
-        await prisma.deleteToken({
+        await tokenModel.deleteOne({
             loginId: userProfile.hash,
         });
     }
