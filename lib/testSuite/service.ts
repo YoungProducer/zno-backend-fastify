@@ -115,13 +115,19 @@ class TestSuiteService {
                 },
             });
         } else {
-            await subjectConfigModel.create({
+            const createdConfig = await subjectConfigModel.create({
                 subSubjects: subSubject ? [subSubject.id] : [],
                 themes: credentials.theme,
                 exams: {
                     trainings: credentials.training,
                     sessions: credentials.session,
                 },
+            });
+
+            await subjectModel.updateOne({
+                _id: subject?._id,
+            }, {
+                config: createdConfig._id,
             });
         }
 
