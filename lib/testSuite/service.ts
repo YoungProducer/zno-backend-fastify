@@ -47,56 +47,57 @@ class TestSuiteService {
         });
 
         const config = subject?.toJSON().config as SubjectConfigPopulated;
-        const { exams, themes, subSubjects } = config;
-
-        const nonPopulatedSubjects: SubSubject[] = subSubjects
-            ? subSubjects.map(sub => ({
-                subject: sub.subject._id,
-                themes: sub.themes,
-            }))
-            : [];
-
-        let newSubSubjects = nonPopulatedSubjects;
-
-        if (credentials.theme && subSubjectName) {
-            const id = mongoose.Types.ObjectId(subSubject?.id);
-
-            const isSubSubjectAlreayExist =
-                nonPopulatedSubjects.findIndex(sub => {
-                    const currentId = mongoose.Types.ObjectId(sub.subject);
-                    console.log(currentId.equals(id));
-                    return currentId.equals(id);
-                }) !== -1;
-
-            if (isSubSubjectAlreayExist) {
-                newSubSubjects = nonPopulatedSubjects.map(sub => {
-                    const currentId = mongoose.Types.ObjectId(sub.subject);
-
-                    if (currentId.equals(id)) {
-                        return {
-                            subject: sub.subject,
-                            themes: sub.themes.concat(credentials.theme as string),
-                        };
-                    }
-
-                    return {
-                        subject: sub.subject,
-                        themes: sub.themes,
-                    };
-                });
-            } else {
-                newSubSubjects = nonPopulatedSubjects.concat({
-                    subject: subSubject?._id,
-                    themes: [credentials.theme],
-                });
-            }
-        }
-
-        const newThemes = credentials.theme && !subSubjectName
-            ? themes.concat(credentials.theme)
-            : themes;
 
         if (config) {
+            const { exams, themes, subSubjects } = config;
+
+            const nonPopulatedSubjects: SubSubject[] = subSubjects
+                ? subSubjects.map(sub => ({
+                    subject: sub.subject._id,
+                    themes: sub.themes,
+                }))
+                : [];
+
+            let newSubSubjects = nonPopulatedSubjects;
+
+            if (credentials.theme && subSubjectName) {
+                const id = mongoose.Types.ObjectId(subSubject?.id);
+
+                const isSubSubjectAlreayExist =
+                    nonPopulatedSubjects.findIndex(sub => {
+                        const currentId = mongoose.Types.ObjectId(sub.subject);
+                        console.log(currentId.equals(id));
+                        return currentId.equals(id);
+                    }) !== -1;
+
+                if (isSubSubjectAlreayExist) {
+                    newSubSubjects = nonPopulatedSubjects.map(sub => {
+                        const currentId = mongoose.Types.ObjectId(sub.subject);
+
+                        if (currentId.equals(id)) {
+                            return {
+                                subject: sub.subject,
+                                themes: sub.themes.concat(credentials.theme as string),
+                            };
+                        }
+
+                        return {
+                            subject: sub.subject,
+                            themes: sub.themes,
+                        };
+                    });
+                } else {
+                    newSubSubjects = nonPopulatedSubjects.concat({
+                        subject: subSubject?._id,
+                        themes: [credentials.theme],
+                    });
+                }
+            }
+
+            const newThemes = credentials.theme && !subSubjectName
+                ? themes.concat(credentials.theme)
+                : themes;
+
             await subjectConfigModel.updateOne({
                 _id: config._id,
             }, {
