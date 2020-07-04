@@ -89,6 +89,7 @@ async function signupHandler(
 
         return { ...user.toClient() };
     } catch (err) {
+        console.log(err);
         if (err.code && err.code === 11000) {
             reply.status(400).send({
                 message: 'Користувач з таким емейлом уже зареєстрований!',

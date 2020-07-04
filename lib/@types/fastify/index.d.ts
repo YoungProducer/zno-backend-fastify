@@ -47,9 +47,7 @@ interface Config {
   PORT?: string;
   HOST?: string;
   PROTOCOL?: string;
-  MONGO_USERNAME: string;
-  MONGO_PASSWORD: string;
-  MONGO_DB_NAME: string;
+  MONGO_URI: string;
 }
 
 declare module 'fastify' {
