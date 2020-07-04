@@ -21,7 +21,7 @@ export = async function (
             req: FastifyRequest<IncomingMessage>,
             reply: FastifyReply<ServerResponse>,
         ) => {
-            await fastify.authPreHandler(req, reply);
+            await fastify.adminAuthPreHandler(req, reply);
             return;
         });
 
@@ -30,6 +30,7 @@ export = async function (
             reply: FastifyReply<ServerResponse>,
         ) => await createHandler(fastify, req, reply));
     });
+
     fastify.get('subject', async (
         req: FastifyRequest<IncomingMessage>,
         reply: FastifyReply<ServerResponse>,
