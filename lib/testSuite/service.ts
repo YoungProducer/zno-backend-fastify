@@ -51,6 +51,8 @@ class TestSuiteService {
         if (config) {
             const { exams, themes, subSubjects } = config;
 
+            console.log(subSubjects);
+
             const nonPopulatedSubjects: SubSubject[] = subSubjects
                 ? subSubjects.map(sub => ({
                     subject: sub.subject._id,
@@ -66,7 +68,6 @@ class TestSuiteService {
                 const isSubSubjectAlreayExist =
                     nonPopulatedSubjects.findIndex(sub => {
                         const currentId = mongoose.Types.ObjectId(sub.subject);
-                        console.log(currentId.equals(id));
                         return currentId.equals(id);
                     }) !== -1;
 
@@ -76,13 +77,13 @@ class TestSuiteService {
 
                         if (currentId.equals(id)) {
                             return {
-                                subject: sub.subject,
+                                ...sub,
                                 themes: sub.themes.concat(credentials.theme as string),
                             };
                         }
 
                         return {
-                            subject: sub.subject,
+                            ...sub,
                             themes: sub.themes,
                         };
                     });
@@ -117,8 +118,11 @@ class TestSuiteService {
         } else {
             const createdConfig = await subjectConfigModel.create({
                 subject: subject?._id,
-                subSubjects: subSubject ? [subSubject.id] : [],
-                themes: credentials.theme,
+                subSubjects: subSubject ? [{
+                    subject: subSubject._id,
+                    themes: credentials.theme,
+                }] : [],
+                themes: !subSubject ? credentials.theme : [],
                 exams: {
                     trainings: credentials.training,
                     sessions: credentials.session,
