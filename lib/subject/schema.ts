@@ -12,6 +12,7 @@ export const create = {
         properties: {
             name: { type: 'string' },
             isSubSubject: { type: 'boolean', default: false },
+            parent: { type: 'string' },
         },
     },
 };

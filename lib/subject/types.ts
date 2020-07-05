@@ -12,6 +12,7 @@ export namespace SubjectTypes {
     export interface CreatePayload {
         name: string;
         isSubSubject: boolean;
+        parent: string;
     }
 }
 
