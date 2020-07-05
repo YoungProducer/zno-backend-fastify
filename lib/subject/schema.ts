@@ -11,7 +11,7 @@ export const create = {
         required: ['name'],
         properties: {
             name: { type: 'string' },
-            subSubject: { type: 'boolean', default: false },
+            isSubSubject: { type: 'boolean', default: false },
         },
     },
 };
