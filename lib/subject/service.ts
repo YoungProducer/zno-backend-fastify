@@ -21,6 +21,22 @@ class SubjectService implements ISubjectService {
     }
 
     async create(payload: SubjectTypes.CreatePayload): Promise<SubjectSchema> {
+        if (payload.isSubSubject) {
+            const parent = await subjectModel.findOne({
+                name: payload.parent,
+            });
+
+            const subject = await subjectModel.create({
+                name: payload.name,
+                parent: parent?._id,
+                isSubSubject: payload.isSubSubject,
+            });
+
+            console.log(subject);
+
+            return subject;
+        }
+
         const subject = await subjectModel.create(payload);
 
         return subject;

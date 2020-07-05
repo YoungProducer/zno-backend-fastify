@@ -19,7 +19,10 @@ class SubjectConfigService {
             .populate({
                 path: 'config',
                 populate: {
-                    path: 'subject subSubject',
+                    path: 'subject subSubjects',
+                    populate: {
+                        path: 'subject',
+                    },
                 },
             });
 
@@ -32,7 +35,7 @@ class SubjectConfigService {
                     name: config.subject.name,
                     id: config.subject.id,
                     subSubjects: config.subSubjects.map((subject: any) => ({
-                        id: subject.subject.id,
+                        id: subject.subject._id,
                         name: subject.subject.name,
                         themes: subject.themes,
                     })),
