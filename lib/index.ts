@@ -195,7 +195,11 @@ instance
     .register(fp(decorateFastifyInstance))
     .register(fastifyFormBody)
     .register(fastifyCookie)
-    .register(require('fastify-file-upload'))
+    .register(require('fastify-file-upload'), {
+        limits: {
+            fileSize: 200 * 1024 * 1024,
+        },
+    })
     .register(authController, { prefix: 'api/auth/' })
     .register(adminAuthController, { prefix: 'api/auth/admin' })
     .register(subjectController, { prefix: 'api/' })
