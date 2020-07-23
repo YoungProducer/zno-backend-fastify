@@ -7,7 +7,6 @@ import path from 'path';
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, SchemaCompiler } from 'fastify';
 import fp from 'fastify-plugin';
 import fastifyFormBody from 'fastify-formbody';
-import fastifyMultipart from 'fastify-multipart';
 import fastifyCors from 'fastify-cors';
 import jwt from 'fastify-jwt';
 import fastifyCookie from 'fastify-cookie';
@@ -194,7 +193,6 @@ instance
     .register(fp(errorHandler))
     .register(fp(authenticator))
     .register(fp(decorateFastifyInstance))
-    .register(fastifyMultipart)
     .register(fastifyFormBody)
     .register(fastifyCookie)
     .register(require('fastify-file-upload'))
